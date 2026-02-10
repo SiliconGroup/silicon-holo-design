@@ -1,6 +1,7 @@
 {
   "name": "silicon-holo-design",
   "version": "0.1.0",
+  "license": "Apache-2.0",
   "type": "module",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

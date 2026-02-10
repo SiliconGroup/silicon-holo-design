@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/组件-58-00e5ff?style=flat-square" alt="58 components" />
   <img src="https://img.shields.io/badge/react-18-61dafb?style=flat-square" alt="React 18" />
   <img src="https://img.shields.io/badge/typescript-5.7-3178c6?style=flat-square" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT" />
+  <img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="Apache 2.0" />
 </p>
 
 <p align="center">
@@ -437,4 +437,4 @@ silicon-holo-design/
 
 ## 许可证
 
-MIT
+Apache 2.0
