@@ -18,6 +18,7 @@
 <p align="center">
   <a href="#快速开始">快速开始</a> ·
   <a href="#组件列表">组件列表</a> ·
+  <a href="#聊天组件">聊天组件</a> ·
   <a href="#ai-聊天">AI 聊天</a> ·
   <a href="#主题定制">主题定制</a> ·
   <a href="#国际化">国际化</a> ·
@@ -70,7 +71,8 @@ export default defineConfig({
 | `silicon-holo-design` | 所有组件、hooks、工具函数、类型 |
 | `silicon-holo-design/styles` | CSS 变量与基础样式（必须导入） |
 | `silicon-holo-design/preset` | UnoCSS 预设（`presetSiliconHolo`） |
-| `silicon-holo-design/ai` | 仅 AI/聊天组件 |
+| `silicon-holo-design/chat` | 基础聊天组件（`ChatBubble`、`ChatInputArea`、`ChatMessageList`） |
+| `silicon-holo-design/ai` | AI 增强聊天组件（`AIChatContainer`、`AIMessageBubble` 等） |
 | `silicon-holo-design/locale/*` | 语言包（`en-US`、`zh-CN`） |
 
 ---
@@ -141,6 +143,8 @@ export default defineConfig({
 | `HoloEmpty` | 空状态 |
 | `HoloKbd` | 键盘快捷键 |
 | `StatusIndicator` | 连接/状态指示器，支持自定义标签和颜色 |
+| `CodeBlock` | 语法高亮代码块 |
+| `HtmlPreviewBlock` | HTML 沙箱预览 |
 
 ### 反馈
 
@@ -155,29 +159,76 @@ export default defineConfig({
 | `HoloSpinner` | 加载旋转器 |
 | `HexagonLoader` | 六边形加载动画 |
 | `ToastProvider` / `useToast` | 轻提示系统 |
+| `DataStreamEffect` | 数据流动画效果 |
 
-### AI / 聊天
+### 聊天（基础层）
+
+无业务绑定的聊天原语 — 可用于客服、团队通讯等任意聊天场景：
 
 | 组件 | 说明 |
 |------|------|
-| `ChatContainer` | 完整聊天界面（消息列表 + 输入框） |
-| `ChatInputArea` | 聊天输入框 |
-| `MessageList` | 可滚动消息列表 |
-| `MessageBubble` | 单条消息气泡（支持 Markdown） |
-| `HtmlPreviewBlock` | HTML 沙箱预览 |
-| `ToolExecutionCard` | 工具调用状态卡片 |
-| `CodeBlock` | 语法高亮代码块 |
-| `DataStreamEffect` | 数据流动画效果 |
+| `ChatBubble` | 消息气泡，支持左/右对齐和流式指示器 |
+| `ChatInputArea` | 聊天输入框，支持发送按钮、Shift+Enter 换行、国际化 |
+| `ChatMessageList` | 自动滚动消息容器，支持空状态 |
+
+### AI（增强层）
+
+基于聊天基础层的高级封装，专为 AI 助手界面设计：
+
+| 组件 | 说明 |
+|------|------|
+| `AIChatContainer` | 完整 AI 聊天界面（消息列表 + 输入框 + 空状态）。支持 `noSessionContent` 和 `emptyContent` 自定义空状态。 |
+| `AIMessageBubble` | 消息气泡，支持 Markdown、语法高亮、Mermaid 图表 |
+| `AIMessageList` | 消息列表，支持流式输出、思考状态、工具调用展示。支持自定义 `emptyContent`。 |
+| `AIToolExecutionCard` | 工具调用状态卡片（pending → running → complete/error） |
+
+> **注意：** 旧名称 `ChatContainer`、`MessageBubble`、`MessageList`、`ToolExecutionCard` 仍可使用但已弃用，请使用 `AI` 前缀的新名称。
 
 ---
 
-## AI 聊天
+## 聊天组件
 
-几分钟内搭建完整的 AI 聊天界面：
+使用基础聊天组件构建简单聊天界面：
 
 ```tsx
 import {
-  ChatContainer, LocaleProvider, ToastProvider, zhCN,
+  ChatBubble, ChatInputArea, ChatMessageList,
+  LocaleProvider, zhCN,
+} from 'silicon-holo-design'
+
+function ChatApp() {
+  const [messages, setMessages] = useState([])
+
+  const handleSend = (text: string) => {
+    setMessages(prev => [...prev, {
+      id: crypto.randomUUID(),
+      align: 'right' as const,
+      content: text,
+    }])
+  }
+
+  return (
+    <LocaleProvider locale={zhCN}>
+      <ChatMessageList scrollDeps={[messages]} isEmpty={messages.length === 0}>
+        {messages.map(msg => (
+          <ChatBubble key={msg.id} align={msg.align}>
+            <p>{msg.content}</p>
+          </ChatBubble>
+        ))}
+      </ChatMessageList>
+      <ChatInputArea onSend={handleSend} />
+    </LocaleProvider>
+  )
+}
+```
+
+## AI 聊天
+
+几分钟内搭建完整的 AI 聊天界面，支持 Markdown 渲染、流式输出和工具调用：
+
+```tsx
+import {
+  AIChatContainer, LocaleProvider, ToastProvider, zhCN,
 } from 'silicon-holo-design'
 import type { ChatMessage } from 'silicon-holo-design'
 
@@ -197,7 +248,7 @@ function AIChatApp() {
   return (
     <LocaleProvider locale={zhCN}>
       <ToastProvider>
-        <ChatContainer
+        <AIChatContainer
           messages={messages}
           onSend={handleSend}
           showEmptyState={messages.length === 0}
@@ -207,6 +258,34 @@ function AIChatApp() {
   )
 }
 ```
+
+### 工具执行卡片
+
+在 AI 界面中展示工具调用进度：
+
+```tsx
+import { AIToolExecutionCard } from 'silicon-holo-design'
+
+<AIToolExecutionCard toolName="search_codebase" status="running" />
+<AIToolExecutionCard toolName="search_codebase" status="complete" result="找到 3 个文件" />
+<AIToolExecutionCard toolName="search_codebase" status="error" />
+```
+
+### 自定义空状态
+
+`AIChatContainer` 和 `AIMessageList` 均支持自定义空状态内容：
+
+```tsx
+<AIChatContainer
+  messages={messages}
+  onSend={handleSend}
+  showEmptyState={!currentSession}
+  noSessionContent={<MyCustomNoSessionView />}   // showEmptyState 为 true 时显示
+  emptyContent={<MyCustomEmptyMessages />}        // 消息列表为空时显示
+/>
+```
+
+不传则使用内置默认（会话选择器和对话引导提示）。
 
 ---
 
@@ -304,7 +383,8 @@ import { LocaleProvider, zhCN, enUS } from 'silicon-holo-design'
 | 示例 | 说明 | 启动命令 |
 |------|------|----------|
 | `examples/vite-basic` | 最小化入门 — 按钮、输入、弹窗、语言切换 | `npm run example:basic` |
-| `examples/ai-chat` | AI 聊天界面 — 流式输出、状态指示器 | `npm run example:ai-chat` |
+| `examples/chat` | 基础聊天 — 使用 `ChatBubble`、`ChatInputArea`、`ChatMessageList` | `npm run example:chat` |
+| `examples/ai-chat` | AI 聊天 — 流式输出、工具执行卡片、状态指示器 | `npm run example:ai-chat` |
 | `examples/component-gallery` | 全部 58 个组件一览 | `npm run example:gallery` |
 | Showcase | 交互式组件展示（类似 Storybook） | `npm run showcase` |
 
@@ -318,6 +398,39 @@ npm run showcase     # 启动组件展示
 npm run typecheck    # 类型检查
 npm run test         # 运行测试
 npm run build        # 构建库
+```
+
+---
+
+## 项目结构
+
+```
+silicon-holo-design/
+├── src/
+│   ├── components/
+│   │   ├── general/       # Button, Link, GlowCard, IconButton, CircuitBorder
+│   │   ├── layout/        # Divider, Space, ScrollArea
+│   │   ├── navigation/    # Breadcrumb, Dropdown, Pagination, Steps, Tab, Anchor
+│   │   ├── data-entry/    # Input, Select, Checkbox, Radio, Switch, Slider, ...
+│   │   ├── data-display/  # Table, Tag, Badge, Avatar, Tooltip, CodeBlock, ...
+│   │   ├── feedback/      # Modal, Drawer, Alert, Progress, Toast, ...
+│   │   ├── chat/          # ChatBubble, ChatInputArea, ChatMessageList（基础层）
+│   │   └── ai/            # AIChatContainer, AIMessageBubble, AIToolExecutionCard（AI 层）
+│   ├── locale/            # 国际化（en-US, zh-CN）
+│   ├── theme/             # 主题 tokens 与 provider
+│   ├── preset/            # UnoCSS 预设
+│   ├── styles/            # 基础 CSS 与动画
+│   ├── hooks/             # useClickOutside
+│   ├── utils/             # cn(), HoloPortal
+│   ├── types/             # 共享类型定义
+│   └── index.ts           # 主入口 — 所有导出
+├── showcases/             # 交互式组件展示
+├── examples/              # 独立使用示例
+│   ├── vite-basic/        # 最小化入门
+│   ├── chat/              # 基础聊天示例
+│   ├── ai-chat/           # AI 聊天示例（含工具调用）
+│   └── component-gallery/ # 全组件一览
+└── dev_docs/              # 迁移与设计文档
 ```
 
 ---

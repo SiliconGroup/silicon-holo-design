@@ -7,6 +7,7 @@
   "exports": {
     ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
     "./styles": "./dist/silicon-holo-design.css",
+    "./chat": { "import": "./dist/components/chat/index.js", "types": "./dist/components/chat/index.d.ts" },
     "./ai": { "import": "./dist/components/ai/index.js", "types": "./dist/components/ai/index.d.ts" },
     "./preset": { "import": "./dist/preset/index.js", "types": "./dist/preset/index.d.ts" },
     "./locale/*": { "import": "./dist/locale/*.js", "types": "./dist/locale/*.d.ts" }
@@ -49,6 +50,7 @@
     "typecheck": "tsc --noEmit",
     "showcase": "vite --config vite.showcase.config.ts",
     "example:basic": "vite --config examples/vite-basic/vite.config.ts",
+    "example:chat": "vite --config examples/chat/vite.config.ts",
     "example:ai-chat": "vite --config examples/ai-chat/vite.config.ts",
     "example:gallery": "vite --config examples/component-gallery/vite.config.ts"
   }

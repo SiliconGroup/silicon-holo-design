@@ -8,5 +8,4 @@ export interface ChatMessage {
   toolCallId?: string
   toolResult?: string
 }
-export type ConnectionStatus = 'connected' | 'disconnected' | 'connecting' | 'error'
 export type ToolStatus = 'pending' | 'running' | 'complete' | 'error'

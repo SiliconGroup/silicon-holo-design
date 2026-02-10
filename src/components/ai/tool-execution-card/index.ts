@@ -1,1 +1,1 @@
-export { ToolExecutionCard } from "./ToolExecutionCard"
+export { AIToolExecutionCard } from "./AIToolExecutionCard"

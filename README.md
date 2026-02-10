@@ -18,6 +18,7 @@
 <p align="center">
   <a href="#quick-start">Quick Start</a> ·
   <a href="#components">Components</a> ·
+  <a href="#chat">Chat</a> ·
   <a href="#ai-chat">AI Chat</a> ·
   <a href="#theming">Theming</a> ·
   <a href="#i18n">i18n</a> ·
@@ -72,7 +73,8 @@ The preset includes colors, shortcuts, fonts, and a **safelist** of all CSS clas
 | `silicon-holo-design` | All components, hooks, utilities, types |
 | `silicon-holo-design/styles` | CSS variables & base styles (required) |
 | `silicon-holo-design/preset` | UnoCSS preset (`presetSiliconHolo`) |
-| `silicon-holo-design/ai` | AI/Chat components only |
+| `silicon-holo-design/chat` | Base chat components (`ChatBubble`, `ChatInputArea`, `ChatMessageList`) |
+| `silicon-holo-design/ai` | AI-enhanced chat components (`AIChatContainer`, `AIMessageBubble`, etc.) |
 | `silicon-holo-design/locale/*` | Locale files (`en-US`, `zh-CN`) |
 
 ---
@@ -144,6 +146,8 @@ The preset includes colors, shortcuts, fonts, and a **safelist** of all CSS clas
 | `HoloEmpty` | Empty state placeholder |
 | `HoloKbd` | Keyboard shortcut indicator |
 | `StatusIndicator` | Connection/status dot with customizable labels and colors |
+| `CodeBlock` | Syntax-highlighted code block |
+| `HtmlPreviewBlock` | Sandboxed HTML preview |
 
 ### Feedback
 
@@ -158,29 +162,76 @@ The preset includes colors, shortcuts, fonts, and a **safelist** of all CSS clas
 | `HoloSpinner` | Spinning loader |
 | `HexagonLoader` | Hexagonal loading animation |
 | `ToastProvider` / `useToast` | Toast notification system |
+| `DataStreamEffect` | Ambient data stream animation |
 
-### AI / Chat
+### Chat (Base Layer)
+
+Headless chat primitives — use these to build any chat UI (customer support, team messaging, etc.):
 
 | Component | Description |
 |-----------|-------------|
-| `ChatContainer` | Full chat interface (messages + input) |
-| `ChatInputArea` | Chat text input with send action |
-| `MessageList` | Scrollable message list |
-| `MessageBubble` | Single message with Markdown rendering |
-| `HtmlPreviewBlock` | Sandboxed HTML preview |
-| `ToolExecutionCard` | Tool call status display |
-| `CodeBlock` | Syntax-highlighted code block |
-| `DataStreamEffect` | Ambient data stream animation |
+| `ChatBubble` | Styled message bubble with left/right alignment and streaming indicator |
+| `ChatInputArea` | Text input with send button, Shift+Enter support, and i18n |
+| `ChatMessageList` | Auto-scrolling message container with empty state support |
+
+### AI (Enhanced Layer)
+
+Higher-level components built on top of the chat layer, designed for AI assistant interfaces:
+
+| Component | Description |
+|-----------|-------------|
+| `AIChatContainer` | Full AI chat interface (message list + input + empty state). Supports `noSessionContent` and `emptyContent` for custom empty states. |
+| `AIMessageBubble` | Message bubble with Markdown, syntax highlighting, Mermaid diagrams |
+| `AIMessageList` | Message list with streaming, thinking state, and tool call display. Supports custom `emptyContent`. |
+| `AIToolExecutionCard` | Tool call status card (pending → running → complete/error) |
+
+> **Note:** Legacy aliases `ChatContainer`, `MessageBubble`, `MessageList`, `ToolExecutionCard` are still available but deprecated. Use the `AI`-prefixed names.
 
 ---
 
-## AI Chat
+## Chat
 
-Build a complete AI chat interface in minutes:
+Build a simple chat interface using the base chat components:
 
 ```tsx
 import {
-  ChatContainer, DataStreamEffect,
+  ChatBubble, ChatInputArea, ChatMessageList,
+  LocaleProvider, enUS,
+} from 'silicon-holo-design'
+
+function ChatApp() {
+  const [messages, setMessages] = useState([])
+
+  const handleSend = (text: string) => {
+    setMessages(prev => [...prev, {
+      id: crypto.randomUUID(),
+      align: 'right' as const,
+      content: text,
+    }])
+  }
+
+  return (
+    <LocaleProvider locale={enUS}>
+      <ChatMessageList scrollDeps={[messages]} isEmpty={messages.length === 0}>
+        {messages.map(msg => (
+          <ChatBubble key={msg.id} align={msg.align}>
+            <p>{msg.content}</p>
+          </ChatBubble>
+        ))}
+      </ChatMessageList>
+      <ChatInputArea onSend={handleSend} />
+    </LocaleProvider>
+  )
+}
+```
+
+## AI Chat
+
+Build a complete AI chat interface with Markdown rendering, streaming, and tool calls:
+
+```tsx
+import {
+  AIChatContainer, DataStreamEffect,
   LocaleProvider, ToastProvider, enUS,
 } from 'silicon-holo-design'
 import type { ChatMessage } from 'silicon-holo-design'
@@ -203,8 +254,8 @@ function AIChatApp() {
   return (
     <LocaleProvider locale={enUS}>
       <ToastProvider>
-        <DataStreamEffect />
-        <ChatContainer
+        <DataStreamEffect active={processing} />
+        <AIChatContainer
           messages={messages}
           onSend={handleSend}
           processing={processing}
@@ -230,6 +281,34 @@ interface ChatMessage {
   toolResult?: string
 }
 ```
+
+### Tool Execution Card
+
+Display tool call progress in your AI interface:
+
+```tsx
+import { AIToolExecutionCard } from 'silicon-holo-design'
+
+<AIToolExecutionCard toolName="search_codebase" status="running" />
+<AIToolExecutionCard toolName="search_codebase" status="complete" result="Found 3 files" />
+<AIToolExecutionCard toolName="search_codebase" status="error" />
+```
+
+### Custom Empty States
+
+Both `AIChatContainer` and `AIMessageList` accept custom empty state content:
+
+```tsx
+<AIChatContainer
+  messages={messages}
+  onSend={handleSend}
+  showEmptyState={!currentSession}
+  noSessionContent={<MyCustomNoSessionView />}   // shown when showEmptyState is true
+  emptyContent={<MyCustomEmptyMessages />}        // shown when message list is empty
+/>
+```
+
+If omitted, built-in defaults are used (session selector and conversation starter hints).
 
 ---
 
@@ -358,9 +437,17 @@ Minimal setup — buttons, inputs, modals, toasts, and locale switching.
 npm run example:basic
 ```
 
+### `examples/chat`
+
+Simple chat interface using the base chat components (`ChatBubble`, `ChatInputArea`, `ChatMessageList`) — suitable for customer support, team messaging, or any non-AI chat scenario.
+
+```bash
+npm run example:chat
+```
+
 ### `examples/ai-chat`
 
-Full AI chat interface with streaming simulation, status indicator, and data stream effects.
+Full AI chat interface with streaming simulation, tool execution cards, status indicator, and data stream effects.
 
 ```bash
 npm run example:ai-chat
@@ -416,9 +503,10 @@ silicon-holo-design/
 │   │   ├── layout/        # Divider, Space, ScrollArea
 │   │   ├── navigation/    # Breadcrumb, Dropdown, Pagination, Steps, Tab, Anchor
 │   │   ├── data-entry/    # Input, Select, Checkbox, Radio, Switch, Slider, ...
-│   │   ├── data-display/  # Table, Tag, Badge, Avatar, Tooltip, Popover, ...
+│   │   ├── data-display/  # Table, Tag, Badge, Avatar, Tooltip, CodeBlock, ...
 │   │   ├── feedback/      # Modal, Drawer, Alert, Progress, Toast, ...
-│   │   └── ai/            # ChatContainer, MessageBubble, CodeBlock, ...
+│   │   ├── chat/          # ChatBubble, ChatInputArea, ChatMessageList (base layer)
+│   │   └── ai/            # AIChatContainer, AIMessageBubble, AIToolExecutionCard (AI layer)
 │   ├── locale/            # i18n (en-US, zh-CN)
 │   ├── theme/             # Theme tokens & provider
 │   ├── preset/            # UnoCSS preset
@@ -430,7 +518,8 @@ silicon-holo-design/
 ├── showcases/             # Interactive component showcase
 ├── examples/              # Standalone usage examples
 │   ├── vite-basic/        # Minimal starter
-│   ├── ai-chat/           # AI chat demo
+│   ├── chat/              # Base chat demo
+│   ├── ai-chat/           # AI chat demo with tool calls
 │   └── component-gallery/ # Full component reference
 └── dev_docs/              # Migration & design docs
 ```

@@ -14,14 +14,16 @@ export interface Locale {
     placeholder: string; months: string[]; shortMonths: string[]
     weekdays: string[]; shortWeekdays: string[]; today: string; monthYearFormat: string
   }
+  chat: {
+    inputPlaceholder: string; inputAriaLabel: string; sendButton: string; shiftEnterHint: string
+    codeTab: string; previewTab: string
+  }
   ai: {
     thinking: string; thinkingDescription: string; generating: string
     copy: string; copied: string; retry: string; stop: string
     newConversation: string; newConversationHint: string
     selectSession: string; selectSessionHint: string
-    inputPlaceholder: string; inputAriaLabel: string; sendButton: string; shiftEnterHint: string
     suggestCode: string; suggestExplain: string; suggestAnalyze: string
     toolRunning: string; toolComplete: string; toolError: string; toolPending: string
-    codeTab: string; previewTab: string
   }
 }

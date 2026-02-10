@@ -178,6 +178,7 @@ export const safelist: string[] = [
   "h-px",
   "h2",
   "h3",
+  "h[i]",
   "h[l]",
   "h[n]",
   "h[s]",

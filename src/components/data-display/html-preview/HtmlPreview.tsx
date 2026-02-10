@@ -113,8 +113,8 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
       <div className="flex items-center gap-1 px-3 py-1.5 bg-scene-void/60 border-b border-holo-blue/10">
         <HoloTab
           items={[
-            { key: 'code', label: locale.ai.codeTab, icon: <CodeIcon /> },
-            { key: 'preview', label: locale.ai.previewTab, icon: <PreviewIcon /> },
+            { key: 'code', label: locale.chat.codeTab, icon: <CodeIcon /> },
+            { key: 'preview', label: locale.chat.previewTab, icon: <PreviewIcon /> },
           ]}
           activeKey={mode}
           onChange={(key) => setMode(key as 'code' | 'preview')}

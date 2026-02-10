@@ -7,6 +7,8 @@ describe('Locale', () => {
   it('en-US has all required keys', () => {
     expect(enUS.locale).toBe('en-US')
     expect(enUS.common.confirm).toBe('Confirm')
+    expect(enUS.chat.inputPlaceholder).toBe('Type a message...')
+    expect(enUS.chat.codeTab).toBe('Code')
     expect(enUS.ai.thinking).toBe('Thinking')
     expect(enUS.datePicker.shortWeekdays).toHaveLength(7)
   })
@@ -14,6 +16,8 @@ describe('Locale', () => {
   it('zh-CN has all required keys', () => {
     expect(zhCN.locale).toBe('zh-CN')
     expect(zhCN.common.confirm).toBe('确认')
+    expect(zhCN.chat.inputPlaceholder).toBe('输入消息...')
+    expect(zhCN.chat.codeTab).toBe('代码')
     expect(zhCN.ai.thinking).toBe('正在思考')
     expect(zhCN.datePicker.shortWeekdays).toHaveLength(7)
   })

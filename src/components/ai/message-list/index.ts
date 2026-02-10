@@ -1,1 +1,1 @@
-export { MessageList } from "./MessageList"
+export { AIMessageList } from "./AIMessageList"

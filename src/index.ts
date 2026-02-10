@@ -3,7 +3,8 @@ import './styles/base.css'
 import './styles/animations.css'
 
 // Types
-export type { Size, Status, MessageRole, ChatMessage, ConnectionStatus, ToolStatus } from './types'
+export type { Size, Status, ConnectionStatus } from './types'
+export type { MessageRole, ChatMessage, ToolStatus } from './types'
 
 // Locale
 export { LocaleProvider, useLocale, formatMessage, enUS, zhCN } from './locale/index'
@@ -71,6 +72,8 @@ export { HoloPopover } from './components/data-display/popover'
 export { HoloEmpty } from './components/data-display/empty'
 export { HoloKbd } from './components/data-display/kbd'
 export { StatusIndicator } from './components/data-display/status-indicator'
+export { CodeBlock } from './components/data-display/code-block'
+export { HtmlPreviewBlock, isFullHtmlPage } from './components/data-display/html-preview'
 
 // Feedback
 export { HoloModal } from './components/feedback/modal'
@@ -82,16 +85,28 @@ export { HoloSkeleton } from './components/feedback/skeleton'
 export { HoloSpinner } from './components/feedback/spinner'
 export { HexagonLoader } from './components/feedback/hexagon-loader'
 export { ToastProvider, useToast } from './components/feedback/toast'
+export { DataStreamEffect } from './components/feedback/data-stream-effect'
 
-// AI
-export { MessageBubble } from './components/ai/message-bubble'
-export { MessageList } from './components/ai/message-list'
-export { ChatInputArea } from './components/ai/chat-input'
-export { ChatContainer } from './components/ai/chat-container'
-export { HtmlPreviewBlock } from './components/ai/html-preview'
-export { ToolExecutionCard } from './components/ai/tool-execution-card'
-export { DataStreamEffect } from './components/ai/data-stream-effect'
-export { CodeBlock } from './components/ai/code-block'
+// Chat (通用聊天组件)
+export { ChatBubble } from './components/chat/chat-bubble'
+export { ChatInputArea } from './components/chat/chat-input'
+export { ChatMessageList } from './components/chat/chat-message-list'
+
+// AI (二次封装，AI 前缀)
+export { AIMessageBubble } from './components/ai/message-bubble'
+export { AIMessageList } from './components/ai/message-list'
+export { AIChatContainer } from './components/ai/chat-container'
+export { AIToolExecutionCard } from './components/ai/tool-execution-card'
+
+// Backward-compatible aliases (deprecated, will be removed in next major version)
+/** @deprecated Use AIMessageBubble instead */
+export { AIMessageBubble as MessageBubble } from './components/ai/message-bubble'
+/** @deprecated Use AIMessageList instead */
+export { AIMessageList as MessageList } from './components/ai/message-list'
+/** @deprecated Use AIChatContainer instead */
+export { AIChatContainer as ChatContainer } from './components/ai/chat-container'
+/** @deprecated Use AIToolExecutionCard instead */
+export { AIToolExecutionCard as ToolExecutionCard } from './components/ai/tool-execution-card'
 
 // Preset
 export { presetSiliconHolo } from './preset'

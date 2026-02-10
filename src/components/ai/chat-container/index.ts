@@ -1,1 +1,1 @@
-export { ChatContainer } from "./ChatContainer"
+export { AIChatContainer } from "./AIChatContainer"

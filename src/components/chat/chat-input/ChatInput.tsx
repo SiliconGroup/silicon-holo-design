@@ -29,14 +29,14 @@ export function ChatInputArea({ onSend, disabled = false }: ChatInputAreaProps) 
       <div className={`absolute top-0 left-4 right-4 h-px transition-opacity duration-300 ${focused ? 'opacity-100' : 'opacity-0'}`} style={{ background: 'linear-gradient(90deg, transparent, rgba(0,255,255,0.3), transparent)' }} />
       <textarea ref={textareaRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={handleKeyDown}
         onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} disabled={disabled}
-        placeholder={locale.ai.inputPlaceholder} rows={1} aria-label={locale.ai.inputAriaLabel}
+        placeholder={locale.chat.inputPlaceholder} rows={1} aria-label={locale.chat.inputAriaLabel}
         className="chat-input-scrollbar w-full bg-transparent resize-none outline-none border-none overflow-hidden text-white/90 placeholder-white/25 font-sans text-[15px] leading-relaxed px-4 pt-3 pb-10 disabled:opacity-50 disabled:cursor-not-allowed" />
       <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-3 pb-2">
         <div className="flex items-center gap-2">
           <div className={`w-1 h-1 rounded-full transition-colors duration-300 ${focused ? 'bg-holo-cyan/60' : 'bg-white/15'}`} />
-          <span className="text-[11px] text-white/20 select-none">{locale.ai.shiftEnterHint}</span>
+          <span className="text-[11px] text-white/20 select-none">{locale.chat.shiftEnterHint}</span>
         </div>
-        <IconButton onClick={handleSubmit} disabled={!canSend} variant={canSend ? 'glow' : 'ghost'} size="sm" title={locale.ai.sendButton}>
+        <IconButton onClick={handleSubmit} disabled={!canSend} variant={canSend ? 'glow' : 'ghost'} size="sm" title={locale.chat.sendButton}>
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 12h12m0 0l-5-5m5 5l-5 5" /></svg>
         </IconButton>
       </div>

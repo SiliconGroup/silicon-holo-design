@@ -3,9 +3,9 @@ import { GlowCard } from '@/components/general/glow-card'
 import { HexagonLoader } from '@/components/feedback/hexagon-loader'
 import { useLocale } from '@/locale'
 
-interface ToolExecutionCardProps { toolName: string; status: ToolStatus; result?: string }
+interface AIToolExecutionCardProps { toolName: string; status: ToolStatus; result?: string }
 
-export function ToolExecutionCard({ toolName, status, result }: ToolExecutionCardProps) {
+export function AIToolExecutionCard({ toolName, status, result }: AIToolExecutionCardProps) {
   const locale = useLocale()
   const isRunning = status === 'running'
   const isComplete = status === 'complete'

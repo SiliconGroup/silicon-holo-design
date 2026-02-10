@@ -1,1 +1,1 @@
-export { MessageBubble } from "./MessageBubble"
+export { AIMessageBubble } from "./AIMessageBubble"

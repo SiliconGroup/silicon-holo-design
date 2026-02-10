@@ -19,16 +19,18 @@ const zhCN: Locale = {
     shortWeekdays: ['日','一','二','三','四','五','六'],
     today: '今天', monthYearFormat: '{year}年 {month}',
   },
+  chat: {
+    inputPlaceholder: '输入消息...', inputAriaLabel: '聊天消息输入',
+    sendButton: '发送', shiftEnterHint: 'Shift+Enter 换行',
+    codeTab: '代码', previewTab: '预览',
+  },
   ai: {
     thinking: '正在思考', thinkingDescription: 'AI 正在处理您的请求...',
     generating: '生成中', copy: '复制', copied: '已复制', retry: '重试', stop: '停止',
     newConversation: '开始新的对话', newConversationHint: '输入消息与 AI 助手交流',
     selectSession: '选择或创建会话', selectSessionHint: '从左侧选择一个现有会话，或创建新会话开始与 AI 助手交流',
-    inputPlaceholder: '输入消息...', inputAriaLabel: '聊天消息输入',
-    sendButton: '发送', shiftEnterHint: 'Shift+Enter 换行',
     suggestCode: '写一段代码', suggestExplain: '解释概念', suggestAnalyze: '分析问题',
     toolRunning: '执行中...', toolComplete: '已完成', toolError: '执行失败', toolPending: '等待中',
-    codeTab: '代码', previewTab: '预览',
   },
 }
 export default zhCN
