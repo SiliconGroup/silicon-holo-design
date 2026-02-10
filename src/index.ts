@@ -1,6 +1,7 @@
 // Styles
 import './styles/base.css'
 import './styles/animations.css'
+import './styles/hljs-atom-one-dark.css'
 
 // Types
 export type { Size, Status, ConnectionStatus } from './types'
