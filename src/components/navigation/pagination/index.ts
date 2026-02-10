@@ -1,0 +1,1 @@
+export { HoloPagination } from "./Pagination"

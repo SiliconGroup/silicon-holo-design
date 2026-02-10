@@ -1,0 +1,1 @@
+export { HoloAvatar } from "./Avatar"

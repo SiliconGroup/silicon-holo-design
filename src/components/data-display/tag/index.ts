@@ -1,0 +1,1 @@
+export { HoloTag } from "./Tag"

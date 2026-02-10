@@ -1,0 +1,76 @@
+:root {
+  --shd-holo-cyan: #00ffff;
+  --shd-holo-cyan-dim: #00cccc;
+  --shd-holo-cyan-dark: #001a1a;
+  --shd-holo-blue: #0088ff;
+  --shd-holo-green: #00ffaa;
+  --shd-holo-purple: #aa88ff;
+  --shd-scene-void: #000a0e;
+  --shd-scene-deep: #001018;
+  --shd-scene-surface: #001a28;
+  --shd-status-success: #00ff88;
+  --shd-status-warning: #ffaa00;
+  --shd-status-error: #ff5566;
+  --shd-text-primary: rgba(255, 255, 255, 0.95);
+  --shd-text-secondary: rgba(255, 255, 255, 0.7);
+  --shd-text-muted: rgba(255, 255, 255, 0.4);
+  --shd-border-glow: rgba(0, 255, 255, 0.4);
+  --shd-border-subtle: rgba(0, 255, 255, 0.15);
+  --shd-border-muted: rgba(255, 255, 255, 0.08);
+  --shd-radius-sm: 4px;
+  --shd-radius-md: 6px;
+  --shd-radius-lg: 8px;
+  --shd-transition-fast: 150ms;
+  --shd-transition-normal: 200ms;
+  --shd-transition-slow: 300ms;
+  --shd-glow-cyan: 0 0 8px #00ffff;
+  --shd-glow-blue: 0 0 8px #0088ff;
+  /* Compat aliases */
+  --holo-cyan: var(--shd-holo-cyan);
+  --holo-cyan-dim: var(--shd-holo-cyan-dim);
+  --holo-cyan-dark: var(--shd-holo-cyan-dark);
+  --holo-blue: var(--shd-holo-blue);
+  --holo-green: var(--shd-holo-green);
+  --holo-purple: var(--shd-holo-purple);
+  --bg-void: var(--shd-scene-void);
+  --bg-deep: var(--shd-scene-deep);
+  --bg-surface: var(--shd-scene-surface);
+  --color-success: var(--shd-status-success);
+  --color-warning: var(--shd-status-warning);
+  --color-error: var(--shd-status-error);
+  --text-primary: var(--shd-text-primary);
+  --text-secondary: var(--shd-text-secondary);
+  --text-muted: var(--shd-text-muted);
+  --border-glow: var(--shd-border-glow);
+  --border-subtle: var(--shd-border-subtle);
+  --border-muted: var(--shd-border-muted);
+}
+* { box-sizing: border-box; }
+button { background: none; padding: 0; cursor: pointer; font: inherit; color: inherit; }
+input, textarea, select { border: none; outline: none; background: none; }
+body { margin: 0; background: var(--shd-scene-void); color: var(--shd-text-primary); font-family: 'Inter', -apple-system, sans-serif; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--shd-holo-cyan); border-radius: 2px; }
+::selection { background: rgba(0, 255, 255, 0.2); }
+.holo-text {
+  background: linear-gradient(90deg, var(--shd-holo-cyan), var(--shd-holo-blue), var(--shd-holo-green), var(--shd-holo-cyan));
+  background-size: 300% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; animation: holo-shift 6s ease-in-out infinite;
+}
+.prose { color: var(--shd-text-primary); }
+.prose code { background: rgba(0,255,255,0.1); border: 1px solid var(--shd-border-subtle); border-radius: 4px; padding: 2px 6px; font-family: 'JetBrains Mono', monospace; color: var(--shd-holo-cyan); font-size: 0.9em; }
+.prose pre { background: rgba(0,10,20,0.8); border: 1px solid var(--shd-border-subtle); border-radius: 6px; padding: 16px; overflow-x: auto; }
+.prose a { color: var(--shd-holo-cyan); text-decoration: none; border-bottom: 1px solid var(--shd-border-subtle); }
+.prose a:hover { border-bottom-color: var(--shd-holo-cyan); }
+.prose blockquote { border-left: 3px solid var(--shd-holo-cyan); background: rgba(0,255,255,0.05); padding: 12px 16px; margin: 16px 0; }
+.prose li::marker { color: var(--shd-holo-cyan); }
+.prose table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.9em; }
+.prose th { background: rgba(0,136,255,0.1); border: 1px solid var(--shd-border-subtle); padding: 8px 12px; text-align: left; font-weight: 600; color: var(--shd-holo-cyan); font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
+.prose td { border: 1px solid var(--shd-border-muted); padding: 8px 12px; color: var(--shd-text-secondary); }
+.prose tr:hover td { background: rgba(0,255,255,0.03); }
+.typing-cursor::after { content: '▊'; animation: blink 1s step-end infinite; color: var(--shd-holo-cyan); }
+.chat-input-scrollbar::-webkit-scrollbar { width: 3px; }
+.chat-input-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.chat-input-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,255,255,0.15); border-radius: 2px; }
+.chat-input-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,255,255,0.25); }

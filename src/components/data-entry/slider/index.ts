@@ -1,0 +1,1 @@
+export { HoloSlider } from "./Slider"

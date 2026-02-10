@@ -1,0 +1,1 @@
+export { HoloBadge } from "./Badge"

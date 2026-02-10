@@ -1,0 +1,55 @@
+{
+  "name": "silicon-holo-design",
+  "version": "0.1.0",
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    "./styles": "./dist/silicon-holo-design.css",
+    "./ai": { "import": "./dist/components/ai/index.js", "types": "./dist/components/ai/index.d.ts" },
+    "./preset": { "import": "./dist/preset/index.js", "types": "./dist/preset/index.d.ts" },
+    "./locale/*": { "import": "./dist/locale/*.js", "types": "./dist/locale/*.d.ts" }
+  },
+  "sideEffects": ["*.css"],
+  "files": ["dist", "README.md", "LICENSE"],
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "dependencies": {
+    "motion": "^11.15.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.1.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "@unocss/preset-icons": "^0.65.3",
+    "@unocss/preset-uno": "^0.65.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "glob": "^11.0.0",
+    "highlight.js": "^11.10.0",
+    "jsdom": "^25.0.0",
+    "mermaid": "^11.12.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1",
+    "remark-gfm": "^4.0.1",
+    "typescript": "^5.7.2",
+    "unocss": "^0.65.3",
+    "vite": "^6.0.0",
+    "vite-plugin-dts": "^4.3.0",
+    "vitest": "^2.1.0"
+  },
+  "scripts": {
+    "prepare": "npm run build",
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node scripts/extract-safelist.mjs && vite build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "showcase": "vite --config vite.showcase.config.ts",
+    "example:basic": "vite --config examples/vite-basic/vite.config.ts",
+    "example:ai-chat": "vite --config examples/ai-chat/vite.config.ts",
+    "example:gallery": "vite --config examples/component-gallery/vite.config.ts"
+  }
+}
