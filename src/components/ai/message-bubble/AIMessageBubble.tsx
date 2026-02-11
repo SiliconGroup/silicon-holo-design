@@ -1,5 +1,7 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
 import hljs from 'highlight.js'
 import { useEffect, useRef, useState, type ComponentPropsWithoutRef } from 'react'
 import mermaid from 'mermaid'
@@ -77,7 +79,8 @@ function InternalCodeBlock({ className, children, ...props }: ComponentPropsWith
   return <code className={className} {...props}>{children}</code>
 }
 
-const remarkPlugins = [remarkGfm]
+const remarkPlugins = [remarkGfm, remarkMath]
+const rehypePlugins = [rehypeKatex]
 
 export function AIMessageBubble({ message, isStreaming = false }: AIMessageBubbleProps) {
   const isUser = message.role === 'user'
@@ -119,6 +122,7 @@ export function AIMessageBubble({ message, isStreaming = false }: AIMessageBubbl
       `}>
         <ReactMarkdown
           remarkPlugins={remarkPlugins}
+          rehypePlugins={rehypePlugins}
           components={{ code: InternalCodeBlock }}
         >
           {message.content || ' '}

@@ -6,15 +6,36 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "import": "./dist/index.js", "types": "./dist/index.d.ts" },
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
     "./styles": "./dist/silicon-holo-design.css",
-    "./chat": { "import": "./dist/components/chat/index.js", "types": "./dist/components/chat/index.d.ts" },
-    "./ai": { "import": "./dist/components/ai/index.js", "types": "./dist/components/ai/index.d.ts" },
-    "./preset": { "import": "./dist/preset/index.js", "types": "./dist/preset/index.d.ts" },
-    "./locale/*": { "import": "./dist/locale/*.js", "types": "./dist/locale/*.d.ts" }
+    "./chat": {
+      "import": "./dist/components/chat/index.js",
+      "types": "./dist/components/chat/index.d.ts"
+    },
+    "./ai": {
+      "import": "./dist/components/ai/index.js",
+      "types": "./dist/components/ai/index.d.ts"
+    },
+    "./preset": {
+      "import": "./dist/preset/index.js",
+      "types": "./dist/preset/index.d.ts"
+    },
+    "./locale/*": {
+      "import": "./dist/locale/*.js",
+      "types": "./dist/locale/*.d.ts"
+    }
   },
-  "sideEffects": ["*.css"],
-  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
@@ -32,11 +53,14 @@
     "glob": "^11.0.0",
     "highlight.js": "^11.10.0",
     "jsdom": "^25.0.0",
+    "katex": "^0.16.28",
     "mermaid": "^11.12.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
+    "rehype-katex": "^7.0.1",
     "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
     "typescript": "^5.7.2",
     "unocss": "^0.65.3",
     "vite": "^6.0.0",
