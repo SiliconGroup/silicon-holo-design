@@ -79,6 +79,15 @@ function InternalCodeBlock({ className, children, ...props }: ComponentPropsWith
   return <code className={className} {...props}>{children}</code>
 }
 
+/** Normalize LaTeX delimiters: \[...\] → $$...$$, \(...\) → $...$, skipping code blocks */
+function normalizeMath(s: string): string {
+  return s.replace(/(```[\s\S]*?```)|(\\\[[\s\S]*?\\\])|(\\\([\s\S]*?\\\))/g, (m, code, block, inline) => {
+    if (code) return code
+    if (block) return `$$${block.slice(2, -2)}$$`
+    return `$${inline.slice(2, -2)}$`
+  })
+}
+
 const remarkPlugins = [remarkGfm, remarkMath]
 const rehypePlugins = [rehypeKatex]
 
@@ -125,7 +134,7 @@ export function AIMessageBubble({ message, isStreaming = false }: AIMessageBubbl
           rehypePlugins={rehypePlugins}
           components={{ code: InternalCodeBlock }}
         >
-          {message.content || ' '}
+          {normalizeMath(message.content || ' ')}
         </ReactMarkdown>
       </div>
     </ChatBubble>
