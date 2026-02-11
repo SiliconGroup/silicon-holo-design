@@ -181,7 +181,7 @@ Higher-level components built on top of the chat layer, designed for AI assistan
 | Component | Description |
 |-----------|-------------|
 | `AIChatContainer` | Full AI chat interface (message list + input + empty state). Supports `noSessionContent` and `emptyContent` for custom empty states. |
-| `AIMessageBubble` | Message bubble with Markdown, syntax highlighting, Mermaid diagrams |
+| `AIMessageBubble` | Message bubble with Markdown, math formulas (KaTeX), syntax highlighting, Mermaid diagrams |
 | `AIMessageList` | Message list with streaming, thinking state, and tool call display. Supports custom `emptyContent`. |
 | `AIToolExecutionCard` | Tool call status card (pending → running → complete/error) |
 
@@ -293,6 +293,19 @@ import { AIToolExecutionCard } from 'silicon-holo-design'
 <AIToolExecutionCard toolName="search_codebase" status="complete" result="Found 3 files" />
 <AIToolExecutionCard toolName="search_codebase" status="error" />
 ```
+
+### Math Formula Rendering
+
+`AIMessageBubble` has built-in math formula support via KaTeX. All common delimiters are supported:
+
+| Syntax | Type | Example |
+|--------|------|---------|
+| `$...$` | Inline math | `$E=mc^2$` |
+| `$$...$$` | Display math | `$$\frac{a}{b}$$` |
+| `\(...\)` | Inline math (LaTeX) | `\(E=mc^2\)` |
+| `\[...\]` | Display math (LaTeX) | `\[E=mc^2\]` |
+
+No extra dependencies needed — KaTeX, remark-math, and rehype-katex are bundled in the library.
 
 ### Custom Empty States
 

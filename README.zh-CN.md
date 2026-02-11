@@ -178,7 +178,7 @@ export default defineConfig({
 | 组件 | 说明 |
 |------|------|
 | `AIChatContainer` | 完整 AI 聊天界面（消息列表 + 输入框 + 空状态）。支持 `noSessionContent` 和 `emptyContent` 自定义空状态。 |
-| `AIMessageBubble` | 消息气泡，支持 Markdown、语法高亮、Mermaid 图表 |
+| `AIMessageBubble` | 消息气泡，支持 Markdown、数学公式（KaTeX）、语法高亮、Mermaid 图表 |
 | `AIMessageList` | 消息列表，支持流式输出、思考状态、工具调用展示。支持自定义 `emptyContent`。 |
 | `AIToolExecutionCard` | 工具调用状态卡片（pending → running → complete/error） |
 
@@ -270,6 +270,19 @@ import { AIToolExecutionCard } from 'silicon-holo-design'
 <AIToolExecutionCard toolName="search_codebase" status="complete" result="找到 3 个文件" />
 <AIToolExecutionCard toolName="search_codebase" status="error" />
 ```
+
+### 数学公式渲染
+
+`AIMessageBubble` 内置了基于 KaTeX 的数学公式渲染，支持以下语法：
+
+| 语法 | 类型 | 示例 |
+|------|------|------|
+| `$...$` | 行内公式 | `$E=mc^2$` |
+| `$$...$$` | 块级公式 | `$$\frac{a}{b}$$` |
+| `\(...\)` | 行内公式（LaTeX） | `\(E=mc^2\)` |
+| `\[...\]` | 块级公式（LaTeX） | `\[E=mc^2\]` |
+
+无需额外安装依赖 — KaTeX、remark-math、rehype-katex 已打包在库中。
 
 ### 自定义空状态
 

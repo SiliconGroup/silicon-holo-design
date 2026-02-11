@@ -12,9 +12,9 @@ export default defineConfig({
   ],
   resolve: { alias: { '@': resolve(__dirname, 'src') } },
   build: {
-    lib: { entry: resolve(__dirname, 'src/index.ts'), formats: ['es'] },
+    lib: { entry: { index: resolve(__dirname, 'src/index.ts'), 'preset/index': resolve(__dirname, 'src/preset/index.ts') }, formats: ['es'] },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime', 'react-markdown', 'remark-gfm', 'remark-math', 'rehype-katex', 'highlight.js', 'mermaid'],
+      external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: { entryFileNames: '[name].js', globals: { react: 'React', 'react-dom': 'ReactDOM' } },
     },
   },
