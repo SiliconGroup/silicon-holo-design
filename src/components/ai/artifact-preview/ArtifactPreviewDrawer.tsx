@@ -80,7 +80,7 @@ export function ArtifactPreviewDrawer({ artifact, onClose, width = '50vw', rende
           <div className="flex items-center gap-2">
             <button onClick={handleCopy} className="px-2 py-1 text-[11px] text-white/40 hover:text-white/70 border border-white/10 hover:border-white/20 rounded transition-colors">{copied ? locale.ai.copied : locale.ai.copy}</button>
             <button onClick={handleDownload} className="px-2 py-1 text-[11px] text-white/40 hover:text-white/70 border border-white/10 hover:border-white/20 rounded transition-colors">{locale.ai.artifactDownload}</button>
-            <button onClick={onClose} className="text-white/40 hover:text-white/80 transition-colors"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+            <button onClick={onClose} className="border-none text-white/40 hover:text-white/80 transition-colors duration-200"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
           </div>
         </div>
         <div className="flex-1 min-h-0 overflow-hidden">
