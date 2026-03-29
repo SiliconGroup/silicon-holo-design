@@ -29,5 +29,8 @@ export interface Locale {
     artifactCode: string
     artifactPreview: string
     artifactDownload: string
+    toolArguments: string
+    toolResult: string
+    toolNoResult: string
   }
 }

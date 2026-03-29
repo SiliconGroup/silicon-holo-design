@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, useMemo, useCallback, type ComponentPropsW
 import mermaid from 'mermaid'
 import { isFullHtmlPage } from '@/components/data-display/html-preview'
 import { ChatBubble } from '@/components/chat/chat-bubble'
+import { AIToolCallCard } from '@/components/ai/tool-call-card'
 import { useLocale } from '@/locale'
 import type { ChatMessage, Artifact } from '@/types'
 
@@ -112,15 +113,17 @@ export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact }
   const isUser = message.role === 'user'
   const isTool = message.role === 'tool'
 
-  if (isTool) {
+  if (isTool && message.toolName) {
     return (
-      <div className="flex justify-center my-4">
-        <div className="inline-flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-status-success/10 via-holo-cyan/10 to-status-success/10 border border-status-success/20 rounded-full backdrop-blur-sm">
-          <div className="w-2 h-2 rounded-full bg-status-success animate-pulse" style={{ boxShadow: '0 0 8px var(--color-success)' }} />
-          <span className="text-sm font-mono text-status-success">{message.toolName}</span>
-          {message.toolResult && (
-            <><svg className="w-4 h-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg><span className="text-sm text-white/50 max-w-[200px] truncate">{message.toolResult}</span></>
-          )}
+      <div className="flex justify-start my-2 px-2">
+        <div className="max-w-[85%]">
+          <AIToolCallCard
+            name={message.toolName}
+            status={message.toolStatus || 'complete'}
+            arguments={message.toolArguments}
+            result={message.toolResult}
+            durationMs={message.toolDuration}
+          />
         </div>
       </div>
     )

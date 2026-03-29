@@ -35,6 +35,9 @@ const enUS: Locale = {
     artifactCode: 'Code',
     artifactPreview: 'Preview',
     artifactDownload: 'Download',
+    toolArguments: 'Arguments',
+    toolResult: 'Result',
+    toolNoResult: '(no result)',
   },
 }
 export default enUS

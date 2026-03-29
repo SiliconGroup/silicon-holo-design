@@ -102,6 +102,7 @@ export { AIMessageBubble } from './components/ai/message-bubble'
 export { AIMessageList } from './components/ai/message-list'
 export { AIChatContainer } from './components/ai/chat-container'
 export { AIToolExecutionCard } from './components/ai/tool-execution-card'
+export { AIToolCallCard } from './components/ai/tool-call-card'
 export { ArtifactPreviewDrawer } from './components/ai/artifact-preview'
 export type { ArtifactPreviewDrawerProps } from './components/ai/artifact-preview'
 

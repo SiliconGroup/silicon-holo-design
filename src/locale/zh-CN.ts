@@ -35,6 +35,9 @@ const zhCN: Locale = {
     artifactCode: '代码',
     artifactPreview: '预览',
     artifactDownload: '下载',
+    toolArguments: '请求参数',
+    toolResult: '执行结果',
+    toolNoResult: '（无结果）',
   },
 }
 export default zhCN

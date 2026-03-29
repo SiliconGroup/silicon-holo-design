@@ -7,6 +7,12 @@ export interface ChatMessage {
   toolName?: string
   toolCallId?: string
   toolResult?: string
+  /** 工具调用状态（仅 role=tool 时有意义） */
+  toolStatus?: ToolStatus
+  /** 工具调用参数（JSON 字符串） */
+  toolArguments?: string
+  /** 工具执行耗时（毫秒） */
+  toolDuration?: number
 }
 export type ToolStatus = 'pending' | 'running' | 'complete' | 'error'
 
