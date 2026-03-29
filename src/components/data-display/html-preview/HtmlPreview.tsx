@@ -9,6 +9,8 @@ interface HtmlPreviewBlockProps {
 }
 
 /**
+ * @deprecated Use ArtifactPreviewDrawer for HTML preview instead.
+ *
  * HTML 代码/预览切换组件
  *
  * 渲染策略：

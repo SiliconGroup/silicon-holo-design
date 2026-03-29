@@ -9,3 +9,15 @@ export interface ChatMessage {
   toolResult?: string
 }
 export type ToolStatus = 'pending' | 'running' | 'complete' | 'error'
+
+/** 可预览的内容类型，可扩展 */
+export type ArtifactType = 'html' | 'image' | 'svg'
+
+/** 通用 Artifact 描述 */
+export interface Artifact {
+  id: string
+  type: ArtifactType
+  title?: string
+  content: string
+  messageId?: string
+}

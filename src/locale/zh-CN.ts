@@ -31,6 +31,10 @@ const zhCN: Locale = {
     selectSession: '选择或创建会话', selectSessionHint: '从左侧选择一个现有会话，或创建新会话开始与 AI 助手交流',
     suggestCode: '写一段代码', suggestExplain: '解释概念', suggestAnalyze: '分析问题',
     toolRunning: '执行中...', toolComplete: '已完成', toolError: '执行失败', toolPending: '等待中',
+    preview: '预览',
+    artifactCode: '代码',
+    artifactPreview: '预览',
+    artifactDownload: '下载',
   },
 }
 export default zhCN

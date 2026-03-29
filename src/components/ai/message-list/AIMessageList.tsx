@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { ChatMessage } from '@/types'
+import type { ChatMessage, Artifact } from '@/types'
 import { ChatMessageList } from '@/components/chat/chat-message-list'
 import { AIMessageBubble } from '@/components/ai/message-bubble'
 import { HexagonLoader } from '@/components/feedback/hexagon-loader'
@@ -10,11 +10,11 @@ interface AIMessageListProps {
   streamingContent?: string
   streamingThinking?: string
   processing?: boolean
-  /** Custom empty state content. If omitted, uses built-in default. */
   emptyContent?: ReactNode
+  onOpenArtifact?: (artifact: Artifact) => void
 }
 
-export function AIMessageList({ messages, streamingContent, streamingThinking, processing, emptyContent: customEmptyContent }: AIMessageListProps) {
+export function AIMessageList({ messages, streamingContent, streamingThinking, processing, emptyContent: customEmptyContent, onOpenArtifact }: AIMessageListProps) {
   const locale = useLocale()
 
   const defaultEmptyContent = (
@@ -38,12 +38,8 @@ export function AIMessageList({ messages, streamingContent, streamingThinking, p
   )
 
   return (
-    <ChatMessageList
-      scrollDeps={[messages, streamingContent, streamingThinking]}
-      isEmpty={messages.length === 0 && !processing}
-      emptyContent={customEmptyContent ?? defaultEmptyContent}
-    >
-      {messages.map((msg) => <AIMessageBubble key={msg.id} message={msg} />)}
+    <ChatMessageList scrollDeps={[messages, streamingContent, streamingThinking]} isEmpty={messages.length === 0 && !processing} emptyContent={customEmptyContent ?? defaultEmptyContent}>
+      {messages.map((msg) => <AIMessageBubble key={msg.id} message={msg} onOpenArtifact={onOpenArtifact} />)}
 
       {streamingThinking && (
         <div className="flex justify-start my-4"><div className="max-w-[85%] px-5 py-4 bg-white/3 backdrop-blur-md border border-holo-cyan/10 rounded-md text-white/40 text-sm whitespace-pre-wrap"><span className="text-white/25 text-xs mr-2">💭</span>{streamingThinking}</div></div>

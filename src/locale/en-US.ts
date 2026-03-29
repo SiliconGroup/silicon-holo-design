@@ -31,6 +31,10 @@ const enUS: Locale = {
     selectSession: 'Select or create a session', selectSessionHint: 'Select an existing session or create a new one to start chatting',
     suggestCode: 'Write code', suggestExplain: 'Explain concept', suggestAnalyze: 'Analyze problem',
     toolRunning: 'Running...', toolComplete: 'Complete', toolError: 'Failed', toolPending: 'Pending',
+    preview: 'Preview',
+    artifactCode: 'Code',
+    artifactPreview: 'Preview',
+    artifactDownload: 'Download',
   },
 }
 export default enUS

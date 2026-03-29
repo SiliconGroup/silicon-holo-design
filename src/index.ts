@@ -7,6 +7,7 @@ import 'katex/dist/katex.min.css'
 // Types
 export type { Size, Status, ConnectionStatus } from './types'
 export type { MessageRole, ChatMessage, ToolStatus } from './types'
+export type { ArtifactType, Artifact } from './types'
 
 // Locale
 export { LocaleProvider, useLocale, formatMessage, enUS, zhCN } from './locale/index'
@@ -75,7 +76,9 @@ export { HoloEmpty } from './components/data-display/empty'
 export { HoloKbd } from './components/data-display/kbd'
 export { StatusIndicator } from './components/data-display/status-indicator'
 export { CodeBlock } from './components/data-display/code-block'
-export { HtmlPreviewBlock, isFullHtmlPage } from './components/data-display/html-preview'
+/** @deprecated Use ArtifactPreviewDrawer for HTML preview instead */
+export { HtmlPreviewBlock } from './components/data-display/html-preview'
+export { isFullHtmlPage } from './components/data-display/html-preview'
 
 // Feedback
 export { HoloModal } from './components/feedback/modal'
@@ -99,6 +102,8 @@ export { AIMessageBubble } from './components/ai/message-bubble'
 export { AIMessageList } from './components/ai/message-list'
 export { AIChatContainer } from './components/ai/chat-container'
 export { AIToolExecutionCard } from './components/ai/tool-execution-card'
+export { ArtifactPreviewDrawer } from './components/ai/artifact-preview'
+export type { ArtifactPreviewDrawerProps } from './components/ai/artifact-preview'
 
 // Backward-compatible aliases (deprecated, will be removed in next major version)
 /** @deprecated Use AIMessageBubble instead */

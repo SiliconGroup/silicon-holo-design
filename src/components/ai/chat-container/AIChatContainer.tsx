@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { ChatMessage } from '@/types'
+import type { ChatMessage, Artifact } from '@/types'
 import { AIMessageList } from '@/components/ai/message-list'
 import { ChatInputArea } from '@/components/chat/chat-input'
 import { useLocale } from '@/locale'
@@ -10,15 +10,13 @@ interface AIChatContainerProps {
   processing?: boolean
   streamingContent?: string
   streamingThinking?: string
-  /** When true, renders the no-session / empty-state view instead of the chat view */
   showEmptyState?: boolean
-  /** Custom content for the no-session empty state. If omitted, uses built-in default. */
   noSessionContent?: ReactNode
-  /** Custom content for the empty message list. Passed through to AIMessageList. */
   emptyContent?: ReactNode
+  onOpenArtifact?: (artifact: Artifact) => void
 }
 
-export function AIChatContainer({ messages = [], onSend, processing, streamingContent, streamingThinking, showEmptyState, noSessionContent, emptyContent }: AIChatContainerProps) {
+export function AIChatContainer({ messages = [], onSend, processing, streamingContent, streamingThinking, showEmptyState, noSessionContent, emptyContent, onOpenArtifact }: AIChatContainerProps) {
   const locale = useLocale()
   if (showEmptyState) {
     return (
@@ -43,7 +41,7 @@ export function AIChatContainer({ messages = [], onSend, processing, streamingCo
   return (
     <div className="flex-1 flex flex-col relative overflow-hidden min-h-0">
       <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-scene-void/50 to-transparent pointer-events-none z-10" />
-      <AIMessageList messages={messages} streamingContent={streamingContent} streamingThinking={streamingThinking} processing={processing} emptyContent={emptyContent} />
+      <AIMessageList messages={messages} streamingContent={streamingContent} streamingThinking={streamingThinking} processing={processing} emptyContent={emptyContent} onOpenArtifact={onOpenArtifact} />
       <div className="relative px-6 pb-5 pt-2 flex-shrink-0"><ChatInputArea onSend={onSend} disabled={processing} /></div>
     </div>
   )

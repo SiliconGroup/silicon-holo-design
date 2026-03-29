@@ -25,5 +25,9 @@ export interface Locale {
     selectSession: string; selectSessionHint: string
     suggestCode: string; suggestExplain: string; suggestAnalyze: string
     toolRunning: string; toolComplete: string; toolError: string; toolPending: string
+    preview: string
+    artifactCode: string
+    artifactPreview: string
+    artifactDownload: string
   }
 }
