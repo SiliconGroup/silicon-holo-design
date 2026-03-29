@@ -47,22 +47,31 @@ function MermaidBlock({ code }: { code: string }) {
   return <div ref={containerRef} className="flex justify-center py-2 [&_svg]:max-w-full" />
 }
 
-function CodeToolbar({ code, lang, onPreview }: { code: string; lang?: string; onPreview?: () => void }) {
+/** 紧凑的 Artifact 卡片，替代气泡内的代码块 */
+function ArtifactCard({ code, onPreview, onCopy }: { code: string; onPreview?: () => void; onCopy: () => void }) {
   const locale = useLocale()
   const [copied, setCopied] = useState(false)
-  const handleCopy = useCallback(() => { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 2000) }, [code])
+  const handleCopy = useCallback(() => { onCopy(); setCopied(true); setTimeout(() => setCopied(false), 2000) }, [onCopy])
 
   return (
-    <div className="flex items-center justify-between px-3 py-1.5 bg-scene-void/60 border-b border-holo-blue/10 rounded-t-md">
-      <span className="text-[10px] font-mono text-white/25 uppercase">{lang || 'code'}</span>
-      <div className="flex items-center gap-1">
+    <div
+      className="my-2 flex items-center gap-3 px-4 py-3 rounded-md border border-holo-cyan/15 bg-holo-cyan/5 backdrop-blur-sm cursor-pointer hover:border-holo-cyan/30 hover:bg-holo-cyan/8 transition-all duration-200"
+      onClick={onPreview}
+    >
+      <div className="flex-shrink-0 w-8 h-8 rounded flex items-center justify-center bg-holo-cyan/10 border border-holo-cyan/20">
+        <svg className="w-4 h-4 text-holo-cyan/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5a17.92 17.92 0 01-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>
+      </div>
+      <div className="flex-1 min-w-0">
+        <span className="text-xs font-mono text-holo-cyan/60 uppercase">html</span>
+      </div>
+      <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+        <button onClick={handleCopy} className="border-none px-2 py-1 text-[11px] text-white/40 hover:text-white/70 rounded transition-colors duration-200">{copied ? locale.ai.copied : locale.ai.copy}</button>
         {onPreview && (
-          <button onClick={onPreview} className="flex items-center gap-1 px-2 py-0.5 text-[11px] text-holo-cyan/70 hover:text-holo-cyan border border-holo-cyan/15 hover:border-holo-cyan/30 rounded transition-colors">
+          <button onClick={onPreview} className="border-none flex items-center gap-1 px-2 py-1 text-[11px] text-holo-cyan/70 hover:text-holo-cyan rounded transition-colors duration-200">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
             {locale.ai.preview}
           </button>
         )}
-        <button onClick={handleCopy} className="flex items-center gap-1 px-2 py-0.5 text-[11px] text-white/40 hover:text-white/70 border border-white/10 hover:border-white/20 rounded transition-colors">{copied ? locale.ai.copied : locale.ai.copy}</button>
       </div>
     </div>
   )
@@ -79,13 +88,7 @@ function createCodeBlock(messageId: string, onOpenArtifact?: (artifact: Artifact
     if (lang === 'html' && isFullHtmlPage(codeStr)) {
       const blockIdx = htmlBlockIndex++
       const handlePreview = onOpenArtifact ? () => onOpenArtifact({ id: `${messageId}-html-${blockIdx}`, type: 'html', content: codeStr, messageId }) : undefined
-      const highlighted = hljs.highlight(codeStr, { language: 'html' }).value
-      return (
-        <div className="my-2 rounded-md overflow-hidden border border-holo-blue/15">
-          <CodeToolbar code={codeStr} lang="html" onPreview={handlePreview} />
-          <pre className="m-0 p-4 bg-scene-void/80 overflow-auto text-sm" style={{ maxHeight: 300 }}><code className="language-html" dangerouslySetInnerHTML={{ __html: highlighted }} {...props} /></pre>
-        </div>
-      )
+      return <ArtifactCard code={codeStr} onPreview={handlePreview} onCopy={() => navigator.clipboard.writeText(codeStr)} />
     }
 
     const highlighted = lang ? (hljs.getLanguage(lang) ? hljs.highlight(codeStr, { language: lang }).value : hljs.highlightAuto(codeStr).value) : null
