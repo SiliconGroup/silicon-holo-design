@@ -49,7 +49,7 @@
 button { background: none; padding: 0; cursor: pointer; font: inherit; color: inherit; }
 input, textarea, select { border: none; outline: none; background: none; }
 body { margin: 0; background: var(--shd-scene-void); color: var(--shd-text-primary); font-family: 'Inter', -apple-system, sans-serif; }
-::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--shd-holo-cyan); border-radius: 2px; }
 ::selection { background: rgba(0, 255, 255, 0.2); }
