@@ -140,7 +140,7 @@ export const HoloSelect = forwardRef<HTMLDivElement, HoloSelectProps>(
           <HoloPortal>
             <div
               ref={dropdownRef}
-              className="fixed bg-scene-void/95 backdrop-blur-sm border border-holo-cyan/25 rounded-md shadow-lg z-30 min-w-32 max-h-60 overflow-auto"
+              className="fixed bg-scene-void/95 backdrop-blur-sm border border-holo-cyan/25 rounded-md shadow-lg z-60 min-w-32 max-h-60 overflow-auto"
               style={{
                 top: triggerRef.current ? triggerRef.current.getBoundingClientRect().bottom + 4 : 0,
                 left: triggerRef.current ? triggerRef.current.getBoundingClientRect().left : 0,

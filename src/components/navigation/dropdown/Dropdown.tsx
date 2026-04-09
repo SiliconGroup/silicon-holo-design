@@ -101,7 +101,7 @@ export function HoloDropdown({
             ref={panelRef}
             className={`
               fixed bg-scene-void/95 backdrop-blur-sm border border-holo-cyan/25 
-              rounded-md py-1 z-30 min-w-32
+              rounded-md py-1 z-60 min-w-32
             `}
             style={(() => {
               const rect = triggerRef.current?.getBoundingClientRect()

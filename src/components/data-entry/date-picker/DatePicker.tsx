@@ -121,7 +121,7 @@ export function HoloDatePicker({
             onClick={() => setIsOpen(false)}
           />
           <div
-            className="fixed z-30 bg-scene-void/95 backdrop-blur-sm border border-holo-cyan/25 rounded-md p-3"
+            className="fixed z-60 bg-scene-void/95 backdrop-blur-sm border border-holo-cyan/25 rounded-md p-3"
             style={(() => {
               const rect = triggerRef.current?.getBoundingClientRect()
               return rect ? { top: rect.bottom + 4, left: rect.left } : {}

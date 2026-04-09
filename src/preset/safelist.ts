@@ -724,6 +724,7 @@ export const safelist: string[] = [
   "z-30",
   "z-40",
   "z-50",
+  "z-60",
   "z0",
   "z1",
   "z2",
