@@ -12,9 +12,11 @@ interface AIMessageListProps {
   processing?: boolean
   emptyContent?: ReactNode
   onOpenArtifact?: (artifact: Artifact) => void
+  /** 是否启用消息复制按钮 */
+  enableCopy?: boolean
 }
 
-export function AIMessageList({ messages, streamingContent, streamingThinking, processing, emptyContent: customEmptyContent, onOpenArtifact }: AIMessageListProps) {
+export function AIMessageList({ messages, streamingContent, streamingThinking, processing, emptyContent: customEmptyContent, onOpenArtifact, enableCopy }: AIMessageListProps) {
   const locale = useLocale()
 
   const defaultEmptyContent = (
@@ -39,7 +41,7 @@ export function AIMessageList({ messages, streamingContent, streamingThinking, p
 
   return (
     <ChatMessageList scrollDeps={[messages, streamingContent, streamingThinking]} isEmpty={messages.length === 0 && !processing} emptyContent={customEmptyContent ?? defaultEmptyContent}>
-      {messages.map((msg) => <AIMessageBubble key={msg.id} message={msg} onOpenArtifact={onOpenArtifact} />)}
+      {messages.map((msg) => <AIMessageBubble key={msg.id} message={msg} onOpenArtifact={onOpenArtifact} enableCopy={enableCopy} />)}
 
       {streamingThinking && (
         <div className="flex justify-start my-4"><div className="max-w-[85%] px-5 py-4 bg-white/3 backdrop-blur-md border border-holo-cyan/10 rounded-md text-white/40 text-sm whitespace-pre-wrap"><span className="text-white/25 text-xs mr-2">💭</span>{streamingThinking}</div></div>

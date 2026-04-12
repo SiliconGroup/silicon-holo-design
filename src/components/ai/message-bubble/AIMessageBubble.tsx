@@ -3,7 +3,7 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import hljs from 'highlight.js'
-import { useEffect, useRef, useState, useMemo, useCallback, type ComponentPropsWithoutRef } from 'react'
+import { useEffect, useRef, useState, useMemo, useCallback, type ComponentPropsWithoutRef, type ReactNode } from 'react'
 import mermaid from 'mermaid'
 import { isFullHtmlPage } from '@/components/data-display/html-preview'
 import { ChatBubble } from '@/components/chat/chat-bubble'
@@ -26,6 +26,10 @@ interface AIMessageBubbleProps {
   message: ChatMessage
   isStreaming?: boolean
   onOpenArtifact?: (artifact: Artifact) => void
+  /** 是否启用消息复制按钮（默认 false，保持向后兼容） */
+  enableCopy?: boolean
+  /** 自定义操作区，渲染在复制按钮之后 */
+  actions?: ReactNode
 }
 
 function MermaidBlock({ code }: { code: string }) {
@@ -78,6 +82,36 @@ function ArtifactCard({ code, onPreview, onCopy }: { code: string; onPreview?: (
   )
 }
 
+/** 消息复制按钮 */
+function CopyButton({ content }: { content: string }) {
+  const locale = useLocale()
+  const [copied, setCopied] = useState(false)
+  const handleCopy = useCallback(() => {
+    navigator.clipboard.writeText(content)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }, [content])
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="border-none px-2 py-0.5 text-[11px] text-white/30 hover:text-white/60 rounded transition-colors duration-200 cursor-pointer bg-transparent"
+    >
+      {copied ? (
+        <span className="flex items-center gap-1">
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+          {locale.ai.copied}
+        </span>
+      ) : (
+        <span className="flex items-center gap-1">
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+          {locale.ai.copy}
+        </span>
+      )}
+    </button>
+  )
+}
+
 function createCodeBlock(messageId: string, onOpenArtifact?: (artifact: Artifact) => void) {
   let htmlBlockIndex = 0
   return function InternalCodeBlock({ className, children, ...props }: ComponentPropsWithoutRef<'code'>) {
@@ -109,7 +143,7 @@ function normalizeMath(s: string): string {
 const remarkPlugins = [remarkGfm, remarkMath]
 const rehypePlugins = [rehypeKatex]
 
-export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact }: AIMessageBubbleProps) {
+export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact, enableCopy = false, actions }: AIMessageBubbleProps) {
   const isUser = message.role === 'user'
   const isTool = message.role === 'tool'
 
@@ -137,6 +171,12 @@ export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact }
       <div className={`prose prose-sm max-w-none ${isUser ? 'text-white/90' : 'text-white/85'} ${isStreaming ? 'typing-cursor' : ''}`}>
         <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={{ code: CodeBlock }}>{normalizeMath(message.content || ' ')}</ReactMarkdown>
       </div>
+      {!isStreaming && (enableCopy || actions) && (
+        <div className="relative flex items-center justify-end gap-1 pt-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity duration-200">
+          {enableCopy && <CopyButton content={message.content} />}
+          {actions}
+        </div>
+      )}
     </ChatBubble>
   )
 }

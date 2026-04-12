@@ -60,7 +60,7 @@ export function ChatBubble({ align, streaming, timestamp, children, className }:
     <div className={`flex ${isRight ? 'justify-end' : 'justify-start'} my-4`}>
       <div
         className={`
-          relative max-w-[75%] rounded-md overflow-hidden backdrop-blur-md border
+          group/bubble relative max-w-[75%] rounded-md overflow-hidden backdrop-blur-md border
           ${isRight ? 'bg-holo-cyan/8 border-holo-cyan/20' : 'bg-holo-blue/6 border-holo-blue/15'}
           ${streaming ? 'shadow-[0_0_20px_rgba(0,136,255,0.15)]' : ''}
           ${className ?? ''}
