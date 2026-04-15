@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import hljs from 'highlight.js'
 import { HoloTab } from '@/components/navigation/tabs'
 import { useLocale } from '@/locale'
@@ -109,6 +109,21 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
     }
   }, [mode])
 
+  const blobUrlRef = useRef<string | null>(null)
+  const blobUrl = useMemo(() => {
+    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current)
+    const blob = new Blob([code], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    blobUrlRef.current = url
+    return url
+  }, [code])
+
+  useEffect(() => {
+    return () => {
+      if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current)
+    }
+  }, [])
+
   return (
     <div ref={containerRef} className="my-2 rounded-md overflow-hidden border border-holo-blue/15">
       {/* 工具栏 */}
@@ -137,7 +152,7 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
         <div className="overflow-hidden" style={{ height: layout.wrapH }}>
           <iframe
             ref={iframeRef}
-            srcDoc={code}
+            src={blobUrl}
             sandbox="allow-scripts allow-same-origin"
             className="border-0"
             style={{
