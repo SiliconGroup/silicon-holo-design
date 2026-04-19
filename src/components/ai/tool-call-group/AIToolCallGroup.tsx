@@ -43,7 +43,7 @@ export function AIToolCallGroup({ messages }: AIToolCallGroupProps) {
 
   return (
     <div className="flex justify-start my-2 px-2" role="group" aria-label={locale.ai.toolGroupLabel}>
-      <div className="max-w-[85%] w-full">
+      <div className="max-w-[85%]">
         <div className={`rounded-md overflow-hidden border backdrop-blur-sm ${runningMessage ? 'border-holo-cyan/20 bg-holo-cyan/5' : 'border-holo-blue/15 bg-holo-blue/5'}`}>
           {allDone ? (
             <button
