@@ -32,5 +32,9 @@ export interface Locale {
     toolArguments: string
     toolResult: string
     toolNoResult: string
+    toolGroupSummary: string
+    toolGroupRunning: string
+    toolGroupProgress: string
+    toolGroupLabel: string
   }
 }

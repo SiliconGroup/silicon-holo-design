@@ -38,6 +38,10 @@ const enUS: Locale = {
     toolArguments: 'Arguments',
     toolResult: 'Result',
     toolNoResult: '(no result)',
+    toolGroupSummary: '{count} tools executed',
+    toolGroupRunning: 'Running: {name}...',
+    toolGroupProgress: '{completed}/{total} complete',
+    toolGroupLabel: 'Tool execution group',
   },
 }
 export default enUS

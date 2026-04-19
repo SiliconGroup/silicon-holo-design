@@ -1,7 +1,9 @@
+import { useMemo } from 'react'
 import type { ReactNode } from 'react'
 import type { ChatMessage, Artifact } from '@/types'
 import { ChatMessageList } from '@/components/chat/chat-message-list'
 import { AIMessageBubble } from '@/components/ai/message-bubble'
+import { AIToolCallGroup } from '@/components/ai/tool-call-group'
 import { HexagonLoader } from '@/components/feedback/hexagon-loader'
 import { useLocale } from '@/locale'
 
@@ -14,6 +16,42 @@ interface AIMessageListProps {
   onOpenArtifact?: (artifact: Artifact) => void
   /** 是否启用消息复制按钮 */
   enableCopy?: boolean
+}
+
+interface MessageItem {
+  type: 'message'
+  message: ChatMessage
+}
+
+interface ToolGroupItem {
+  type: 'tool-group'
+  messages: ChatMessage[]
+}
+
+type RenderItem = MessageItem | ToolGroupItem
+
+function groupMessages(messages: ChatMessage[]): RenderItem[] {
+  const items: RenderItem[] = []
+  let i = 0
+
+  while (i < messages.length) {
+    const msg = messages[i]
+
+    if (msg.role === 'tool' && msg.toolName) {
+      const toolMessages: ChatMessage[] = [msg]
+      i++
+      while (i < messages.length && messages[i].role === 'tool' && messages[i].toolName) {
+        toolMessages.push(messages[i])
+        i++
+      }
+      items.push({ type: 'tool-group', messages: toolMessages })
+    } else {
+      items.push({ type: 'message', message: msg })
+      i++
+    }
+  }
+
+  return items
 }
 
 export function AIMessageList({ messages, streamingContent, streamingThinking, processing, emptyContent: customEmptyContent, onOpenArtifact, enableCopy }: AIMessageListProps) {
@@ -39,9 +77,17 @@ export function AIMessageList({ messages, streamingContent, streamingThinking, p
     </div>
   )
 
+  const renderItems = useMemo(() => groupMessages(messages), [messages])
+
   return (
     <ChatMessageList scrollDeps={[messages, streamingContent, streamingThinking]} isEmpty={messages.length === 0 && !processing} emptyContent={customEmptyContent ?? defaultEmptyContent}>
-      {messages.map((msg) => <AIMessageBubble key={msg.id} message={msg} onOpenArtifact={onOpenArtifact} enableCopy={enableCopy} />)}
+      {renderItems.map((item) => {
+        if (item.type === 'tool-group') {
+          const key = item.messages[0].id
+          return <AIToolCallGroup key={key} messages={item.messages} />
+        }
+        return <AIMessageBubble key={item.message.id} message={item.message} onOpenArtifact={onOpenArtifact} enableCopy={enableCopy} />
+      })}
 
       {streamingThinking && (
         <div className="flex justify-start my-4"><div className="max-w-[85%] px-5 py-4 bg-white/3 backdrop-blur-md border border-holo-cyan/10 rounded-md text-white/40 text-sm whitespace-pre-wrap"><span className="text-white/25 text-xs mr-2">💭</span>{streamingThinking}</div></div>

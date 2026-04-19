@@ -38,6 +38,10 @@ const zhCN: Locale = {
     toolArguments: '请求参数',
     toolResult: '执行结果',
     toolNoResult: '（无结果）',
+    toolGroupSummary: '已执行 {count} 个工具',
+    toolGroupRunning: '执行中: {name}...',
+    toolGroupProgress: '{completed}/{total} 已完成',
+    toolGroupLabel: '工具执行组',
   },
 }
 export default zhCN
