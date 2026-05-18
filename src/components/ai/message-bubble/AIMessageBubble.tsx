@@ -30,6 +30,8 @@ interface AIMessageBubbleProps {
   enableCopy?: boolean
   /** 自定义操作区，渲染在复制按钮之后 */
   actions?: ReactNode
+  /** 自定义 Markdown 渲染组件，合并到 ReactMarkdown 的 components 中 */
+  markdownComponents?: Record<string, React.ComponentType<unknown>>
 }
 
 function MermaidBlock({ code }: { code: string }) {
@@ -143,7 +145,7 @@ function normalizeMath(s: string): string {
 const remarkPlugins = [remarkGfm, remarkMath]
 const rehypePlugins = [rehypeKatex]
 
-export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact, enableCopy = false, actions }: AIMessageBubbleProps) {
+export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact, enableCopy = false, actions, markdownComponents }: AIMessageBubbleProps) {
   const isUser = message.role === 'user'
   const isTool = message.role === 'tool'
 
@@ -169,7 +171,7 @@ export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact, 
   return (
     <ChatBubble align={isUser ? 'right' : 'left'} streaming={isStreaming} timestamp={message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : undefined}>
       <div className={`prose prose-sm max-w-none ${isUser ? 'text-white/90' : 'text-white/85'} ${isStreaming ? 'typing-cursor' : ''}`}>
-        <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={{ code: CodeBlock }}>{normalizeMath(message.content || ' ')}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={{ code: CodeBlock, ...markdownComponents }}>{normalizeMath(message.content || ' ')}</ReactMarkdown>
       </div>
       {!isStreaming && (enableCopy || actions) && (
         <div className="relative flex items-center justify-end gap-1 pt-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity duration-200">

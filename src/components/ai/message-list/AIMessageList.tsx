@@ -1,6 +1,6 @@
-import { useMemo } from 'react'
+import { useMemo, Fragment } from 'react'
 import type { ReactNode } from 'react'
-import type { ChatMessage, Artifact } from '@/types'
+import type { ChatMessage, Artifact, FileArtifact } from '@/types'
 import { ChatMessageList } from '@/components/chat/chat-message-list'
 import { AIMessageBubble } from '@/components/ai/message-bubble'
 import { AIToolCallGroup } from '@/components/ai/tool-call-group'
@@ -16,6 +16,8 @@ interface AIMessageListProps {
   onOpenArtifact?: (artifact: Artifact) => void
   /** 是否启用消息复制按钮 */
   enableCopy?: boolean
+  /** 渲染工具组产出的文件卡片（在工具组之后、下一条消息之前） */
+  renderFileGroup?: (artifacts: FileArtifact[], toolGroup: ChatMessage[]) => ReactNode
 }
 
 interface MessageItem {
@@ -54,7 +56,22 @@ function groupMessages(messages: ChatMessage[]): RenderItem[] {
   return items
 }
 
-export function AIMessageList({ messages, streamingContent, streamingThinking, processing, emptyContent: customEmptyContent, onOpenArtifact, enableCopy }: AIMessageListProps) {
+/** Extract file artifacts from a tool group's metadata */
+function extractArtifactsFromGroup(messages: ChatMessage[]): FileArtifact[] {
+  return messages.flatMap(msg => {
+    if (!msg.toolMetadata) return []
+    try {
+      const meta = JSON.parse(msg.toolMetadata) as Record<string, unknown>
+      const artifacts = meta.artifacts
+      if (Array.isArray(artifacts)) return artifacts as FileArtifact[]
+      return []
+    } catch {
+      return []
+    }
+  })
+}
+
+export function AIMessageList({ messages, streamingContent, streamingThinking, processing, emptyContent: customEmptyContent, onOpenArtifact, enableCopy, renderFileGroup }: AIMessageListProps) {
   const locale = useLocale()
 
   const defaultEmptyContent = (
@@ -84,7 +101,13 @@ export function AIMessageList({ messages, streamingContent, streamingThinking, p
       {renderItems.map((item) => {
         if (item.type === 'tool-group') {
           const key = item.messages[0].id
-          return <AIToolCallGroup key={key} messages={item.messages} />
+          const artifacts = extractArtifactsFromGroup(item.messages)
+          return (
+            <Fragment key={key}>
+              <AIToolCallGroup messages={item.messages} />
+              {artifacts.length > 0 && renderFileGroup?.(artifacts, item.messages)}
+            </Fragment>
+          )
         }
         return <AIMessageBubble key={item.message.id} message={item.message} onOpenArtifact={onOpenArtifact} enableCopy={enableCopy} />
       })}

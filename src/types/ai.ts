@@ -13,11 +13,20 @@ export interface ChatMessage {
   toolArguments?: string
   /** 工具执行耗时（毫秒） */
   toolDuration?: number
+  /** 工具执行元数据（JSON 字符串，可含 artifacts 等结构化信息） */
+  toolMetadata?: string
 }
 export type ToolStatus = 'pending' | 'running' | 'complete' | 'error'
 
-/** 可预览的内容类型，可扩展 */
-export type ArtifactType = 'html' | 'image' | 'svg'
+/** 工具产出的文件描述 */
+export interface FileArtifact {
+  path: string
+  mime_type?: string
+  file_name?: string
+}
+
+/** 可预览的内容类型，支持扩展自定义类型 */
+export type ArtifactType = 'html' | 'image' | 'svg' | (string & {})
 
 /** 通用 Artifact 描述 */
 export interface Artifact {
