@@ -24,10 +24,11 @@ export function HoloTab({ items, activeKey, onChange, className = '' }: HoloTabP
             onClick={() => onChange(item.key)}
             className={`
               flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium
-              border transition-colors duration-200
+              border transition-colors duration-150
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus
               ${active
-                ? 'border-holo-cyan/40 bg-holo-cyan/10 text-holo-cyan'
-                : 'border-transparent text-white/40 hover:text-holo-cyan/70 hover:bg-holo-cyan/5 hover:border-holo-cyan/20'
+                ? 'border-stroke-accent bg-surface-selected text-content-accent'
+                : 'border-transparent text-content-tertiary hover:text-content-primary hover:bg-surface-interactive'
               }
             `}
           >

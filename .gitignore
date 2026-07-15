@@ -6,3 +6,6 @@ dist
 coverage
 .vite
 dev_docs
+refs/
+image.png
+image2.png

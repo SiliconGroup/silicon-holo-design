@@ -110,9 +110,9 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
   }, [mode])
 
   return (
-    <div ref={containerRef} className="my-2 rounded-md overflow-hidden border border-holo-blue/15">
+    <div ref={containerRef} className="my-2 rounded-md overflow-hidden border border-stroke-subtle bg-surface-base">
       {/* 工具栏 */}
-      <div className="flex items-center gap-1 px-3 py-1.5 bg-scene-void/60 border-b border-holo-blue/10">
+      <div className="flex items-center gap-1 px-3 py-1.5 bg-surface-raised border-b border-stroke-muted">
         <HoloTab
           items={[
             { key: 'code', label: locale.chat.codeTab, icon: <CodeIcon /> },
@@ -123,14 +123,14 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
         />
         <div className="flex-1" />
         {mode === 'preview' && layout.scale < 0.99 && (
-          <span className="text-[10px] font-mono text-white/30">{Math.round(layout.scale * 100)}%</span>
+          <span className="text-[10px] font-mono text-content-tertiary">{Math.round(layout.scale * 100)}%</span>
         )}
-        <span className="text-[10px] font-mono text-white/25 uppercase ml-2">html</span>
+        <span className="text-[10px] font-mono text-content-disabled uppercase ml-2">html</span>
       </div>
 
       {/* 内容区 */}
       {mode === 'code' ? (
-        <pre className="m-0 p-4 bg-scene-void/80 overflow-auto text-sm" style={{ maxHeight: 500 }}>
+        <pre className="m-0 p-4 bg-surface-base overflow-auto text-sm" style={{ maxHeight: 500 }}>
           <code ref={codeRef} className="language-html">{code}</code>
         </pre>
       ) : (

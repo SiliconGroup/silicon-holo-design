@@ -11,12 +11,12 @@ interface HoloTagProps {
 }
 
 const colorMap = {
-  cyan: { bg: 'bg-holo-cyan/10', border: 'border-holo-cyan/30', text: 'text-holo-cyan', hover: 'hover:bg-holo-cyan/20' },
-  blue: { bg: 'bg-blue-500/10', border: 'border-blue-500/30', text: 'text-blue-400', hover: 'hover:bg-blue-500/20' },
-  green: { bg: 'bg-status-success/10', border: 'border-status-success/30', text: 'text-status-success', hover: 'hover:bg-status-success/20' },
-  purple: { bg: 'bg-purple-500/10', border: 'border-purple-500/30', text: 'text-purple-400', hover: 'hover:bg-purple-500/20' },
-  error: { bg: 'bg-status-error/10', border: 'border-status-error/30', text: 'text-status-error', hover: 'hover:bg-status-error/20' },
-  warning: { bg: 'bg-status-warning/10', border: 'border-status-warning/30', text: 'text-status-warning', hover: 'hover:bg-status-warning/20' },
+  cyan: { bg: 'bg-accent-primary-soft', border: 'border-stroke-accent', text: 'text-content-accent', hover: 'hover:bg-surface-selected' },
+  blue: { bg: 'bg-accent-blue-soft', border: 'border-stroke-subtle', text: 'text-accent-blue', hover: 'hover:bg-surface-interactive-hover' },
+  green: { bg: 'bg-state-success-soft', border: 'border-stroke-success', text: 'text-status-success', hover: 'hover:bg-surface-interactive-hover' },
+  purple: { bg: 'bg-accent-purple-soft', border: 'border-stroke-subtle', text: 'text-accent-purple', hover: 'hover:bg-surface-interactive-hover' },
+  error: { bg: 'bg-state-error-soft', border: 'border-stroke-error', text: 'text-status-error', hover: 'hover:bg-surface-interactive-hover' },
+  warning: { bg: 'bg-state-warning-soft', border: 'border-stroke-warning', text: 'text-status-warning', hover: 'hover:bg-surface-interactive-hover' },
 }
 
 const sizeMap = {
@@ -47,7 +47,7 @@ export function HoloTag({
       {closable && (
         <button
           onClick={onClose}
-          className={`border-none flex-shrink-0 rounded-full transition-colors ${colorConfig.hover}`}
+          className={`border-none flex-shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ${colorConfig.hover}`}
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

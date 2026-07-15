@@ -4,23 +4,11 @@ import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import hljs from 'highlight.js'
 import { useEffect, useRef, useState, useMemo, useCallback, type ComponentPropsWithoutRef, type ReactNode } from 'react'
-import mermaid from 'mermaid'
 import { isFullHtmlPage } from '@/components/data-display/html-preview'
 import { ChatBubble } from '@/components/chat/chat-bubble'
 import { AIToolCallCard } from '@/components/ai/tool-call-card'
 import { useLocale } from '@/locale'
 import type { ChatMessage, Artifact } from '@/types'
-
-mermaid.initialize({ startOnLoad: false, theme: 'dark', themeVariables: {
-  primaryColor: 'rgba(0, 136, 255, 0.15)',
-  primaryBorderColor: 'var(--holo-cyan)',
-  primaryTextColor: 'rgba(255, 255, 255, 0.85)',
-  lineColor: 'var(--holo-cyan)',
-  secondaryColor: 'rgba(0, 255, 255, 0.08)',
-  tertiaryColor: 'rgba(0, 26, 40, 0.6)',
-  fontFamily: 'Inter, -apple-system, sans-serif',
-  fontSize: '13px',
-}})
 
 interface AIMessageBubbleProps {
   message: ChatMessage
@@ -43,6 +31,19 @@ function MermaidBlock({ code }: { code: string }) {
     let cancelled = false
     ;(async () => {
       try {
+        const { default: mermaid } = await import('mermaid')
+        const styles = getComputedStyle(document.documentElement)
+        const token = (name: string) => styles.getPropertyValue(name).trim()
+        mermaid.initialize({ startOnLoad: false, theme: 'dark', themeVariables: {
+          primaryColor: token('--shd-accent-primary-soft'),
+          primaryBorderColor: token('--shd-stroke-accent'),
+          primaryTextColor: token('--shd-content-primary'),
+          lineColor: token('--shd-accent-primary-hover'),
+          secondaryColor: token('--shd-accent-primary-softer'),
+          tertiaryColor: token('--shd-surface-base'),
+          fontFamily: 'Inter, -apple-system, sans-serif',
+          fontSize: '13px',
+        }})
         const { svg } = await mermaid.render(renderIdRef.current, code.trim())
         if (!cancelled && containerRef.current) containerRef.current.innerHTML = svg
       } catch (e) { if (!cancelled) setError(String(e)) }
@@ -50,7 +51,7 @@ function MermaidBlock({ code }: { code: string }) {
     return () => { cancelled = true }
   }, [code])
 
-  if (error) return <pre className="text-xs text-status-error/70 font-mono whitespace-pre-wrap">{code}</pre>
+  if (error) return <pre className="text-xs text-status-error font-mono whitespace-pre-wrap">{code}</pre>
   return <div ref={containerRef} className="flex justify-center py-2 [&_svg]:max-w-full" />
 }
 
@@ -62,19 +63,19 @@ function ArtifactCard({ code, onPreview, onCopy }: { code: string; onPreview?: (
 
   return (
     <div
-      className="my-2 flex items-center gap-3 px-4 py-3 rounded-md border border-holo-cyan/15 bg-holo-cyan/5 backdrop-blur-sm cursor-pointer hover:border-holo-cyan/30 hover:bg-holo-cyan/8 transition-all duration-200"
+      className="relative my-2 flex items-center gap-3 px-4 py-3 rounded-md border border-stroke-subtle bg-surface-base cursor-pointer hover:border-stroke-accent hover:bg-surface-interactive transition-colors duration-150 overflow-hidden"
       onClick={onPreview}
     >
-      <div className="flex-shrink-0 w-8 h-8 rounded flex items-center justify-center bg-holo-cyan/10 border border-holo-cyan/20">
-        <svg className="w-4 h-4 text-holo-cyan/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5a17.92 17.92 0 01-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>
+      <div className="flex-shrink-0 w-8 h-8 rounded flex items-center justify-center bg-accent-primary-softer border border-stroke-default">
+        <svg className="w-4 h-4 text-content-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5a17.92 17.92 0 01-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>
       </div>
       <div className="flex-1 min-w-0">
-        <span className="text-xs font-mono text-holo-cyan/60 uppercase">html</span>
+        <span className="text-xs font-mono text-content-accent uppercase">html</span>
       </div>
       <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-        <button onClick={handleCopy} className="border-none px-2 py-1 text-[11px] text-white/40 hover:text-white/70 rounded transition-colors duration-200">{copied ? locale.ai.copied : locale.ai.copy}</button>
+        <button onClick={handleCopy} className="border-none px-2 py-1 text-[11px] text-content-tertiary hover:text-content-primary rounded transition-colors duration-150">{copied ? locale.ai.copied : locale.ai.copy}</button>
         {onPreview && (
-          <button onClick={onPreview} className="border-none flex items-center gap-1 px-2 py-1 text-[11px] text-holo-cyan/70 hover:text-holo-cyan rounded transition-colors duration-200">
+          <button onClick={onPreview} className="border-none flex items-center gap-1 px-2 py-1 text-[11px] text-content-accent hover:text-accent-primary-hover rounded transition-colors duration-150">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
             {locale.ai.preview}
           </button>
@@ -97,7 +98,7 @@ function CopyButton({ content }: { content: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="border-none px-2 py-0.5 text-[11px] text-white/30 hover:text-white/60 rounded transition-colors duration-200 cursor-pointer bg-transparent"
+      className="cursor-pointer rounded border-none bg-transparent px-2 py-0.5 text-[11px] text-content-tertiary transition-colors duration-150 hover:text-content-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
     >
       {copied ? (
         <span className="flex items-center gap-1">
@@ -170,7 +171,7 @@ export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact, 
 
   return (
     <ChatBubble align={isUser ? 'right' : 'left'} streaming={isStreaming} timestamp={message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : undefined}>
-      <div className={`prose prose-sm max-w-none ${isUser ? 'text-white/90' : 'text-white/85'} ${isStreaming ? 'typing-cursor' : ''}`}>
+      <div className={`prose prose-sm max-w-none text-content-primary ${isStreaming ? 'typing-cursor' : ''}`}>
         <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={{ code: CodeBlock, ...markdownComponents }}>{normalizeMath(message.content || ' ')}</ReactMarkdown>
       </div>
       {!isStreaming && (enableCopy || actions) && (

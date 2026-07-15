@@ -19,4 +19,11 @@ describe('HoloButton', () => {
     render(<HoloButton disabled>Disabled</HoloButton>)
     expect(screen.getByText('Disabled').closest('button')?.disabled).toBe(true)
   })
+
+  it('preserves custom classes and focus-visible styling', () => {
+    render(<HoloButton className="consumer-class">Styled</HoloButton>)
+    const button = screen.getByRole('button', { name: 'Styled' })
+    expect(button.className).toContain('consumer-class')
+    expect(button.className).toContain('focus-visible:ring-focus')
+  })
 })

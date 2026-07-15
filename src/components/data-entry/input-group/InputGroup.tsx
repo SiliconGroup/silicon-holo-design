@@ -17,7 +17,7 @@ export interface HoloInputAddonProps {
 /** 附加块 — 紧贴在输入框前/后，共享容器边框 */
 export function HoloInputAddon({ children, className = '' }: HoloInputAddonProps) {
   return (
-    <div className={`flex-shrink-0 flex-center px-3 text-white/40 text-sm border-holo-cyan/30 ${className}`}>
+    <div className={`flex-shrink-0 flex-center self-stretch px-3 text-content-secondary text-sm bg-surface-raised border-stroke-subtle ${className}`}>
       {children}
     </div>
   )
@@ -37,14 +37,14 @@ export function HoloInputGroup({
   const [focused, setFocused] = useState(false)
 
   const borderColor = status === 'error'
-    ? 'border-status-error/50'
+    ? 'border-stroke-error bg-state-error-soft'
     : status === 'success'
-      ? 'border-status-success/50'
+      ? 'border-stroke-success bg-state-success-soft'
       : focused
-        ? 'border-holo-cyan/50'
+        ? 'border-stroke-accent ring-2 ring-focus ring-offset-1 ring-offset-surface-base'
         : variant === 'ghost'
-          ? 'border-transparent hover:border-holo-cyan/20'
-          : 'border-holo-cyan/30 hover:border-holo-cyan/40'
+          ? 'border-transparent hover:border-stroke-subtle'
+          : 'border-stroke-default hover:border-stroke-strong'
 
   const enhancedChildren = Children.map(children, (child) => {
     if (!isValidElement(child)) return child
@@ -77,8 +77,7 @@ export function HoloInputGroup({
     <div
       className={`
         flex items-end rounded-md border border-solid overflow-hidden
-        transition-colors duration-200
-        bg-scene-void/80 backdrop-blur-sm
+        transition-colors duration-150 bg-surface-interactive
         ${borderColor}
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         ${className}

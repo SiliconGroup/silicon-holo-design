@@ -1,4 +1,6 @@
 import 'virtual:uno.css'
+import '../../../src/styles/base.css'
+import '../../../src/styles/animations.css'
 import { createRoot } from 'react-dom/client'
 import { useState } from 'react'
 import {
@@ -15,15 +17,20 @@ import type { Locale } from '../../../src'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 48 }}>
-      <h2 style={{ fontSize: 18, fontWeight: 600, color: 'rgba(0,255,255,0.85)', marginBottom: 16, paddingBottom: 8, borderBottom: '1px solid rgba(0,255,255,0.15)' }}>{title}</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>{children}</div>
-    </div>
+    <section className="mb-12">
+      <h2 className="mb-4 flex items-center gap-3 border-b border-stroke-subtle pb-2 text-lg font-semibold text-content-primary">
+        <span className="h-1.5 w-1.5 rotate-45 border border-stroke-accent bg-accent-primary-soft" />
+        {title}
+      </h2>
+      <div className="flex flex-col gap-4 overflow-hidden rounded-md border border-stroke-subtle bg-surface-base p-5">
+        {children}
+      </div>
+    </section>
   )
 }
 
 function Row({ children }: { children: React.ReactNode }) {
-  return <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>{children}</div>
+  return <div className="flex flex-wrap items-center gap-3">{children}</div>
 }
 
 function App() {
@@ -44,15 +51,20 @@ function App() {
   return (
     <LocaleProvider locale={locale}>
       <ToastProvider>
-        <div style={{ background: '#000a0e', minHeight: '100vh', padding: '32px 48px', color: 'rgba(255,255,255,0.9)', maxWidth: 960, margin: '0 auto' }}>
+        <div className="relative min-h-screen overflow-hidden bg-surface-canvas text-content-primary">
+          <div aria-hidden="true" className="pointer-events-none fixed inset-0" style={{
+            background: 'linear-gradient(rgba(0,255,255,0.016) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.016) 1px, transparent 1px), radial-gradient(ellipse at 18% 0%, rgba(0,136,255,0.06), transparent 42%), radial-gradient(ellipse at 88% 72%, rgba(170,136,255,0.035), transparent 34%)',
+            backgroundSize: '32px 32px, 32px 32px, auto, auto',
+          }} />
+          <div className="relative mx-auto max-w-5xl px-6 py-10 lg:px-12">
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 40 }}>
+          <div className="mb-10 flex items-center gap-4 border-b border-stroke-subtle pb-6">
             <img src="/logo.svg" alt="logo" style={{ height: 32 }} />
             <div>
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: 'rgba(0,255,255,0.9)' }}>Component Gallery</h1>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>All components at a glance</p>
+              <h1 className="holo-text text-2xl font-bold">Component Gallery</h1>
+              <p className="mt-1 text-xs text-content-tertiary">Spectral-flat components and interaction states</p>
             </div>
-            <div style={{ marginLeft: 'auto' }}>
+            <div className="ml-auto">
               <HoloSpace size="sm">
                 <HoloButton size="sm" variant={locale === enUS ? 'primary' : 'ghost'} onClick={() => setLocale(enUS)}>EN</HoloButton>
                 <HoloButton size="sm" variant={locale === zhCN ? 'primary' : 'ghost'} onClick={() => setLocale(zhCN)}>中文</HoloButton>
@@ -185,6 +197,7 @@ function App() {
               <HoloButton>Spaced C</HoloButton>
             </HoloSpace>
           </Section>
+          </div>
         </div>
       </ToastProvider>
     </LocaleProvider>

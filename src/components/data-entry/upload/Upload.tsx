@@ -62,21 +62,21 @@ export function HoloUpload({
 
   const defaultContent = (
     <div className="flex flex-col items-center gap-2">
-      <svg className="w-8 h-8 text-holo-cyan/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-8 h-8 text-content-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
       </svg>
-      <div className="text-sm text-white/70">{locale.upload.dragText}</div>
+      <div className="text-sm text-content-secondary">{locale.upload.dragText}</div>
     </div>
   )
 
   return (
     <div
       className={`
-        border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
-        transition-colors duration-200
+        border border-dashed rounded-lg p-6 text-center cursor-pointer bg-surface-raised
+        transition-colors duration-150 focus-within:ring-2 focus-within:ring-focus
         ${isDragOver
-          ? 'border-holo-cyan/50 bg-holo-cyan/5'
-          : 'border-holo-cyan/25 hover:border-holo-cyan/40'
+          ? 'border-stroke-accent-strong bg-surface-selected'
+          : 'border-stroke-default hover:border-stroke-accent hover:bg-surface-interactive-hover'
         }
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         ${className}

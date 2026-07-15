@@ -25,11 +25,11 @@ export function AIChatContainer({ messages = [], onSend, processing, streamingCo
           {noSessionContent ?? (
             <>
               <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full" style={{ background: 'radial-gradient(circle, rgba(0,255,255,0.02) 0%, transparent 70%)' }} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,var(--shd-accent-primary-softer)_0%,transparent_70%)]" />
               </div>
               <div className="relative text-center">
-                <h2 className="text-2xl font-light holo-text mb-3">{locale.ai.selectSession}</h2>
-                <p className="text-white/40 max-w-md">{locale.ai.selectSessionHint}</p>
+                <h2 className="text-2xl font-medium text-content-primary mb-3">{locale.ai.selectSession}</h2>
+                <p className="text-content-tertiary max-w-md">{locale.ai.selectSessionHint}</p>
               </div>
             </>
           )}
@@ -40,7 +40,7 @@ export function AIChatContainer({ messages = [], onSend, processing, streamingCo
   }
   return (
     <div className="flex-1 flex flex-col relative overflow-hidden min-h-0">
-      <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-scene-void/50 to-transparent pointer-events-none z-10" />
+      <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-surface-canvas to-transparent pointer-events-none z-10" />
       <AIMessageList messages={messages} streamingContent={streamingContent} streamingThinking={streamingThinking} processing={processing} emptyContent={emptyContent} onOpenArtifact={onOpenArtifact} />
       <div className="relative px-6 pb-5 pt-2 flex-shrink-0"><ChatInputArea onSend={onSend} disabled={processing} /></div>
     </div>

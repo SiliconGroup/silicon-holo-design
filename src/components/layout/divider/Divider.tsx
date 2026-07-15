@@ -13,21 +13,21 @@ export function HoloDivider({
 }: HoloDividerProps) {
   if (orientation === 'vertical') {
     return (
-      <div className={`inline-block h-full border-l border-holo-cyan/15 ${className}`} />
+      <div className={`inline-block h-full border-l border-stroke-subtle ${className}`} />
     )
   }
 
   if (label) {
     return (
       <div className={`flex items-center gap-3 w-full ${className}`}>
-        <div className="flex-1 border-t border-holo-cyan/15" />
-        <span className="text-white/30 text-xs">{label}</span>
-        <div className="flex-1 border-t border-holo-cyan/15" />
+        <div className="flex-1 border-t border-stroke-subtle" />
+        <span className="text-content-tertiary text-xs">{label}</span>
+        <div className="flex-1 border-t border-stroke-subtle" />
       </div>
     )
   }
 
   return (
-    <div className={`w-full border-t border-holo-cyan/15 ${className}`} />
+    <div className={`w-full border-t border-stroke-subtle ${className}`} />
   )
 }

@@ -23,11 +23,11 @@ export function HoloLink({
     <a
       href={disabled ? undefined : href}
       className={`
-        text-holo-cyan hover:text-holo-cyan/80
-        border-b border-holo-cyan/30 hover:border-holo-cyan
-        transition-colors duration-200
-        focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-holo-cyan/50
-        ${disabled ? 'opacity-50 pointer-events-none' : ''}
+        text-content-accent hover:text-accent-primary-hover
+        border-b border-stroke-accent hover:border-stroke-accent-strong
+        transition-colors duration-150 rounded-sm
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus
+        ${disabled ? 'text-content-disabled border-stroke-muted pointer-events-none' : ''}
         ${className}
       `}
       {...(disabled ? {} : linkProps)}

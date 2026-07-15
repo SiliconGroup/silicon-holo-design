@@ -28,6 +28,17 @@
 
 ---
 
+## 光谱扁平设计
+
+`0.2.0` 在不改变组件调用方式的前提下升级了整体视觉。新版采用深空近黑表面、中性结构描边、低填充控件与局部青蓝紫光谱响应。青色仍是核心识别色，但主要用于焦点、激活状态、数据信号与品牌场景，而不再铺满每一个面板。
+
+- 按钮使用 tonal fill 与稳定的中性边界保持扁平，不再依赖顶部高光或发光框体。
+- Card 与 Input 使用稳定的 surface role，普通表面默认不使用 blur。
+- Drawer、Modal、Alert 与 ToolCall 通过深色表面层级、精确信息密度和克制的状态色保留全息科技感。
+- `.holo-text` 默认静态，仅用于品牌或 Hero；动态效果需显式使用 `.holo-text-animated`，并支持 reduced motion。
+
+---
+
 ## 快速开始
 
 ```bash
@@ -85,9 +96,9 @@ export default defineConfig({
 
 | 组件 | 说明 |
 |------|------|
-| `HoloButton` | 主操作按钮，支持多种发光变体 |
+| `HoloButton` | 扁平光谱操作按钮，支持多种 tonal 变体 |
 | `HoloLink` | 样式化链接 |
-| `GlowCard` | 全息发光边框卡片 |
+| `GlowCard` | 支持局部光谱响应的表面卡片 |
 | `IconButton` | 图标按钮 |
 | `CircuitBorder` | 电路纹理装饰边框 |
 
@@ -364,6 +375,10 @@ import { StatusIndicator } from 'silicon-holo-design'
   --shd-holo-cyan: #00e5ff;
   --shd-holo-green: #00ffaa;
   --shd-scene-void: #000a0e;
+  --shd-surface-raised: #041218;
+  --shd-content-primary: rgba(244, 251, 255, 0.92);
+  --shd-stroke-default: rgba(133, 171, 188, 0.24);
+  --shd-accent-primary: #00e5ff;
 }
 ```
 
@@ -373,6 +388,22 @@ import { StatusIndicator } from 'silicon-holo-design'
 import { ThemeProvider } from 'silicon-holo-design'
 
 <ThemeProvider theme={{ colors: { 'holo-cyan': '#ff6b35' } }}>
+  <App />
+</ThemeProvider>
+```
+
+在保留旧 primitive 覆盖能力的同时，也可以单独覆盖语义角色：
+
+```tsx
+<ThemeProvider
+  theme={{
+    semanticColors: {
+      'surface-raised': '#07151c',
+      'stroke-accent': 'rgba(0, 229, 255, 0.42)',
+      'accent-primary-soft': 'rgba(0, 229, 255, 0.08)',
+    },
+  }}
+>
   <App />
 </ThemeProvider>
 ```

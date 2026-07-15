@@ -22,24 +22,24 @@ export function HoloProgress({
   }
 
   const statusColors = {
-    normal: 'bg-holo-cyan',
+    normal: 'bg-accent-primary',
     success: 'bg-status-success',
     error: 'bg-status-error',
   }
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <div className={`flex-1 rounded-full bg-white/10 ${sizeClasses[size]}`}>
+      <div className={`flex-1 rounded-full bg-stroke-subtle ${sizeClasses[size]}`}>
         <div
           className={`
-            rounded-full transition-all duration-300 ${sizeClasses[size]}
+            rounded-full transition-[width] duration-200 ${sizeClasses[size]}
             ${statusColors[finalStatus]}
           `}
           style={{ width: `${clampedPercent}%` }}
         />
       </div>
       {showInfo && (
-        <span className="text-sm text-white/60 min-w-10 text-right">
+        <span className="text-sm text-content-secondary min-w-10 text-right font-mono">
           {Math.round(clampedPercent)}%
         </span>
       )}

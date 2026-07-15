@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type ReactNode } from 'react'
+import { cloneElement, isValidElement, useId, useState, useRef, useEffect, type FocusEvent, type MouseEvent as ReactMouseEvent, type ReactElement, type ReactNode } from 'react'
 import { HoloPortal } from '@/utils/portal'
 
 interface HoloPopoverProps {
@@ -21,6 +21,8 @@ export function HoloPopover({
   className = '',
 }: HoloPopoverProps) {
   const [internalOpen, setInternalOpen] = useState(false)
+  const panelId = useId()
+  const triggerLabelId = useId()
   const triggerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const isControlled = controlledOpen !== undefined
@@ -47,9 +49,22 @@ export function HoloPopover({
       }
     }
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isOpen && event.key === 'Escape') {
+        event.preventDefault()
+        setOpen(false)
+        triggerRef.current?.querySelector<HTMLElement>('[tabindex], button, a, input, select, textarea')?.focus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
     if (trigger === 'click') {
       document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [isOpen, trigger])
 
@@ -65,10 +80,20 @@ export function HoloPopover({
     }
   }
 
-  const handleTriggerMouseLeave = () => {
-    if (trigger === 'hover') {
-      setOpen(false)
-    }
+  const isWithinPopover = (target: EventTarget | null) => target instanceof Node && (
+    triggerRef.current?.contains(target) || panelRef.current?.contains(target)
+  )
+
+  const handleTriggerMouseLeave = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (trigger === 'hover' && !isWithinPopover(event.relatedTarget)) setOpen(false)
+  }
+
+  const handleFocus = () => {
+    if (trigger === 'hover') setOpen(true)
+  }
+
+  const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    if (trigger === 'hover' && !isWithinPopover(event.relatedTarget)) setOpen(false)
   }
 
   const getPositionStyles = () => {
@@ -103,25 +128,47 @@ export function HoloPopover({
     return styles
   }
 
+  const triggerContent = isValidElement(children)
+    ? cloneElement(children as ReactElement<{
+        'aria-controls'?: string
+        'aria-expanded'?: boolean
+        'aria-haspopup'?: 'dialog'
+      }>, {
+        'aria-controls': panelId,
+        'aria-expanded': isOpen,
+        'aria-haspopup': 'dialog',
+      })
+    : children
+
   return (
     <>
       <div
         ref={triggerRef}
+        id={triggerLabelId}
         onClick={handleTriggerClick}
         onMouseEnter={handleTriggerMouseEnter}
         onMouseLeave={handleTriggerMouseLeave}
+        onFocusCapture={handleFocus}
+        onBlurCapture={handleBlur}
         className="inline-block"
       >
-        {children}
+        {triggerContent}
       </div>
       {isOpen && (
         <HoloPortal>
           <div
             ref={panelRef}
+            id={panelId}
+            role="dialog"
+            aria-labelledby={triggerLabelId}
             style={getPositionStyles()}
+            onMouseEnter={handleTriggerMouseEnter}
+            onMouseLeave={handleTriggerMouseLeave}
+            onFocusCapture={handleFocus}
+            onBlurCapture={handleBlur}
             className={`
-              bg-scene-void/95 backdrop-blur-sm border border-holo-cyan/25
-              rounded-md p-3 z-40 shadow-lg
+              bg-surface-overlay-soft backdrop-blur-md border border-stroke-default
+              rounded-md p-3 z-40 shadow-[0_16px_40px_rgba(0,0,0,0.32)]
               ${className}
             `}
           >

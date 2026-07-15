@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { HoloPortal } from '@/utils/portal'
 import { useLocale, formatMessage } from '@/locale'
 
@@ -23,7 +23,8 @@ export function HoloDatePicker({
   const resolvedPlaceholder = placeholder ?? locale.datePicker.placeholder
   const [isOpen, setIsOpen] = useState(false)
   const [currentDate, setCurrentDate] = useState(new Date())
-  const triggerRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
 
   const sizeClasses = {
     sm: 'h-8 text-xs px-2.5',
@@ -41,11 +42,49 @@ export function HoloDatePicker({
     const dateStr = date.toISOString().split('T')[0]
     onChange(dateStr)
     setIsOpen(false)
+    queueMicrotask(() => triggerRef.current?.focus())
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') {
+  const closeAndRestoreFocus = () => {
+    setIsOpen(false)
+    queueMicrotask(() => triggerRef.current?.focus())
+  }
+
+  const handleTriggerKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      setIsOpen(open => !open)
+    } else if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      setIsOpen(true)
+    }
+  }
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const focusTimer = window.setTimeout(() => {
+      panelRef.current?.querySelector<HTMLButtonElement>('button')?.focus()
+    }, 0)
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        closeAndRestoreFocus()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      window.clearTimeout(focusTimer)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen])
+
+  const handlePanelKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.stopPropagation()
       setIsOpen(false)
+      queueMicrotask(() => triggerRef.current?.focus())
     }
   }
 
@@ -94,54 +133,67 @@ export function HoloDatePicker({
 
   return (
     <>
-      <div
+      <button
+        type="button"
         ref={triggerRef}
+        disabled={disabled}
+        aria-haspopup="dialog"
+        aria-expanded={isOpen}
         className={`
-          flex items-center justify-between rounded-md border border-solid
-          transition-colors duration-200 bg-scene-void/80 backdrop-blur-sm
-          border-holo-cyan/30 hover:border-holo-cyan/40 cursor-pointer
+          w-full appearance-none flex items-center justify-between rounded-md border border-solid text-left
+          transition-colors duration-150 bg-surface-interactive
+          border-stroke-default hover:border-stroke-strong cursor-pointer
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus
           ${sizeClasses[size]}
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${className}
         `}
         onClick={() => !disabled && setIsOpen(!isOpen)}
+        onKeyDown={handleTriggerKeyDown}
       >
-        <span className={`text-white/90 ${!value ? 'text-white/30' : ''}`}>
+        <span className={`text-content-primary ${!value ? 'text-content-tertiary' : ''}`}>
           {value ? formatDate(value) : resolvedPlaceholder}
         </span>
-        <svg className="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-content-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
-      </div>
+      </button>
 
       {isOpen && (
         <HoloPortal>
           <div
             className="fixed inset-0 z-20"
-            onClick={() => setIsOpen(false)}
+            onClick={closeAndRestoreFocus}
           />
           <div
-            className="fixed z-60 bg-scene-void/95 backdrop-blur-sm border border-holo-cyan/25 rounded-md p-3"
+            ref={panelRef}
+            role="dialog"
+            aria-label={resolvedPlaceholder}
+            className="fixed z-60 bg-surface-overlay-soft backdrop-blur-md border border-stroke-default rounded-md p-3 shadow-[0_16px_40px_rgba(0,0,0,0.32)]"
             style={(() => {
               const rect = triggerRef.current?.getBoundingClientRect()
               return rect ? { top: rect.bottom + 4, left: rect.left } : {}
             })()}
-            onKeyDown={handleKeyDown}
+            onKeyDown={handlePanelKeyDown}
           >
             <div className="flex items-center justify-between mb-3">
               <button
-                className="border-none p-1 hover:bg-holo-cyan/10 rounded"
+                type="button"
+                aria-label="Previous month"
+                className="border-none p-1 text-content-tertiary hover:text-content-primary hover:bg-surface-interactive rounded"
                 onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              <div className="text-sm font-medium text-white/80">
+              <div className="text-sm font-medium text-content-primary">
                 {formatMessage(locale.datePicker.monthYearFormat, { month: locale.datePicker.months[currentDate.getMonth()], year: currentDate.getFullYear() })}
               </div>
               <button
-                className="border-none p-1 hover:bg-holo-cyan/10 rounded"
+                type="button"
+                aria-label="Next month"
+                className="border-none p-1 text-content-tertiary hover:text-content-primary hover:bg-surface-interactive rounded"
                 onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,7 +204,7 @@ export function HoloDatePicker({
 
             <div className="grid grid-cols-7 gap-1 mb-2">
               {locale.datePicker.shortWeekdays.map(day => (
-                <div key={day} className="text-xs text-white/40 text-center p-1">
+                <div key={day} className="text-xs text-content-tertiary text-center p-1">
                   {day}
                 </div>
               ))}
@@ -161,17 +213,19 @@ export function HoloDatePicker({
             <div className="grid grid-cols-7 gap-1">
               {days.map((day, index) => (
                 <button
+                  type="button"
+                  aria-label={day.date.toLocaleDateString()}
                   key={index}
                   className={`
                     w-8 h-8 text-xs rounded flex items-center justify-center
                     transition-colors duration-200
                     ${day.isCurrentMonth
                       ? isSelected(day.date)
-                        ? 'bg-holo-cyan/15 border border-holo-cyan/40 text-holo-cyan'
+                        ? 'bg-surface-selected border border-stroke-accent text-content-accent'
                         : isToday(day.date)
-                          ? 'border border-holo-cyan/40 text-white/70 hover:bg-holo-cyan/8'
-                          : 'border-none text-white/70 hover:bg-holo-cyan/8'
-                      : 'border-none text-white/20 hover:bg-holo-cyan/5'
+                          ? 'border border-stroke-accent text-content-primary hover:bg-surface-interactive-hover'
+                          : 'border border-transparent text-content-secondary hover:bg-surface-interactive-hover'
+                      : 'border border-transparent text-content-disabled hover:bg-surface-interactive'
                     }
                   `}
                   onClick={() => handleDateSelect(day.date)}

@@ -54,7 +54,7 @@ export function HoloPagination({
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       {showTotal && (
-        <span className="text-white/50 text-sm mr-4">
+        <span className="text-content-tertiary text-sm mr-4">
           {formatMessage(locale.pagination.total, { total })}
         </span>
       )}
@@ -62,7 +62,7 @@ export function HoloPagination({
       <button
         onClick={() => onChange(current - 1)}
         disabled={current <= 1}
-        className="w-8 h-8 rounded flex items-center justify-center text-sm border border-holo-cyan/20 text-white/50 hover:text-holo-cyan/70 hover:bg-holo-cyan/5 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-8 h-8 rounded flex items-center justify-center text-sm border border-stroke-subtle text-content-secondary hover:text-content-primary hover:bg-surface-interactive hover:border-stroke-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:text-content-disabled disabled:cursor-not-allowed"
       >
         ‹
       </button>
@@ -73,10 +73,10 @@ export function HoloPagination({
           onClick={() => typeof page === 'number' && onChange(page)}
           disabled={typeof page !== 'number'}
           className={`
-            w-8 h-8 rounded flex items-center justify-center text-sm border border-holo-cyan/20
+            w-8 h-8 rounded flex items-center justify-center text-sm border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus
             ${page === current
-              ? 'border-holo-cyan/40 bg-holo-cyan/10 text-holo-cyan'
-              : 'text-white/50 hover:text-holo-cyan/70 hover:bg-holo-cyan/5'
+              ? 'border-stroke-accent bg-surface-selected text-content-accent'
+              : 'border-stroke-subtle text-content-secondary hover:text-content-primary hover:bg-surface-interactive'
             }
             ${typeof page !== 'number' ? 'cursor-default' : ''}
           `}
@@ -88,7 +88,7 @@ export function HoloPagination({
       <button
         onClick={() => onChange(current + 1)}
         disabled={current >= totalPages}
-        className="w-8 h-8 rounded flex items-center justify-center text-sm border border-holo-cyan/20 text-white/50 hover:text-holo-cyan/70 hover:bg-holo-cyan/5 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-8 h-8 rounded flex items-center justify-center text-sm border border-stroke-subtle text-content-secondary hover:text-content-primary hover:bg-surface-interactive hover:border-stroke-default focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:text-content-disabled disabled:cursor-not-allowed"
       >
         ›
       </button>

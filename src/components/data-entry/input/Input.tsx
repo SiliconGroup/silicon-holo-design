@@ -40,18 +40,18 @@ export const HoloInput = forwardRef<HTMLInputElement, HoloInputProps>(
     const s = sizeMap[size]
 
     const borderColor = status === 'error'
-      ? 'border-status-error/50'
+      ? 'border-stroke-error bg-state-error-soft'
       : status === 'success'
-        ? 'border-status-success/50'
+        ? 'border-stroke-success bg-state-success-soft'
         : focused
-          ? 'border-holo-cyan/50'
+          ? 'border-stroke-accent'
           : variant === 'ghost'
-            ? 'border-transparent hover:border-holo-cyan/20'
-            : 'border-holo-cyan/30 hover:border-holo-cyan/40'
+            ? 'border-transparent hover:border-stroke-subtle'
+            : 'border-stroke-default hover:border-stroke-strong'
 
     const wrapperClasses = grouped
       ? `flex items-center ${s.wrapper} bg-transparent`
-      : `flex items-center ${s.wrapper} rounded-md border border-solid transition-colors duration-200 bg-scene-void/80 backdrop-blur-sm ${borderColor}`
+      : `relative flex items-center ${s.wrapper} rounded-md border border-solid transition-colors duration-150 ${variant === 'ghost' ? 'bg-transparent' : 'bg-surface-interactive'} ${focused ? 'ring-2 ring-focus ring-offset-1 ring-offset-surface-base' : ''} ${borderColor}`
 
     return (
       <div
@@ -62,7 +62,7 @@ export const HoloInput = forwardRef<HTMLInputElement, HoloInputProps>(
         `}
       >
         {prefix && (
-          <span className={`flex-shrink-0 flex-center ${s.icon} text-white/40 ${focused ? 'text-holo-cyan/70' : ''} transition-colors duration-200`} aria-hidden="true">
+          <span className={`flex-shrink-0 flex-center ${s.icon} text-content-tertiary ${focused ? 'text-content-accent' : ''} transition-colors duration-150`} aria-hidden="true">
             {prefix}
           </span>
         )}
@@ -76,7 +76,7 @@ export const HoloInput = forwardRef<HTMLInputElement, HoloInputProps>(
           onBlur={(e) => { setFocused(false); rest.onBlur?.(e) }}
           className={`
             flex-1 min-w-0 bg-transparent outline-none
-            text-white/90 placeholder-white/30
+            text-content-primary placeholder-text-content-tertiary
             font-sans leading-normal
             disabled:cursor-not-allowed
             ${!prefix ? s.input : 'pr-1'}
@@ -86,7 +86,7 @@ export const HoloInput = forwardRef<HTMLInputElement, HoloInputProps>(
           {...rest}
         />
         {suffix && (
-          <span className={`flex-shrink-0 flex-center ${s.icon} text-white/40 ${focused ? 'text-holo-cyan/70' : ''} transition-colors duration-200`} aria-hidden="true">
+          <span className={`flex-shrink-0 flex-center ${s.icon} text-content-tertiary ${focused ? 'text-content-accent' : ''} transition-colors duration-150`} aria-hidden="true">
             {suffix}
           </span>
         )}

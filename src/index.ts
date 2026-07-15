@@ -1,6 +1,7 @@
 // Styles
 import './styles/base.css'
 import './styles/animations.css'
+import './styles/generated-utilities.css'
 import './styles/hljs-atom-one-dark.css'
 import 'katex/dist/katex.min.css'
 
@@ -14,8 +15,8 @@ export { LocaleProvider, useLocale, formatMessage, enUS, zhCN } from './locale/i
 export type { Locale } from './locale/index'
 
 // Theme
-export { ThemeProvider, useTheme, defaultTokens } from './theme/index'
-export type { ThemeTokens } from './theme/index'
+export { ThemeProvider, useTheme, defaultTokens, defaultSemanticTokens } from './theme/index'
+export type { ThemeTokens, SemanticThemeTokens, ResolvedThemeTokens, ThemeOverride, ThemeProviderProps } from './theme/index'
 
 // Utils
 export { cn } from './utils/cn'

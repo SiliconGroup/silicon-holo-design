@@ -4,6 +4,8 @@ import DataSection from './sections/DataSection'
 import FeedbackSection from './sections/FeedbackSection'
 import NavSection from './sections/NavSection'
 import LayoutSection from './sections/LayoutSection'
+import ChatAISection from './sections/ChatAISection'
+import FoundationsSection from './sections/FoundationsSection'
 
 interface NavItem {
   id: string
@@ -16,6 +18,25 @@ interface NavCategory {
 }
 
 const navCategories: NavCategory[] = [
+  {
+    title: 'Spectral Flat',
+    items: [
+      { id: 'foundations', title: 'Foundations' },
+      { id: 'compatibility', title: 'Compatibility' },
+    ]
+  },
+  {
+    title: 'Chat & AI (智能交互)',
+    items: [
+      { id: 'chat-bubble', title: 'ChatBubble' },
+      { id: 'chat-input', title: 'ChatInputArea' },
+      { id: 'ai-message', title: 'AIMessageBubble' },
+      { id: 'tool-call-card', title: 'AIToolCallCard' },
+      { id: 'tool-call-group', title: 'AIToolCallGroup' },
+      { id: 'tool-execution', title: 'AIToolExecutionCard' },
+      { id: 'data-stream', title: 'DataStreamEffect' },
+    ]
+  },
   {
     title: 'Form (表单)',
     items: [
@@ -38,6 +59,7 @@ const navCategories: NavCategory[] = [
     items: [
       { id: 'badge', title: 'HoloBadge' },
       { id: 'tag', title: 'HoloTag' },
+      { id: 'code-block', title: 'CodeBlock' },
       { id: 'avatar', title: 'HoloAvatar' },
       { id: 'tooltip', title: 'HoloTooltip' },
       { id: 'popover', title: 'HoloPopover' },
@@ -125,7 +147,7 @@ export function ShowcaseLayout() {
       {/* Mobile toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 w-9 h-9 flex-center rounded border border-holo-cyan/30 hover:border-holo-cyan/50 bg-scene-void/90 backdrop-blur-sm text-white/50 hover:text-holo-cyan transition-colors duration-200"
+        className="md:hidden fixed top-4 left-4 z-50 w-9 h-9 flex-center rounded border border-stroke-default hover:border-stroke-accent bg-surface-overlay text-content-secondary hover:text-content-accent transition-colors duration-150"
       >
         <span className="i-carbon-menu text-lg" />
       </button>
@@ -137,26 +159,26 @@ export function ShowcaseLayout() {
       {/* Sidebar */}
       <aside className={`
         fixed md:sticky top-0 left-0 z-40 w-60 flex-shrink-0
-        bg-scene-deep/95 border-r border-holo-cyan/15 backdrop-blur-sm
+        bg-surface-base border-r border-stroke-subtle
         h-screen overflow-y-auto transition-transform duration-250
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         <div className="p-5 pb-3">
           <h1 className="text-xl font-bold holo-text">Silicon Holo</h1>
-          <p className="text-xs text-white/30 mt-1">Component Library</p>
+          <p className="text-xs text-content-tertiary mt-1">Component Library</p>
         </div>
         <nav className="px-3 pb-6">
           {navCategories.map((cat) => (
             <div key={cat.title}>
-              <h3 className="text-xs text-white/30 uppercase tracking-wider mb-1 mt-4 px-2">{cat.title}</h3>
+              <h3 className="text-xs text-content-tertiary uppercase tracking-wider mb-1 mt-4 px-2">{cat.title}</h3>
               {cat.items.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollToComponent(item.id)}
                   className={`text-sm py-1.5 pl-3 block w-full text-left rounded-sm transition-colors duration-200 ${
                     activeSection === item.id
-                      ? 'text-holo-cyan bg-holo-cyan/8 border-l-2 border-holo-cyan'
-                      : 'text-white/50 hover:text-holo-cyan/70 hover:bg-holo-cyan/5 border-l-2 border-transparent'
+                      ? 'text-content-accent bg-accent-primary-softer border-l-2 border-accent-primary'
+                      : 'text-content-tertiary hover:text-content-primary hover:bg-surface-interactive border-l-2 border-transparent'
                   }`}
                 >
                   {item.title}
@@ -172,28 +194,36 @@ export function ShowcaseLayout() {
         <div className="max-w-5xl mx-auto px-6 py-8">
           <div className="text-center py-8 mb-8">
             <h1 className="text-3xl font-bold holo-text mb-3">Silicon Holo Components</h1>
-            <p className="text-white/50 text-sm max-w-xl mx-auto">全息科技风 UI 组件库 — React + TypeScript + UnoCSS</p>
+            <p className="text-content-tertiary text-sm max-w-xl mx-auto">全息科技风 UI 组件库 — React + TypeScript + UnoCSS</p>
           </div>
 
           <div className="space-y-16">
             <section>
-              <h2 className="text-xl font-semibold holo-text mb-6 pb-2 border-b border-holo-cyan/15">Form (表单)</h2>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">00</span>Spectral Flat Foundations</h2>
+              <FoundationsSection />
+            </section>
+            <section>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">01</span>Chat & AI (智能交互)</h2>
+              <ChatAISection />
+            </section>
+            <section>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">02</span>Form (表单)</h2>
               <FormSection />
             </section>
             <section>
-              <h2 className="text-xl font-semibold holo-text mb-6 pb-2 border-b border-holo-cyan/15">Data Display (数据展示)</h2>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">03</span>Data Display (数据展示)</h2>
               <DataSection />
             </section>
             <section>
-              <h2 className="text-xl font-semibold holo-text mb-6 pb-2 border-b border-holo-cyan/15">Feedback (反馈)</h2>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">04</span>Feedback (反馈)</h2>
               <FeedbackSection />
             </section>
             <section>
-              <h2 className="text-xl font-semibold holo-text mb-6 pb-2 border-b border-holo-cyan/15">Navigation (导航)</h2>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">05</span>Navigation (导航)</h2>
               <NavSection />
             </section>
             <section>
-              <h2 className="text-xl font-semibold holo-text mb-6 pb-2 border-b border-holo-cyan/15">Layout (布局)</h2>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">06</span>Layout (布局)</h2>
               <LayoutSection />
             </section>
           </div>

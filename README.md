@@ -28,6 +28,17 @@
 
 ---
 
+## Spectral Flat Design
+
+Version `0.2.0` refines the visual system without changing component calls. The interface uses deep-space near-black surfaces, neutral structural strokes, low-fill controls, and local cyan/blue/purple spectral response. Cyan remains the identity color, but it is concentrated in focus, active state, data signals, and brand moments instead of filling every panel.
+
+- Buttons stay flat through tonal fills and stable neutral boundaries rather than top highlights or glowing frames.
+- Cards and inputs use stable surface roles instead of default blur.
+- Drawers, modals, alerts, and tool cards retain holographic identity through deep surface hierarchy, precise information density, and restrained state color.
+- `.holo-text` is static and reserved for brand or hero usage; `.holo-text-animated` is explicit and reduced-motion aware.
+
+---
+
 ## Quick Start
 
 ```bash
@@ -87,9 +98,9 @@ The preset includes colors, shortcuts, fonts, and a **safelist** of all CSS clas
 
 | Component | Description |
 |-----------|-------------|
-| `HoloButton` | Primary action button with glow variants |
+| `HoloButton` | Flat spectral action button with tonal variants |
 | `HoloLink` | Styled anchor link |
-| `GlowCard` | Card with holographic glow border |
+| `GlowCard` | Surface card with optional local spectral response |
 | `IconButton` | Compact icon-only button |
 | `CircuitBorder` | Decorative circuit-pattern border wrapper |
 
@@ -389,6 +400,10 @@ Override CSS variables to customize the theme. All variables use the `--shd-` pr
   --shd-holo-purple: #b388ff;
   --shd-scene-void: #000a0e;
   --shd-scene-deep: #001018;
+  --shd-surface-raised: #041218;
+  --shd-content-primary: rgba(244, 251, 255, 0.92);
+  --shd-stroke-default: rgba(133, 171, 188, 0.24);
+  --shd-accent-primary: #00e5ff;
 }
 ```
 
@@ -400,6 +415,22 @@ Or use the React provider for dynamic theming:
 import { ThemeProvider } from 'silicon-holo-design'
 
 <ThemeProvider theme={{ colors: { 'holo-cyan': '#ff6b35' } }}>
+  <App />
+</ThemeProvider>
+```
+
+Semantic roles can be overridden independently while legacy primitive overrides remain valid:
+
+```tsx
+<ThemeProvider
+  theme={{
+    semanticColors: {
+      'surface-raised': '#07151c',
+      'stroke-accent': 'rgba(0, 229, 255, 0.42)',
+      'accent-primary-soft': 'rgba(0, 229, 255, 0.08)',
+    },
+  }}
+>
   <App />
 </ThemeProvider>
 ```

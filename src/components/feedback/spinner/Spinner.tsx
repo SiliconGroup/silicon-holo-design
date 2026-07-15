@@ -16,16 +16,16 @@ export function HoloSpinner({
   }
 
   return (
-    <div className={`flex flex-col items-center gap-2 ${className}`}>
+    <div data-shd-motion="status" role="status" className={`flex flex-col items-center gap-2 ${className}`}>
       <div
         className={`rounded-full animate-spin ${sizeClasses[size]}`}
         style={{
-          border: '2px solid rgba(0, 255, 255, 0.3)',
-          borderTopColor: '#00ffff',
+          border: '2px solid var(--shd-stroke-default)',
+          borderTopColor: 'var(--shd-accent-primary)',
         }}
       />
       {label && (
-        <span className="text-white/40 text-xs">{label}</span>
+        <span className="text-content-tertiary text-xs">{label}</span>
       )}
     </div>
   )

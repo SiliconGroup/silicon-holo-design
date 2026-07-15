@@ -67,18 +67,18 @@ export const HoloTextarea = forwardRef<HTMLTextAreaElement, HoloTextareaProps>(
     }
 
     const borderColor = status === 'error'
-      ? 'border-status-error/50'
+      ? 'border-stroke-error bg-state-error-soft'
       : status === 'success'
-        ? 'border-status-success/50'
+        ? 'border-stroke-success bg-state-success-soft'
         : focused
-          ? 'border-holo-cyan/50'
+          ? 'border-stroke-accent'
           : variant === 'ghost'
-            ? 'border-transparent hover:border-holo-cyan/20'
-            : 'border-holo-cyan/30 hover:border-holo-cyan/40'
+            ? 'border-transparent hover:border-stroke-subtle'
+            : 'border-stroke-default hover:border-stroke-strong'
 
     const wrapperClasses = grouped
       ? 'flex-1 min-w-0'
-      : `rounded-md border border-solid transition-colors duration-200 bg-scene-void/80 backdrop-blur-sm ${borderColor}`
+      : `rounded-md border border-solid transition-colors duration-150 ${variant === 'ghost' ? 'bg-transparent' : 'bg-surface-interactive'} ${focused ? 'ring-2 ring-focus ring-offset-1 ring-offset-surface-base' : ''} ${borderColor}`
 
     return (
       <div
@@ -101,7 +101,7 @@ export const HoloTextarea = forwardRef<HTMLTextAreaElement, HoloTextareaProps>(
           onKeyDown={handleKeyDown}
           className={`
             w-full bg-transparent resize-none outline-none
-            text-white/90 placeholder-white/30
+            text-content-primary placeholder-text-content-tertiary
             font-sans leading-relaxed
             disabled:cursor-not-allowed
             ${sizeMap[size]}

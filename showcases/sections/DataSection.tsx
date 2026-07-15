@@ -11,6 +11,7 @@ import {
   HoloTimeline,
   HoloDescriptions,
   HoloKbd,
+  CodeBlock,
   GlowCard,
   StatusIndicator,
   HoloButton,
@@ -103,6 +104,10 @@ export default function DataSection() {
           <HoloTag size="sm">Small</HoloTag>
           <HoloTag size="md">Large</HoloTag>
         </div>
+      </ComponentDemo>
+
+      <ComponentDemo id="code-block" title="CodeBlock" description="Stable deep code surface with neutral edge hierarchy">
+        <CodeBlock>{`const visualLanguage = 'spectral-flat'\nconst surface = 'raised'`}</CodeBlock>
       </ComponentDemo>
 
       <ComponentDemo id="avatar" title="HoloAvatar" description="User avatars with images, fallbacks, and shapes">

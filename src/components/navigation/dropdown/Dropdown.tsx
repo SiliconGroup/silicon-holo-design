@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type ReactNode } from 'react'
+import { cloneElement, isValidElement, useState, useRef, useEffect, useId, type FocusEvent, type MouseEvent as ReactMouseEvent, type ReactElement, type ReactNode } from 'react'
 import { HoloPortal } from '@/utils/portal'
 
 interface DropdownItem {
@@ -29,22 +29,32 @@ export function HoloDropdown({
 }: HoloDropdownProps) {
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
+  const menuId = useId()
+  const triggerLabelId = useId()
   const triggerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
+  const validItems = items.filter(item => !item.disabled && !item.divider)
+
+  const focusTrigger = () => {
+    triggerRef.current?.querySelector<HTMLElement>('[tabindex], button, a, input, select, textarea')?.focus()
+  }
 
   useEffect(() => {
     if (!open) return
 
+    panelRef.current?.focus()
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      const validItems = items.filter(item => !item.disabled && !item.divider)
-      
       if (e.key === 'Escape') {
         setOpen(false)
         setActiveIndex(-1)
+        focusTrigger()
       } else if (e.key === 'ArrowDown') {
+        if (validItems.length === 0) return
         e.preventDefault()
         setActiveIndex(prev => (prev + 1) % validItems.length)
       } else if (e.key === 'ArrowUp') {
+        if (validItems.length === 0) return
         e.preventDefault()
         setActiveIndex(prev => prev <= 0 ? validItems.length - 1 : prev - 1)
       } else if (e.key === 'Enter' && activeIndex >= 0) {
@@ -53,6 +63,7 @@ export function HoloDropdown({
         onSelect?.(item.key)
         setOpen(false)
         setActiveIndex(-1)
+        focusTrigger()
       }
     }
 
@@ -82,26 +93,73 @@ export function HoloDropdown({
     onSelect?.(key)
     setOpen(false)
     setActiveIndex(-1)
+    focusTrigger()
   }
+
+  const isWithinDropdown = (target: EventTarget | null) => target instanceof Node && (
+    triggerRef.current?.contains(target) || panelRef.current?.contains(target)
+  )
+
+  const handleFocus = () => {
+    if (trigger === 'hover') setOpen(true)
+  }
+
+  const handleBlur = (event: FocusEvent<HTMLDivElement>) => {
+    if (trigger === 'hover' && !isWithinDropdown(event.relatedTarget)) {
+      setOpen(false)
+      setActiveIndex(-1)
+    }
+  }
+
+  const handleMouseLeave = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (trigger === 'hover' && !isWithinDropdown(event.relatedTarget)) {
+      setOpen(false)
+      setActiveIndex(-1)
+    }
+  }
+
+  const triggerContent = isValidElement(children)
+    ? cloneElement(children as ReactElement<{
+        'aria-controls'?: string
+        'aria-expanded'?: boolean
+        'aria-haspopup'?: 'menu'
+      }>, {
+        'aria-controls': menuId,
+        'aria-expanded': open,
+        'aria-haspopup': 'menu',
+      })
+    : children
 
   return (
     <div className={`relative inline-block ${className}`}>
       <div
         ref={triggerRef}
+        id={triggerLabelId}
         onClick={handleTrigger}
         onMouseEnter={trigger === 'hover' ? () => setOpen(true) : undefined}
-        onMouseLeave={trigger === 'hover' ? () => setOpen(false) : undefined}
+        onMouseLeave={handleMouseLeave}
+        onFocusCapture={handleFocus}
+        onBlurCapture={handleBlur}
       >
-        {children}
+        {triggerContent}
       </div>
       
       {open && (
         <HoloPortal>
           <div
             ref={panelRef}
+            id={menuId}
+            role="menu"
+            aria-labelledby={triggerLabelId}
+            tabIndex={-1}
+            aria-activedescendant={activeIndex >= 0 ? `${menuId}-item-${validItems[activeIndex]?.key}` : undefined}
+            onMouseEnter={trigger === 'hover' ? () => setOpen(true) : undefined}
+            onMouseLeave={handleMouseLeave}
+            onFocusCapture={handleFocus}
+            onBlurCapture={handleBlur}
             className={`
-              fixed bg-scene-void/95 backdrop-blur-sm border border-holo-cyan/25 
-              rounded-md py-1 z-60 min-w-32
+              fixed bg-surface-overlay-soft backdrop-blur-md border border-stroke-default
+              rounded-md p-1 z-60 min-w-32 shadow-[0_16px_40px_rgba(0,0,0,0.32)]
             `}
             style={(() => {
               const rect = triggerRef.current?.getBoundingClientRect()
@@ -115,24 +173,27 @@ export function HoloDropdown({
           >
             {items.map((item) => {
               if (item.divider) {
-                return <div key={item.key} className="border-t border-holo-cyan/10 my-1" />
+                return <div key={item.key} className="border-t border-stroke-muted my-1" />
               }
               
-              const isActive = activeIndex === items.filter(i => !i.disabled && !i.divider).indexOf(item)
+              const isActive = activeIndex === validItems.indexOf(item)
               
               return (
                 <div
                   key={item.key}
+                  id={`${menuId}-item-${item.key}`}
+                  role="menuitem"
+                  aria-disabled={item.disabled || undefined}
                   onClick={item.disabled ? undefined : () => handleSelect(item.key)}
                   className={`
-                    px-3 py-2 text-sm flex items-center gap-2 transition-colors duration-200
+                    px-3 py-2 text-sm flex items-center gap-2 rounded transition-colors duration-150
                     ${item.disabled 
-                      ? 'text-white/30 cursor-not-allowed' 
+                      ? 'text-content-disabled cursor-not-allowed'
                       : item.danger
-                        ? 'text-status-error hover:bg-status-error/8 cursor-pointer'
-                        : 'text-white/80 hover:bg-holo-cyan/8 cursor-pointer'
+                        ? 'text-status-error hover:bg-state-error-soft cursor-pointer'
+                        : 'text-content-secondary hover:text-content-primary hover:bg-surface-interactive-hover cursor-pointer'
                     }
-                    ${isActive ? 'bg-holo-cyan/8' : ''}
+                    ${isActive ? 'bg-surface-selected text-content-accent' : ''}
                   `}
                 >
                   {item.icon && <span className="flex-shrink-0">{item.icon}</span>}

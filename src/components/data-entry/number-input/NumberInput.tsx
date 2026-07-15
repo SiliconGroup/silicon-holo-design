@@ -58,14 +58,14 @@ export const HoloNumberInput = forwardRef<HTMLInputElement, HoloNumberInputProps
     }
 
     const borderColor = focused
-      ? 'border-holo-cyan/50'
-      : 'border-holo-cyan/30 hover:border-holo-cyan/40'
+      ? 'border-stroke-accent ring-2 ring-focus ring-offset-1 ring-offset-surface-base'
+      : 'border-stroke-default hover:border-stroke-strong'
 
     return (
       <div
         className={`
           flex items-center ${s.wrapper} rounded-md border border-solid
-          transition-colors duration-200 bg-scene-void/80 backdrop-blur-sm
+          transition-colors duration-150 bg-surface-interactive
           ${borderColor}
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${className}
@@ -76,7 +76,7 @@ export const HoloNumberInput = forwardRef<HTMLInputElement, HoloNumberInputProps
           onClick={handleDecrement}
           disabled={disabled || (min !== undefined && value <= min)}
           className={`
-            ${s.button} h-full flex-center border-none text-white/40 hover:text-holo-cyan/70
+            ${s.button} h-full flex-center border-none text-content-tertiary hover:text-content-accent hover:bg-surface-interactive-hover
             transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed
           `}
         >
@@ -96,7 +96,7 @@ export const HoloNumberInput = forwardRef<HTMLInputElement, HoloNumberInputProps
           onBlur={() => setFocused(false)}
           className={`
             flex-1 min-w-0 bg-transparent outline-none text-center
-            text-white/90 font-mono leading-normal
+            text-content-primary font-mono leading-normal
             disabled:cursor-not-allowed appearance-none
             [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none
             ${s.input}
@@ -107,7 +107,7 @@ export const HoloNumberInput = forwardRef<HTMLInputElement, HoloNumberInputProps
           onClick={handleIncrement}
           disabled={disabled || (max !== undefined && value >= max)}
           className={`
-            ${s.button} h-full flex-center border-none text-white/40 hover:text-holo-cyan/70
+            ${s.button} h-full flex-center border-none text-content-tertiary hover:text-content-accent hover:bg-surface-interactive-hover
             transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed
           `}
         >
