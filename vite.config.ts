@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     react(),
     UnoCSS(),
-    dts({ exclude: ['**/*.test.ts', '**/*.test.tsx', '**/*.stories.tsx', 'showcases', 'examples', 'refs'] }),
+    dts({ exclude: ['**/*.test.ts', '**/*.test.tsx', '**/*.stories.tsx', 'src/components/ai/copy-action/**', 'showcases', 'examples', 'refs'] }),
   ],
   resolve: { alias: { '@': resolve(__dirname, 'src') } },
   build: {

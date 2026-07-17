@@ -15,6 +15,7 @@ describe('ChatBubble', () => {
     expect(user?.className).toContain('rounded-br-sm')
     expect(assistant?.className).toContain('text-content-primary')
     expect(user?.className).toContain('text-content-primary')
+    expect(assistant?.querySelector('.shd-chat-bubble-content')).toBeDefined()
   })
 
   it('marks streaming assistant messages as an active material state', () => {

@@ -4,6 +4,7 @@ import { AIToolCallGroup } from '../../../src/components/ai/tool-call-group'
 import { AIMessageBubble } from '../../../src/components/ai/message-bubble'
 import { HoloCollapse } from '../../../src/components/data-display/collapse'
 import { ChatBubble } from '../../../src/components/chat/chat-bubble'
+import { ChatMessageList } from '../../../src/components/chat/chat-message-list'
 import { HoloButton } from '../../../src/components/general/button'
 import { HoloSwitch } from '../../../src/components/data-entry/switch'
 import { HoloPagination } from '../../../src/components/navigation/pagination'
@@ -14,6 +15,7 @@ import { HoloModal } from '../../../src/components/feedback/modal'
 import { HoloDrawer } from '../../../src/components/feedback/drawer'
 import { ToastProvider, useToast } from '../../../src/components/feedback/toast'
 import { HoloTooltip } from '../../../src/components/data-display/tooltip'
+import { HoloAlert } from '../../../src/components/feedback/alert'
 import { HoloPopover } from '../../../src/components/data-display/popover'
 import { LocaleProvider, enUS } from '../../../src/locale'
 import type { ChatMessage } from '../../../src/types'
@@ -69,7 +71,12 @@ const chineseMarkdownMessage: ChatMessage = {
 
 - 保持正文节奏
 - 降低标题压迫感
-- [超长链接也必须在气泡内换行](https://example.com/a/very/long/path/that/must/not/overflow/the/assistant/message/bubble)`,
+- [超长链接也必须在气泡内换行](https://example.com/a/very/long/path/that/must/not/overflow/the/assistant/message/bubble)
+
+| Layer | Token | Responsibility | Notes | Compatibility |
+| --- | --- | --- | --- | --- |
+| Canvas | surface-canvas | Application background | restrained | stable |
+| Glass | surface-glass | contextual overlay | translucent | stable |`,
 }
 
 function ToastOnMount() {
@@ -134,6 +141,31 @@ function App() {
       if (!markdownStyle.fontFamily.includes('PingFang SC') || Number.parseFloat(markdownStyle.lineHeight) < 24) {
         throw new Error(`Chinese Markdown typography contract is incomplete: ${JSON.stringify({ fontFamily: markdownStyle.fontFamily, lineHeight: markdownStyle.lineHeight })}`)
       }
+      if (markdownNarrow.classList.contains('prose') || markdownNarrow.classList.contains('prose-sm')) throw new Error('Markdown still exposes host typography class names.')
+      const markdownHeading = markdownNarrow.querySelector<HTMLElement>('h1')
+      const markdownParagraph = markdownNarrow.querySelector<HTMLElement>('p')
+      const markdownStrong = markdownNarrow.querySelector<HTMLElement>('strong')
+      if (!markdownHeading || !markdownParagraph || !markdownStrong) throw new Error('Markdown hierarchy fixtures are missing.')
+      const headingStyle = getComputedStyle(markdownHeading)
+      const paragraphStyle = getComputedStyle(markdownParagraph)
+      const strongStyle = getComputedStyle(markdownStrong)
+      if (headingStyle.color === paragraphStyle.color || strongStyle.color !== paragraphStyle.color || paragraphStyle.maxWidth === 'none') {
+        throw new Error(`Markdown hierarchy is not restrained: ${JSON.stringify({ headingColor: headingStyle.color, paragraphColor: paragraphStyle.color, strongColor: strongStyle.color, paragraphMaxWidth: paragraphStyle.maxWidth })}`)
+      }
+
+      const expectedButtonMetrics: Record<string, { height: number; fontSize: string; paddingInline: string }> = {
+        sm: { height: 32, fontSize: '13px', paddingInline: '12px' },
+        md: { height: 36, fontSize: '14px', paddingInline: '16px' },
+        lg: { height: 40, fontSize: '15px', paddingInline: '20px' },
+      }
+      for (const button of Array.from(document.querySelectorAll<HTMLButtonElement>('[data-shd-button-fixtures] [data-shd-button="true"]'))) {
+        const size = button.dataset.shdSize ?? ''
+        const expected = expectedButtonMetrics[size]
+        const style = getComputedStyle(button)
+        if (!expected || Math.abs(button.getBoundingClientRect().height - expected.height) > 0.5 || style.fontSize !== expected.fontSize || style.paddingLeft !== expected.paddingInline || style.letterSpacing === 'normal' || Number.parseFloat(style.letterSpacing) > 0.1) {
+          throw new Error(`Button typography metrics are invalid: ${JSON.stringify({ size, height: button.getBoundingClientRect().height, fontSize: style.fontSize, paddingLeft: style.paddingLeft, letterSpacing: style.letterSpacing, expected })}`)
+        }
+      }
 
       const expectedBorders: Record<string, [string, string, string, string]> = {
         top: ['1px', '0px', '0px', '0px'], right: ['0px', '1px', '0px', '0px'], bottom: ['0px', '0px', '1px', '0px'],
@@ -161,9 +193,27 @@ function App() {
       })
       if (!drawerEdges.some(widths => widths.join(',') === '0px,0px,0px,1px') || !drawerEdges.some(widths => widths.join(',') === '0px,1px,0px,0px')) throw new Error(`Drawer placement borders are invalid: ${JSON.stringify(drawerEdges)}`)
 
+      const tableWrap = document.querySelector<HTMLElement>('.shd-markdown-table-wrap')
+      if (!tableWrap || tableWrap.scrollWidth <= tableWrap.clientWidth || markdownNarrow.scrollWidth > markdownNarrow.clientWidth + 1) throw new Error(`Wide Markdown table does not use an internal scroll surface: ${JSON.stringify({ wrap: tableWrap && { scrollWidth: tableWrap.scrollWidth, clientWidth: tableWrap.clientWidth }, markdown: { scrollWidth: markdownNarrow.scrollWidth, clientWidth: markdownNarrow.clientWidth } })}`)
+
+      const messageScroll = document.querySelector<HTMLElement>('[data-shd-message-scroll="true"]')
+      if (!messageScroll || getComputedStyle(messageScroll).scrollbarWidth !== 'thin') throw new Error('Message list does not use the shared thin scrollbar contract.')
+
+      const alert = document.querySelector<HTMLElement>('[data-shd-alert-fixture] [role="status"]')
+      if (!alert) throw new Error('Alert visual fixture is missing.')
+      const alertStyle = getComputedStyle(alert)
+      if (alertStyle.borderLeftWidth !== '3px' || alertStyle.borderLeftColor === alertStyle.borderTopColor) throw new Error(`Alert status edge is not visually distinct: ${JSON.stringify({ leftWidth: alertStyle.borderLeftWidth, leftColor: alertStyle.borderLeftColor, topColor: alertStyle.borderTopColor })}`)
+
+      const bubbleContent = document.querySelector<HTMLElement>('[data-shd-chat-bubble="assistant"] .shd-chat-bubble-content')
+      if (!bubbleContent || getComputedStyle(bubbleContent).paddingLeft !== '18px' || getComputedStyle(bubbleContent).paddingTop !== '14px') throw new Error('Message bubble content spacing is not using the relaxed contract.')
+
       const cardTrigger = document.querySelector<HTMLElement>('[data-shd-tool-card] > button')
       cardTrigger?.click()
       await nextFrame()
+
+      const copyActions = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-shd-copy-action="true"]'))
+      const invalidCopyActions = copyActions.map(button => ({ text: button.textContent?.trim(), width: button.getBoundingClientRect().width, height: button.getBoundingClientRect().height, display: getComputedStyle(button).display })).filter(item => item.text || Math.abs(item.width - 26) > 0.5 || Math.abs(item.height - 26) > 0.5 || !['flex', 'inline-flex'].includes(item.display))
+      if (copyActions.length < 3 || invalidCopyActions.length > 0) throw new Error(`Copy actions are not compact icon controls: ${JSON.stringify({ count: copyActions.length, invalidCopyActions })}`)
 
       const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-shd-tool-group] button, [data-shd-collapse] button'))
       const nativeBorders = buttons.map(button => ({
@@ -290,8 +340,11 @@ function App() {
           <div className="mt-10 w-[320px]" data-shd-narrow-group>
             <AIToolCallGroup messages={narrowMessages} />
           </div>
-          <div className="mt-10 grid grid-cols-2 gap-4" data-shd-designed-border>
-            <HoloButton>Primary action</HoloButton>
+          <div className="mt-10 h-40"><ChatMessageList><div className="h-[320px]">Scrollbar contract</div></ChatMessageList></div>
+          <div className="mt-10 grid grid-cols-2 gap-4" data-shd-designed-border data-shd-button-fixtures>
+            <HoloButton size="sm">Primary action</HoloButton>
+            <HoloButton size="md">Medium action</HoloButton>
+            <HoloButton size="lg">Large action</HoloButton>
             <HoloSwitch checked={false} onChange={() => undefined} />
             <HoloPagination current={2} total={50} onChange={() => undefined} />
             <HoloTab items={[{ key: 'one', label: 'One' }, { key: 'two', label: 'Two' }]} activeKey="one" onChange={() => undefined} />
@@ -300,6 +353,7 @@ function App() {
           <div className="mt-10 max-w-sm" data-shd-number-input>
             <HoloNumberInput value={number} onChange={setNumber} />
           </div>
+          <div className="mt-10" data-shd-alert-fixture><HoloAlert type="success" title="Semantic alert edge" /></div>
           <div className="mt-10">
             <HoloPopover open content={<span data-shd-popover-content>Semantic popover text</span>}>
               <button type="button" data-shd-popover-trigger>Open popover</button>

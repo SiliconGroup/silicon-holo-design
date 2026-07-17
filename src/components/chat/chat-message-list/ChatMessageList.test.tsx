@@ -11,6 +11,12 @@ function setScrollMetrics(element: HTMLElement, values: { scrollHeight: number; 
 }
 
 describe('ChatMessageList', () => {
+  it('uses the shared restrained scrollbar contract', () => {
+    const { container } = render(<ChatMessageList><div>One</div></ChatMessageList>)
+    expect(container.firstElementChild?.className).toContain('shd-scrollbar')
+    expect((container.firstElementChild as HTMLElement).dataset.shdMessageScroll).toBe('true')
+  })
+
   it('follows updates while near the bottom', () => {
     const { container, rerender } = render(<ChatMessageList scrollDeps={[1]}><div>One</div></ChatMessageList>)
     const list = container.firstElementChild as HTMLElement

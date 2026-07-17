@@ -24,7 +24,7 @@ describe('AIToolCallCard', () => {
     expect(card?.getAttribute('data-shd-open')).toBe('true')
     expect(screen.getByText('Arguments')).toBeDefined()
     expect(screen.getByText('Result')).toBeDefined()
-    expect(screen.getAllByRole('button', { name: /copy/i }).every(button => button.className.includes('border-none'))).toBe(true)
+    expect(screen.getAllByRole('button', { name: /copy/i }).every(button => button.getAttribute('data-shd-copy-action') === 'true')).toBe(true)
   })
 
   it('does not advertise expansion without details', () => {

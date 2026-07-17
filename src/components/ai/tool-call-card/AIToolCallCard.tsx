@@ -2,6 +2,7 @@ import { useId, useState } from 'react'
 import hljs from 'highlight.js'
 import { useLocale } from '@/locale'
 import { HexagonLoader } from '@/components/feedback/hexagon-loader'
+import { CopyAction } from '@/components/ai/copy-action/CopyAction'
 import type { ToolStatus } from '@/types'
 
 interface AIToolCallCardProps {
@@ -18,24 +19,15 @@ function formatJson(value: string): string {
 }
 
 function PayloadBlock({ code }: { code: string }) {
-  const locale = useLocale()
-  const [copied, setCopied] = useState(false)
   let isJson = true
   try { JSON.parse(code) } catch { isJson = false }
   const formatted = formatJson(code)
   const highlighted = hljs.getLanguage('json') ? hljs.highlight(formatted, { language: 'json' }).value : hljs.highlightAuto(formatted).value
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1600)
-    } catch { setCopied(false) }
-  }
   return (
     <div className="shd-status-glass-inset overflow-hidden rounded-sm border border-stroke-subtle">
       <div className="flex items-center justify-between border-b border-stroke-muted px-3 py-1.5">
         <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-content-tertiary">{isJson ? 'JSON' : 'TEXT'}</span>
-        <button type="button" onClick={handleCopy} className="shd-control-focus border-none bg-transparent rounded-sm px-1.5 py-0.5 text-[10px] text-content-tertiary hover:bg-surface-interactive hover:text-content-primary">{copied ? locale.ai.copied : locale.ai.copy}</button>
+        <CopyAction content={code} />
       </div>
       <pre className="m-0 max-h-60 overflow-auto p-3 text-xs text-content-secondary">
         <code className={isJson ? 'language-json' : undefined} dangerouslySetInnerHTML={{ __html: highlighted }} />

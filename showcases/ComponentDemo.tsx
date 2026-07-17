@@ -24,7 +24,7 @@ export function ComponentDemo({ id, title, description, children, compareSurface
                 type="button"
                 onClick={() => setSurfaceIndex(index)}
                 aria-pressed={surfaceIndex === index}
-                className={`shd-control-focus inline-flex h-7 min-w-12 flex-1 items-center justify-center rounded-sm border px-2 font-mono text-[11px] font-medium leading-none transition-colors sm:min-w-14 sm:px-2.5 ${surfaceIndex === index ? 'border-stroke-accent bg-surface-selected text-content-accent' : 'border-transparent bg-transparent text-content-tertiary hover:border-stroke-subtle hover:bg-surface-interactive hover:text-content-primary'}`}
+                className={`shd-segmented-control-button shd-control-focus inline-flex h-7 min-w-12 flex-1 items-center justify-center rounded-sm border px-2 transition-colors sm:min-w-14 sm:px-2.5 ${surfaceIndex === index ? 'border-stroke-accent bg-surface-selected text-content-accent' : 'border-transparent bg-transparent text-content-tertiary hover:border-stroke-subtle hover:bg-surface-interactive hover:text-content-primary'}`}
               >
                 {surface.label}
               </button>

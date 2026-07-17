@@ -4,10 +4,11 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import hljs from 'highlight.js'
-import { useEffect, useRef, useState, useMemo, useCallback, type ComponentPropsWithoutRef, type ReactNode } from 'react'
+import { useEffect, useRef, useState, useMemo, type ComponentPropsWithoutRef, type ReactNode } from 'react'
 import { isFullHtmlPage } from '@/components/data-display/html-preview'
 import { ChatBubble } from '@/components/chat/chat-bubble'
 import { AIToolCallCard } from '@/components/ai/tool-call-card'
+import { CopyAction } from '@/components/ai/copy-action/CopyAction'
 import { useLocale } from '@/locale'
 import type { ChatMessage, Artifact } from '@/types'
 
@@ -81,14 +82,6 @@ function MermaidBlock({ code }: { code: string }) {
 /** 紧凑的 Artifact 卡片，替代气泡内的代码块 */
 function ArtifactCard({ code, onPreview, onCopy }: { code: string; onPreview?: () => void; onCopy: () => void | Promise<void> }) {
   const locale = useLocale()
-  const [copied, setCopied] = useState(false)
-  const handleCopy = useCallback(async () => {
-    try {
-      await onCopy()
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch { setCopied(false) }
-  }, [onCopy])
   const previewContent = (
     <>
       <span className="flex-shrink-0 w-8 h-8 rounded flex items-center justify-center bg-accent-primary-softer border border-stroke-default">
@@ -106,7 +99,7 @@ function ArtifactCard({ code, onPreview, onCopy }: { code: string; onPreview?: (
         <div className="flex min-w-0 flex-1 items-center gap-3 p-1">{previewContent}</div>
       )}
       <div className="flex items-center gap-1">
-        <button type="button" onClick={handleCopy} className="shd-control-focus border-none bg-transparent px-2 py-1 text-[11px] text-content-tertiary hover:text-content-primary rounded transition-colors duration-150">{copied ? locale.ai.copied : locale.ai.copy}</button>
+        <CopyAction onCopy={onCopy} />
         {onPreview && (
           <button type="button" onClick={onPreview} className="shd-control-focus border-none bg-transparent flex items-center gap-1 px-2 py-1 text-[11px] text-content-accent hover:text-accent-primary-hover rounded transition-colors duration-150">
             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
@@ -118,63 +111,15 @@ function ArtifactCard({ code, onPreview, onCopy }: { code: string; onPreview?: (
   )
 }
 
-/** 消息复制按钮 */
-function CopyButton({ content }: { content: string }) {
-  const locale = useLocale()
-  const [copied, setCopied] = useState(false)
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(content)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch { setCopied(false) }
-  }, [content])
-
-  return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="shd-control-focus cursor-pointer rounded border-none bg-transparent px-2 py-0.5 text-[11px] text-content-tertiary transition-colors duration-150 hover:text-content-primary"
-    >
-      {copied ? (
-        <span className="flex items-center gap-1">
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-          {locale.ai.copied}
-        </span>
-      ) : (
-        <span className="flex items-center gap-1">
-          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
-          {locale.ai.copy}
-        </span>
-      )}
-    </button>
-  )
-}
-
 function MarkdownCodeBlock({ code, language, highlighted }: { code: string; language?: string; highlighted?: string }) {
   const locale = useLocale()
-  const [copied, setCopied] = useState(false)
   const label = language?.trim() || 'code'
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(code)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1600)
-    } catch { setCopied(false) }
-  }, [code])
 
   return (
     <div data-shd-markdown-code-block="true" className="shd-markdown-code-block my-3 max-w-full overflow-hidden rounded-sm border border-stroke-muted">
       <div className="shd-markdown-code-toolbar flex items-center justify-between border-b border-stroke-muted px-3 py-1.5">
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-content-tertiary">{label}</span>
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="shd-control-focus border-none bg-transparent rounded-sm px-2 py-0.5 text-[10px] text-content-tertiary transition-colors hover:bg-surface-interactive hover:text-content-primary"
-          aria-label={copied ? locale.ai.copied : `${locale.ai.copy} ${label}`}
-        >
-          {copied ? locale.ai.copied : locale.ai.copy}
-        </button>
+        <CopyAction content={code} label={`${locale.ai.copy} ${label}`} />
       </div>
       <pre className="m-0 max-w-full overflow-x-auto p-3.5 text-left font-mono text-[12px] leading-[1.65] text-content-secondary">
         {highlighted
@@ -187,6 +132,10 @@ function MarkdownCodeBlock({ code, language, highlighted }: { code: string; lang
 
 function MarkdownPre({ children }: ComponentPropsWithoutRef<'pre'>) {
   return <>{children}</>
+}
+
+function MarkdownTable({ node: _node, ...props }: ComponentPropsWithoutRef<'table'> & { node?: unknown }) {
+  return <div className="shd-markdown-table-wrap shd-scrollbar" tabIndex={0}><table {...props} /></div>
 }
 
 function createCodeBlock(messageId: string, onOpenArtifact?: (artifact: Artifact) => void) {
@@ -266,12 +215,12 @@ export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact, 
 
   return (
     <ChatBubble align={isUser ? 'right' : 'left'} streaming={isStreaming} timestamp={displayTimestamp}>
-      <div className={`prose prose-sm shd-markdown-content max-w-none text-content-primary ${isStreaming ? 'typing-cursor' : ''}`}>
-        <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={{ pre: MarkdownPre, code: CodeBlock, ...markdownComponents }}>{normalizeMath(message.content || ' ')}</ReactMarkdown>
+      <div className={`not-prose shd-markdown-content max-w-none ${isStreaming ? 'typing-cursor' : ''}`}>
+        <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={{ pre: MarkdownPre, code: CodeBlock, table: MarkdownTable, ...markdownComponents }}>{normalizeMath(message.content || ' ')}</ReactMarkdown>
       </div>
       {!isStreaming && (enableCopy || actions) && (
         <div className="relative flex items-center justify-end gap-1 pt-1 opacity-60 transition-opacity duration-200 group-hover/bubble:opacity-100 group-focus-within/bubble:opacity-100">
-          {enableCopy && <CopyButton content={message.content} />}
+          {enableCopy && <CopyAction content={message.content} />}
           {actions}
         </div>
       )}

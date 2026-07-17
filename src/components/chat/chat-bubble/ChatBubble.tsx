@@ -18,9 +18,9 @@ export function ChatBubble({ align, streaming, timestamp, children, className }:
         data-shd-state={streaming ? 'running' : undefined}
         className={`shd-chat-bubble box-border group/bubble max-w-[78%] text-content-primary ${isRight ? 'shd-chat-bubble-user rounded-l-md rounded-tr-md rounded-br-sm' : 'shd-chat-bubble-assistant rounded-r-md rounded-tl-md rounded-bl-sm'} ${className ?? ''}`}
       >
-        <div className="px-4 py-3">{children}</div>
+        <div className="shd-chat-bubble-content">{children}</div>
         {(timestamp || streaming) && (
-          <div className="shd-chat-bubble-meta flex items-center justify-end gap-2 px-4 pb-2 pt-1">
+          <div className="shd-chat-bubble-meta flex items-center justify-end gap-2 px-[18px] pb-2 pt-1">
             {streaming && (
               <span data-shd-motion="status" className="inline-flex items-center gap-1" aria-label="Streaming">
                 <span className="h-1 w-1 rounded-full bg-accent-primary animate-pulse" />

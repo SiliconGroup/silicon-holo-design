@@ -11,7 +11,7 @@ export function HoloScrollArea({ maxHeight, children, className = '' }: HoloScro
 
   return (
     <div
-      className={`overflow-y-auto ${className}`}
+      className={`shd-scrollbar overflow-y-auto ${className}`}
       style={style}
     >
       {children}

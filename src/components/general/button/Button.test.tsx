@@ -28,6 +28,19 @@ describe('HoloButton', () => {
     expect(button.className).not.toContain('ring-offset')
   })
 
+  it('uses stable typography and control-height size contracts', () => {
+    const { rerender } = render(<HoloButton size="sm">Sized</HoloButton>)
+    let button = screen.getByRole('button', { name: 'Sized' })
+    expect(button.className).toContain('shd-button-sm')
+    expect(button.className).not.toContain('tracking-wide')
+    expect(button.dataset.shdSize).toBe('sm')
+
+    rerender(<HoloButton size="lg">Sized</HoloButton>)
+    button = screen.getByRole('button', { name: 'Sized' })
+    expect(button.className).toContain('shd-button-lg')
+    expect(button.dataset.shdButton).toBe('true')
+  })
+
   it('does not submit forms by default and allows an explicit submit type', () => {
     let submitted = 0
     const { rerender } = render(<form onSubmit={(event) => { event.preventDefault(); submitted += 1 }}><HoloButton>Safe action</HoloButton></form>)

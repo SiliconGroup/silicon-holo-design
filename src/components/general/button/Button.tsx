@@ -14,9 +14,9 @@ interface HoloButtonProps {
 
 export function HoloButton({ children, onClick, className = '', variant = 'primary', size = 'md', icon, fullWidth = false, disabled = false, type = 'button' }: HoloButtonProps) {
   const sizeClasses = {
-    sm: 'py-2 px-3 text-xs gap-1.5',
-    md: 'py-2.5 px-4 text-sm gap-2',
-    lg: 'py-3 px-5 text-base gap-2',
+    sm: 'shd-button-sm',
+    md: 'shd-button-md',
+    lg: 'shd-button-lg',
   }
 
   const variantClasses = {
@@ -33,7 +33,9 @@ export function HoloButton({ children, onClick, className = '', variant = 'prima
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`shd-control-focus rounded-sm font-medium tracking-wide flex items-center justify-center border transition-colors duration-150 focus-visible:border-stroke-strong disabled:text-content-disabled disabled:bg-transparent disabled:border-stroke-muted disabled:cursor-not-allowed ${sizeClasses[size]} ${fullWidth ? 'w-full' : ''} ${variantClasses[variant]} ${className}`}
+      data-shd-button="true"
+      data-shd-size={size}
+      className={`shd-button shd-control-focus rounded-sm flex items-center justify-center border transition-colors duration-150 focus-visible:border-stroke-strong disabled:text-content-disabled disabled:bg-transparent disabled:border-stroke-muted disabled:cursor-not-allowed ${sizeClasses[size]} ${fullWidth ? 'w-full' : ''} ${variantClasses[variant]} ${className}`}
     >
       {icon && <span className="flex-shrink-0 inline-flex">{icon}</span>}
       <span>{children}</span>

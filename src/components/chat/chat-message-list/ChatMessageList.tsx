@@ -35,7 +35,7 @@ export function ChatMessageList({ scrollDeps = [], emptyContent, isEmpty, childr
   }
 
   return (
-    <div ref={containerRef} onScroll={handleScroll} className={`flex-1 overflow-y-auto px-6 py-8 ${className ?? ''}`}>
+    <div data-shd-message-scroll="true" ref={containerRef} onScroll={handleScroll} className={`shd-scrollbar flex-1 overflow-y-auto px-6 py-8 ${className ?? ''}`}>
       {isEmpty && emptyContent ? emptyContent : children}
     </div>
   )

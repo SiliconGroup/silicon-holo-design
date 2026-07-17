@@ -12,6 +12,7 @@ describe('HoloAlert', () => {
     render(<HoloAlert type={type} title={`${type} message`} />)
     const alert = screen.getByText(`${type} message`).closest('[role]')
     expect(alert?.className).toContain(surfaceClass)
+    expect(alert?.className).toContain('shd-accent-border')
     expect(alert?.className).toContain('border-stroke-subtle')
     expect(alert?.className).not.toContain(`border-stroke-${type}`)
   })

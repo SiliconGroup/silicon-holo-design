@@ -27,6 +27,16 @@ describe('AIMessageBubble', () => {
     expect(inline.getAttribute('data-shd-inline-code')).toBe('true')
     expect(inline.closest('[data-shd-markdown-code-block]')).toBeNull()
     expect(markdown).toBeDefined()
+    expect(markdown?.classList.contains('prose')).toBe(false)
+    expect(markdown?.className).toContain('not-prose')
+    expect(screen.getByRole('button', { name: /Copy ts/i }).textContent).toBe('')
+  })
+
+  it('wraps wide Markdown tables in a horizontal scroll surface', () => {
+    const { container } = render(<AIMessageBubble message={{ id: 'table', role: 'assistant', content: '| One | Two | Three |\n| --- | --- | --- |\n| A | B | C |' }} />)
+    const tableWrap = container.querySelector<HTMLElement>('.shd-markdown-table-wrap.shd-scrollbar')
+    expect(tableWrap?.querySelector('table')).toBeDefined()
+    expect(tableWrap?.tabIndex).toBe(0)
   })
 
   it('aligns standalone tool rows with the shared message track', () => {
