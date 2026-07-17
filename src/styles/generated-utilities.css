@@ -36,6 +36,8 @@ button.shd-local-focus{background-color:transparent;color:inherit}
 .shd-markdown-code-block .hljs-number,.shd-markdown-code-block .hljs-literal,.shd-markdown-code-block .hljs-attr,.shd-markdown-code-block .hljs-variable{color:color-mix(in srgb,var(--shd-status-warning) 68%,var(--shd-content-secondary))}
 .shd-markdown-code-block .hljs-title,.shd-markdown-code-block .hljs-type,.shd-markdown-code-block .hljs-built_in,.shd-markdown-code-block .hljs-symbol{color:var(--shd-accent-blue)}
 .shd-markdown-code-block .hljs-attribute,.shd-markdown-code-block .hljs-property{color:var(--shd-content-accent)}
+.prose .shd-markdown-code-block pre,.prose .shd-markdown-code-block code{margin:0;border:0;border-radius:0;background:transparent;padding:0}
+.prose .shd-markdown-code-block pre{overflow-x:auto;padding:14px}
 .shd-local-focus:focus-visible{outline:2px solid var(--shd-focus-ring);outline-offset:-2px}
 .shd-local-active{background-color:var(--shd-accent-primary-softer);box-shadow:inset 2px 0 0 var(--shd-stroke-accent)}
 .shd-control-focus:focus-visible,.shd-focus-frame{outline:2px solid var(--shd-focus-ring);outline-offset:1px}

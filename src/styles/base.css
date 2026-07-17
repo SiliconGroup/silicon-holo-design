@@ -366,6 +366,18 @@ button.shd-local-focus { background-color: transparent; color: inherit; }
 .prose th { background: var(--shd-surface-raised); border: 1px solid var(--shd-stroke-subtle); padding: 8px 12px; text-align: left; font-weight: 600; color: var(--shd-content-primary); font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
 .prose td { border: 1px solid var(--shd-stroke-muted); padding: 8px 12px; color: var(--shd-content-secondary); }
 .prose tr:hover td { background: var(--shd-accent-primary-softer); }
+.prose .shd-markdown-code-block pre,
+.prose .shd-markdown-code-block code {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+}
+.prose .shd-markdown-code-block pre {
+  overflow-x: auto;
+  padding: 14px;
+}
 .typing-cursor::after { content: '▊'; animation: blink 1s step-end infinite; color: var(--shd-content-accent); }
 .chat-input-scrollbar::-webkit-scrollbar { width: 3px; }
 .chat-input-scrollbar::-webkit-scrollbar-track { background: transparent; }

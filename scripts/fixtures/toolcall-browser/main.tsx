@@ -81,9 +81,15 @@ function App() {
 
       const markdownCode = document.querySelector<HTMLElement>('[data-shd-markdown-code-block="true"]')
       const markdownToolbar = markdownCode?.querySelector<HTMLElement>('.shd-markdown-code-toolbar')
+      const markdownPre = markdownCode?.querySelector<HTMLElement>('pre')
+      const markdownCodeElement = markdownCode?.querySelector<HTMLElement>('code')
       const highlightedToken = markdownCode?.querySelector<HTMLElement>('.hljs-keyword')
       const inlineCode = document.querySelector<HTMLElement>('[data-shd-inline-code="true"]')
-      if (!markdownCode || !markdownToolbar || !highlightedToken || !inlineCode) throw new Error('Markdown code material fixtures are incomplete.')
+      if (!markdownCode || !markdownToolbar || !markdownPre || !markdownCodeElement || !highlightedToken || !inlineCode) throw new Error('Markdown code material fixtures are incomplete.')
+      const preStyle = getComputedStyle(markdownPre)
+      const codeStyle = getComputedStyle(markdownCodeElement)
+      if (preStyle.borderTopWidth !== '0px' || codeStyle.borderTopWidth !== '0px') throw new Error(`Markdown code retained a nested border: ${JSON.stringify({ pre: preStyle.borderTopWidth, code: codeStyle.borderTopWidth })}`)
+      if (codeStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') throw new Error(`Markdown code retained a nested background: ${codeStyle.backgroundColor}`)
       if (getComputedStyle(highlightedToken).backgroundColor !== 'rgba(0, 0, 0, 0)') throw new Error('Markdown syntax token retained an opaque background.')
 
       const cardTrigger = document.querySelector<HTMLElement>('[data-shd-tool-card] > button')
