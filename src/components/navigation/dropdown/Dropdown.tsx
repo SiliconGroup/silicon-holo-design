@@ -170,7 +170,7 @@ export function HoloDropdown({
             onBlurCapture={handleBlur}
             className={`
               shd-spectral-glass fixed border border-stroke-default
-              box-border max-h-[calc(100vh-16px)] max-w-[calc(100vw-16px)] overflow-auto rounded-md p-1 z-60 min-w-32 shadow-[0_16px_40px_rgba(0,0,0,0.32)]
+              shd-z-nested-overlay box-border max-h-[calc(100vh-16px)] max-w-[calc(100vw-16px)] overflow-auto rounded-md p-1 min-w-32 shadow-[0_16px_40px_rgba(0,0,0,0.32)]
             `}
             style={(() => {
               void positionVersion

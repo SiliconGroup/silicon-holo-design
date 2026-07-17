@@ -89,7 +89,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={api}>
       {children}
       <HoloPortal>
-        <div role="region" aria-label={locale.common.notifications ?? 'Notifications'} aria-live="polite" aria-relevant="additions text" className="fixed right-4 top-16 z-50 flex max-w-[calc(100vw-32px)] flex-col gap-2">
+        <div data-shd-overlay="toast" role="region" aria-label={locale.common.notifications ?? 'Notifications'} aria-live="polite" aria-relevant="additions text" className="shd-z-toast fixed right-4 top-16 flex max-w-[calc(100vw-32px)] flex-col gap-2">
           {toasts.map(t => <ToastItemView key={t.id} item={t} onDismiss={dismiss} />)}
         </div>
       </HoloPortal>

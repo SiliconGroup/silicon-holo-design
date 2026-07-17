@@ -61,12 +61,12 @@ export function HoloDrawer({
   if (!open) return null
 
   const slideClass = placement === 'left' 
-    ? 'left-0 animate-[slideInLeft_240ms_var(--shd-ease-standard)] border-r'
-    : 'right-0 animate-[slideInRight_240ms_var(--shd-ease-standard)] border-l'
+    ? 'left-0 animate-[slideInLeft_240ms_var(--shd-ease-standard)] shd-drawer-edge-right'
+    : 'right-0 animate-[slideInRight_240ms_var(--shd-ease-standard)] shd-drawer-edge-left'
 
   return (
     <HoloPortal>
-      <div className="fixed inset-0 bg-[var(--shd-overlay-scrim)] backdrop-blur-sm z-50">
+      <div data-shd-overlay="drawer" className="shd-z-overlay fixed inset-0 bg-[var(--shd-overlay-scrim)] backdrop-blur-sm">
         <div className="fixed inset-0" onClick={maskClosable ? onClose : undefined} />
         <div
           ref={drawerRef}
@@ -77,12 +77,12 @@ export function HoloDrawer({
           aria-label={title ? undefined : ariaLabel ?? 'Drawer'}
           tabIndex={-1}
           className={`
-            shd-spectral-glass fixed top-0 bottom-0 flex max-w-[calc(100vw-16px)] flex-col overflow-hidden border-stroke-default z-50 text-content-primary
+            shd-spectral-glass fixed top-0 bottom-0 flex max-w-[calc(100vw-16px)] flex-col overflow-hidden text-content-primary
             shadow-[0_0_60px_rgba(0,0,0,0.28)]
             ${width} ${slideClass} ${className}
           `}
         >
-          <div className="flex items-center justify-between p-4 border-b border-stroke-subtle">
+          <div data-shd-overlay-header className="shd-overlay-header flex items-center justify-between p-4">
             {title && (
               <h2 id={titleId} className="text-lg font-semibold text-content-primary holo-title">
                 {title}

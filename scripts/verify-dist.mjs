@@ -33,6 +33,25 @@ if (!/\.border(?:,[^{]+)?\{[^}]*border-style:solid/.test(css)) {
   process.exit(1)
 }
 
+for (const rule of [
+  /\.border-t\{[^}]*border-width:1px 0 0/,
+  /\.border-r\{[^}]*border-width:0 1px 0 0/,
+  /\.border-b\{[^}]*border-width:0 0 1px/,
+  /\.border-l\{[^}]*border-width:0 0 0 1px/,
+]) {
+  if (!rule.test(css)) {
+    console.error('Directional border utilities must explicitly zero the unused edges')
+    process.exit(1)
+  }
+}
+
+for (const selector of ['.shd-z-overlay{', '.shd-z-toast{', '.shd-z-tooltip{', '.shd-markdown-content{']) {
+  if (!css.includes(selector)) {
+    console.error(`Missing semantic style contract: ${selector}`)
+    process.exit(1)
+  }
+}
+
 if (!/button\.shd-control-focus(?:,[^{]+)?\{[^}]*appearance:none/.test(css)) {
   console.error('Dist CSS must remove native appearance only from library buttons')
   process.exit(1)

@@ -10,9 +10,26 @@ export function presetSiliconHolo() {
     name: 'silicon-holo',
     preflights: [{
       getCSS: () => `
-.border,.border-x,.border-y,.border-t,.border-r,.border-b,.border-l{border-style:solid}
+.border{border-style:solid}
+.border-x{border-style:solid;border-width:0 1px}
+.border-y{border-style:solid;border-width:1px 0}
+.border-t{border-style:solid;border-width:1px 0 0}
+.border-r{border-style:solid;border-width:0 1px 0 0}
+.border-b{border-style:solid;border-width:0 0 1px}
+.border-l{border-style:solid;border-width:0 0 0 1px}
+.border-l-2{border-style:solid;border-width:0 0 0 2px}
 button.shd-control-focus,button.shd-local-focus{appearance:none;font:inherit}
 button.shd-local-focus{background-color:transparent;color:inherit}
+.shd-z-dropdown{z-index:var(--shd-z-dropdown,40)}
+.shd-z-overlay{z-index:var(--shd-z-overlay,50)}
+.shd-z-nested-overlay{z-index:var(--shd-z-nested-overlay,60)}
+.shd-z-toast{z-index:var(--shd-z-toast,70)}
+.shd-z-tooltip{z-index:var(--shd-z-tooltip,80)}
+.shd-overlay-header{border:0 solid var(--shd-stroke-subtle);border-bottom-width:1px}
+.shd-overlay-footer{border:0 solid var(--shd-stroke-subtle);border-top-width:1px}
+.shd-drawer-edge-left{border:0 solid var(--shd-stroke-default);border-left-width:1px}
+.shd-drawer-edge-right{border:0 solid var(--shd-stroke-default);border-right-width:1px}
+.shd-accent-border{border:1px solid var(--shd-stroke-subtle);border-left-width:2px}
 .shd-spectral-panel{background:var(--shd-surface-base-soft);box-shadow:inset 0 1px 0 var(--shd-spectral-highlight);color:var(--shd-content-primary)}
 .shd-spectral-panel-raised{background:var(--shd-surface-raised-soft);box-shadow:inset 0 1px 0 var(--shd-spectral-highlight);color:var(--shd-content-primary)}
 .shd-spectral-glass{background:var(--shd-surface-glass);backdrop-filter:blur(14px) saturate(118%);-webkit-backdrop-filter:blur(14px) saturate(118%);box-shadow:inset 0 1px 0 var(--shd-spectral-highlight);color:var(--shd-content-primary)}
@@ -36,6 +53,22 @@ button.shd-local-focus{background-color:transparent;color:inherit}
 .shd-markdown-code-block{background:color-mix(in srgb,var(--shd-surface-inset) 97%,var(--shd-accent-blue) 3%);box-shadow:inset 0 1px 0 rgba(255,255,255,.018)}
 .shd-markdown-code-toolbar{background:color-mix(in srgb,var(--shd-surface-base) 96%,var(--shd-accent-blue) 4%)}
 [data-shd-inline-code=true]{border-radius:3px;background:var(--shd-accent-primary-softer);padding:.08em .35em;color:var(--shd-content-accent);font-family:var(--shd-font-mono,"JetBrains Mono","Fira Code",monospace);font-size:.9em}
+.shd-markdown-content{min-width:0;font-family:var(--shd-font-sans,Inter,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Noto Sans SC",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif);font-size:.9375rem;line-height:1.72;letter-spacing:.005em;overflow-wrap:break-word;word-break:normal}
+.shd-markdown-content>:first-child{margin-top:0}
+.shd-markdown-content>:last-child{margin-bottom:0}
+.shd-markdown-content p{margin:0 0 .78em}
+.shd-markdown-content h1,.shd-markdown-content h2,.shd-markdown-content h3,.shd-markdown-content h4{margin:1.15em 0 .55em;color:var(--shd-content-primary);font-weight:600;line-height:1.38;letter-spacing:-.012em}
+.shd-markdown-content h1{font-size:1.38em}
+.shd-markdown-content h2{font-size:1.22em}
+.shd-markdown-content h3{font-size:1.1em}
+.shd-markdown-content h4{font-size:1em}
+.shd-markdown-content strong{color:var(--shd-content-primary);font-weight:600}
+.shd-markdown-content ul,.shd-markdown-content ol{margin:.65em 0 .85em;padding-left:1.55em}
+.shd-markdown-content li{padding-left:.12em}
+.shd-markdown-content li+li{margin-top:.18em}
+.shd-markdown-content hr{margin:1.25em 0;border:0;border-top:1px solid var(--shd-stroke-subtle)}
+.shd-markdown-content a{overflow-wrap:anywhere;word-break:break-word}
+.shd-markdown-content code[data-shd-inline-code=true]{white-space:normal;overflow-wrap:anywhere;word-break:break-word}
 .shd-markdown-code-block .hljs{display:inline;overflow:visible;padding:0;background:transparent;color:var(--shd-content-secondary)}
 .shd-markdown-code-block .hljs-comment,.shd-markdown-code-block .hljs-quote{color:var(--shd-content-tertiary)}
 .shd-markdown-code-block .hljs-keyword,.shd-markdown-code-block .hljs-doctag,.shd-markdown-code-block .hljs-formula{color:var(--shd-accent-purple)}
@@ -55,7 +88,7 @@ button.shd-local-focus{background-color:transparent;color:inherit}
       colors,
       fontFamily: {
         mono: 'JetBrains Mono, Fira Code, monospace',
-        sans: 'Inter, -apple-system, sans-serif',
+        sans: 'var(--shd-font-sans, Inter, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif)',
       },
     },
     shortcuts,

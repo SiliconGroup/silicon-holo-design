@@ -266,7 +266,7 @@ export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact, 
 
   return (
     <ChatBubble align={isUser ? 'right' : 'left'} streaming={isStreaming} timestamp={displayTimestamp}>
-      <div className={`prose prose-sm max-w-none text-content-primary ${isStreaming ? 'typing-cursor' : ''}`}>
+      <div className={`prose prose-sm shd-markdown-content max-w-none text-content-primary ${isStreaming ? 'typing-cursor' : ''}`}>
         <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={{ pre: MarkdownPre, code: CodeBlock, ...markdownComponents }}>{normalizeMath(message.content || ' ')}</ReactMarkdown>
       </div>
       {!isStreaming && (enableCopy || actions) && (

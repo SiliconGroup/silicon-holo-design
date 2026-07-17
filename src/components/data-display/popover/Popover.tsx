@@ -196,7 +196,7 @@ export function HoloPopover({
             onBlurCapture={handleBlur}
             className={`
               shd-spectral-glass border border-stroke-default text-content-primary
-              box-border max-h-[calc(100vh-16px)] max-w-[calc(100vw-16px)] overflow-auto rounded-md p-3 z-40 shadow-[0_16px_40px_rgba(0,0,0,0.32)]
+              shd-z-nested-overlay box-border max-h-[calc(100vh-16px)] max-w-[calc(100vw-16px)] overflow-auto rounded-md p-3 shadow-[0_16px_40px_rgba(0,0,0,0.32)]
               ${className}
             `}
           >

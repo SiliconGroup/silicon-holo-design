@@ -5,6 +5,14 @@ import { HoloDrawer } from './Drawer'
 const flushFocus = () => new Promise(resolve => setTimeout(resolve, 0))
 
 describe('HoloDrawer', () => {
+  it('uses a semantic overlay layer and only the placement edge border', () => {
+    const { rerender } = render(<HoloDrawer open onClose={() => {}} placement="right" title="Right drawer">Content</HoloDrawer>)
+    expect(screen.getByRole('dialog', { name: 'Right drawer' }).className).toContain('shd-drawer-edge-left')
+    expect(screen.getByRole('dialog', { name: 'Right drawer' }).parentElement?.className).toContain('shd-z-overlay')
+    rerender(<HoloDrawer open onClose={() => {}} placement="left" title="Left drawer">Content</HoloDrawer>)
+    expect(screen.getByRole('dialog', { name: 'Left drawer' }).className).toContain('shd-drawer-edge-right')
+  })
+
   it('locks background scrolling and keeps long content inside the viewport', () => {
     const { rerender } = render(<HoloDrawer open onClose={() => {}} ariaLabel="Scrollable drawer"><div>Content</div></HoloDrawer>)
     expect(document.body.style.overflow).toBe('hidden')

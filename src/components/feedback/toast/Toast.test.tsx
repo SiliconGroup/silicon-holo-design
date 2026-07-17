@@ -14,6 +14,11 @@ function DoubleTrigger() {
 }
 
 describe('ToastProvider', () => {
+  it('uses the semantic toast layer above blocking overlays', () => {
+    render(<ToastProvider><span>Ready</span></ToastProvider>)
+    expect(screen.getByRole('region', { name: 'Notifications' }).className).toContain('shd-z-toast')
+  })
+
   it('mounts the live region before the first notification', () => {
     render(<ToastProvider><Trigger /></ToastProvider>)
     expect(screen.getByRole('region', { name: 'Notifications' }).textContent).toBe('')

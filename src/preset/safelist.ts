@@ -76,7 +76,6 @@ export const safelist: string[] = [
   "border-l-stroke-warning",
   "border-l-transparent",
   "border-none",
-  "border-r",
   "border-r-0",
   "border-r-accent-purple-soft",
   "border-solid",
@@ -173,6 +172,10 @@ export const safelist: string[] = [
   "h-[2px]",
   "h-full",
   "h-px",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
   "hidden",
   "holo-text",
   "holo-text-animated",
@@ -442,8 +445,5 @@ export const safelist: string[] = [
   "w-full",
   "whitespace-normal",
   "whitespace-nowrap",
-  "whitespace-pre-wrap",
-  "z-40",
-  "z-50",
-  "z-60"
+  "whitespace-pre-wrap"
 ]

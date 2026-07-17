@@ -65,7 +65,7 @@ export function HoloModal({
 
   return (
     <HoloPortal>
-      <div className="fixed inset-0 bg-[var(--shd-overlay-scrim)] backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div data-shd-overlay="modal" className="shd-z-overlay fixed inset-0 bg-[var(--shd-overlay-scrim)] backdrop-blur-sm flex items-center justify-center p-4">
         <div
           className="fixed inset-0"
           onClick={maskClosable ? onClose : undefined}
@@ -79,13 +79,13 @@ export function HoloModal({
           aria-label={title ? undefined : ariaLabel ?? 'Dialog'}
           tabIndex={-1}
           className={`
-            shd-spectral-glass relative border border-stroke-default rounded-md z-50 text-content-primary
+            shd-spectral-glass relative border border-stroke-default rounded-md text-content-primary
             shadow-[0_24px_70px_rgba(0,0,0,0.42)]
             flex max-h-[calc(100vh-32px)] w-full flex-col overflow-hidden ${width} animate-[fadeInScale_240ms_var(--shd-ease-standard)] ${className}
           `}
         >
           {(title || closable) && (
-            <div className="flex items-center justify-between p-4 border-b border-stroke-subtle">
+            <div data-shd-overlay-header className="shd-overlay-header flex items-center justify-between p-4">
               {title && (
                 <h2 id={titleId} className="text-lg font-semibold text-content-primary holo-title">
                   {title}
@@ -107,7 +107,7 @@ export function HoloModal({
           )}
           <div className="min-h-0 flex-1 overflow-auto p-4">{children}</div>
           {footer && (
-            <div className="p-4 border-t border-stroke-subtle">{footer}</div>
+            <div data-shd-overlay-footer className="shd-overlay-footer p-4">{footer}</div>
           )}
         </div>
       </div>

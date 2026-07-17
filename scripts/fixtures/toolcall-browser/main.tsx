@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { AIToolCallGroup } from '../../../src/components/ai/tool-call-group'
 import { AIMessageBubble } from '../../../src/components/ai/message-bubble'
@@ -11,6 +11,9 @@ import { HoloTab } from '../../../src/components/navigation/tabs'
 import { HoloDatePicker } from '../../../src/components/data-entry/date-picker'
 import { HoloNumberInput } from '../../../src/components/data-entry/number-input'
 import { HoloModal } from '../../../src/components/feedback/modal'
+import { HoloDrawer } from '../../../src/components/feedback/drawer'
+import { ToastProvider, useToast } from '../../../src/components/feedback/toast'
+import { HoloTooltip } from '../../../src/components/data-display/tooltip'
 import { HoloPopover } from '../../../src/components/data-display/popover'
 import { LocaleProvider, enUS } from '../../../src/locale'
 import type { ChatMessage } from '../../../src/types'
@@ -55,12 +58,39 @@ const codeMessage: ChatMessage = {
   role: 'assistant',
   content: 'Use `surface-base` for the shell.\n\n```ts\nconst surface = "base"\n```',
 }
+const chineseMarkdownMessage: ChatMessage = {
+  id: 'chinese-markdown-contract',
+  role: 'assistant',
+  content: `# 结论先说
+
+中文正文需要保持舒展、清晰，并与 **English emphasis** 共享一致的层级。
+
+完整路径是：\`/Users/spensercai/Dev/JstWorkSpace/JstClawOrg/JstClaw/jstclaw_data/workspaces/extremely-long-session/results/url_that_must_wrap_without_overflow.png\`
+
+- 保持正文节奏
+- 降低标题压迫感
+- [超长链接也必须在气泡内换行](https://example.com/a/very/long/path/that/must/not/overflow/the/assistant/message/bubble)`,
+}
+
+function ToastOnMount() {
+  const toast = useToast()
+  const fired = useRef(false)
+  useEffect(() => {
+    if (fired.current) return
+    fired.current = true
+    toast.info('Overlay toast contract')
+  }, [toast])
+  return null
+}
 
 function App() {
   const [number, setNumber] = useState(10)
 
   useEffect(() => {
     void (async () => {
+      await nextFrame()
+      const tooltipTrigger = document.querySelector<HTMLButtonElement>('[data-shd-tooltip-trigger]')
+      tooltipTrigger?.focus()
       await nextFrame()
       for (let attempt = 0; attempt < 80; attempt += 1) {
         const mermaid = document.querySelector<HTMLElement>('[data-shd-mermaid]')
@@ -91,6 +121,45 @@ function App() {
       if (preStyle.borderTopWidth !== '0px' || codeStyle.borderTopWidth !== '0px') throw new Error(`Markdown code retained a nested border: ${JSON.stringify({ pre: preStyle.borderTopWidth, code: codeStyle.borderTopWidth })}`)
       if (codeStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') throw new Error(`Markdown code retained a nested background: ${codeStyle.backgroundColor}`)
       if (getComputedStyle(highlightedToken).backgroundColor !== 'rgba(0, 0, 0, 0)') throw new Error('Markdown syntax token retained an opaque background.')
+
+      const markdownNarrow = document.querySelector<HTMLElement>('[data-shd-markdown-narrow] .shd-markdown-content')
+      const inlinePath = markdownNarrow?.querySelector<HTMLElement>('[data-shd-inline-code="true"]')
+      if (!markdownNarrow || !inlinePath) throw new Error('Chinese Markdown overflow fixture is missing.')
+      const markdownRect = markdownNarrow.getBoundingClientRect()
+      const inlineRect = inlinePath.getBoundingClientRect()
+      const markdownStyle = getComputedStyle(markdownNarrow)
+      if (markdownNarrow.scrollWidth > markdownNarrow.clientWidth + 1 || inlineRect.right > markdownRect.right + 1) {
+        throw new Error(`Long Markdown content overflowed its bubble: ${JSON.stringify({ scrollWidth: markdownNarrow.scrollWidth, clientWidth: markdownNarrow.clientWidth, inlineRight: inlineRect.right, markdownRight: markdownRect.right })}`)
+      }
+      if (!markdownStyle.fontFamily.includes('PingFang SC') || Number.parseFloat(markdownStyle.lineHeight) < 24) {
+        throw new Error(`Chinese Markdown typography contract is incomplete: ${JSON.stringify({ fontFamily: markdownStyle.fontFamily, lineHeight: markdownStyle.lineHeight })}`)
+      }
+
+      const expectedBorders: Record<string, [string, string, string, string]> = {
+        top: ['1px', '0px', '0px', '0px'], right: ['0px', '1px', '0px', '0px'], bottom: ['0px', '0px', '1px', '0px'],
+        left: ['0px', '0px', '0px', '1px'], x: ['0px', '1px', '0px', '1px'], y: ['1px', '0px', '1px', '0px'],
+      }
+      for (const element of Array.from(document.querySelectorAll<HTMLElement>('[data-shd-directional-border]'))) {
+        const style = getComputedStyle(element)
+        const actual = [style.borderTopWidth, style.borderRightWidth, style.borderBottomWidth, style.borderLeftWidth]
+        const expected = expectedBorders[element.dataset.shdDirectionalBorder ?? '']
+        if (!expected || actual.some((value, index) => value !== expected[index])) throw new Error(`Directional border is not self-contained: ${JSON.stringify({ direction: element.dataset.shdDirectionalBorder, actual, expected })}`)
+      }
+
+      const modalOverlay = document.querySelector<HTMLElement>('[data-shd-overlay="modal"]')
+      const toastOverlay = document.querySelector<HTMLElement>('[data-shd-overlay="toast"]')
+      const tooltipOverlay = document.querySelector<HTMLElement>('[role="tooltip"]')
+      if (!modalOverlay || !toastOverlay || !tooltipOverlay) throw new Error('Semantic overlay fixtures are missing.')
+      const modalZ = Number.parseInt(getComputedStyle(modalOverlay).zIndex, 10)
+      const toastZ = Number.parseInt(getComputedStyle(toastOverlay).zIndex, 10)
+      const tooltipZ = Number.parseInt(getComputedStyle(tooltipOverlay).zIndex, 10)
+      if (!(modalZ < toastZ && toastZ < tooltipZ)) throw new Error(`Overlay layers are out of order: ${JSON.stringify({ modalZ, toastZ, tooltipZ })}`)
+
+      const drawerEdges = Array.from(document.querySelectorAll<HTMLElement>('[data-shd-overlay="drawer"] [role="dialog"]')).map(dialog => {
+        const style = getComputedStyle(dialog)
+        return [style.borderTopWidth, style.borderRightWidth, style.borderBottomWidth, style.borderLeftWidth]
+      })
+      if (!drawerEdges.some(widths => widths.join(',') === '0px,0px,0px,1px') || !drawerEdges.some(widths => widths.join(',') === '0px,1px,0px,0px')) throw new Error(`Drawer placement borders are invalid: ${JSON.stringify(drawerEdges)}`)
 
       const cardTrigger = document.querySelector<HTMLElement>('[data-shd-tool-card] > button')
       cardTrigger?.click()
@@ -198,6 +267,8 @@ function App() {
 
   return (
     <LocaleProvider locale={enUS}>
+      <ToastProvider>
+        <ToastOnMount />
       <main className="min-h-screen bg-surface-canvas p-12 text-content-primary">
         <div data-shd-tool-fixture className="mx-auto max-w-4xl">
           <AIToolCallGroup messages={messages} />
@@ -214,6 +285,7 @@ function App() {
             <ChatBubble align="right" timestamp="09:43">User messages remain flat and clearly differentiated.</ChatBubble>
             <AIMessageBubble message={codeMessage} />
             <AIMessageBubble message={mermaidMessage} />
+            <div className="w-[320px]" data-shd-markdown-narrow><AIMessageBubble message={chineseMarkdownMessage} /></div>
           </div>
           <div className="mt-10 w-[320px]" data-shd-narrow-group>
             <AIToolCallGroup messages={narrowMessages} />
@@ -233,11 +305,23 @@ function App() {
               <button type="button" data-shd-popover-trigger>Open popover</button>
             </HoloPopover>
           </div>
+          <div className="mt-10 flex gap-2" aria-hidden="true">
+            <span data-shd-directional-border="top" className="border-t border-stroke-default" />
+            <span data-shd-directional-border="right" className="border-r border-stroke-default" />
+            <span data-shd-directional-border="bottom" className="border-b border-stroke-default" />
+            <span data-shd-directional-border="left" className="border-l border-stroke-default" />
+            <span data-shd-directional-border="x" className="border-x border-stroke-default" />
+            <span data-shd-directional-border="y" className="border-y border-stroke-default" />
+          </div>
           <HoloModal open onClose={() => undefined} title="Confirm action" closable>
             <p data-shd-modal-content>Semantic modal text</p>
+            <HoloTooltip content="Overlay tooltip contract"><button type="button" data-shd-tooltip-trigger>Tooltip target</button></HoloTooltip>
           </HoloModal>
+          <HoloDrawer open onClose={() => undefined} placement="left" title="Left drawer">Left</HoloDrawer>
+          <HoloDrawer open onClose={() => undefined} placement="right" title="Right drawer">Right</HoloDrawer>
         </div>
       </main>
+      </ToastProvider>
     </LocaleProvider>
   )
 }

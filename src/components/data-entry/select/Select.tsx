@@ -250,7 +250,7 @@ export const HoloSelect = forwardRef<HTMLDivElement, HoloSelectProps>(
               role="listbox"
               aria-multiselectable={multiple || undefined}
               onKeyDown={handleKeyboardNavigation}
-              className="shd-spectral-glass box-border fixed border border-stroke-default rounded-md shadow-[0_16px_40px_rgba(0,0,0,0.32)] z-60 min-w-32 max-h-60 max-w-[calc(100vw-16px)] overflow-auto p-1"
+              className="shd-spectral-glass shd-z-nested-overlay box-border fixed border border-stroke-default rounded-md shadow-[0_16px_40px_rgba(0,0,0,0.32)] min-w-32 max-h-60 max-w-[calc(100vw-16px)] overflow-auto p-1"
               style={(() => {
                 void positionVersion
                 const rect = triggerRef.current?.getBoundingClientRect()

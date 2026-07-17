@@ -108,7 +108,7 @@ export function HoloTooltip({
           id={tooltipId}
           role="tooltip"
           className={`
-            box-border z-40 max-h-[calc(100vh-16px)] max-w-[calc(100vw-16px)] overflow-auto px-2 py-1 text-xs text-content-primary whitespace-normal break-words
+            shd-z-tooltip box-border max-h-[calc(100vh-16px)] max-w-[calc(100vw-16px)] overflow-auto px-2 py-1 text-xs text-content-primary whitespace-normal break-words
             shd-spectral-glass border border-stroke-default rounded shadow-[0_8px_24px_rgba(0,0,0,0.28)]
             ${className}
           `}

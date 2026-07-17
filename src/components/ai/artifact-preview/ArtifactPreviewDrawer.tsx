@@ -90,9 +90,9 @@ export function ArtifactPreviewDrawer({ artifact, onClose, width = '50vw', const
 
   return (
     <HoloPortal>
-      <div className="fixed inset-0 z-50 bg-[var(--shd-overlay-scrim)] backdrop-blur-sm" onClick={onClose} />
-      <div ref={drawerRef} data-shd-motion="overlay" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="shd-spectral-glass fixed bottom-0 right-0 top-0 z-50 flex flex-col overflow-hidden border-l border-stroke-default text-content-primary shadow-[-24px_0_60px_rgba(0,0,0,0.3)] animate-[slideInRight_200ms_var(--shd-ease-standard)]" style={constrainToViewport ? { width, minWidth: 'min(20rem, calc(100vw - 16px))', maxWidth: 'calc(100vw - 16px)' } : { width }}>
-        <div className="flex flex-shrink-0 flex-wrap items-center justify-between gap-2 border-b border-stroke-subtle px-4 py-3">
+      <div className="shd-z-overlay fixed inset-0 bg-[var(--shd-overlay-scrim)] backdrop-blur-sm" onClick={onClose} />
+      <div ref={drawerRef} data-shd-motion="overlay" role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="shd-spectral-glass shd-z-overlay shd-drawer-edge-left fixed bottom-0 right-0 top-0 flex flex-col overflow-hidden text-content-primary shadow-[-24px_0_60px_rgba(0,0,0,0.3)] animate-[slideInRight_200ms_var(--shd-ease-standard)]" style={constrainToViewport ? { width, minWidth: 'min(20rem, calc(100vw - 16px))', maxWidth: 'calc(100vw - 16px)' } : { width }}>
+        <div className="shd-overlay-header flex flex-shrink-0 flex-wrap items-center justify-between gap-2 px-4 py-3">
           <div className="flex min-w-0 flex-wrap items-center gap-3">
             <h3 id={titleId} className="text-sm font-medium text-content-primary">{artifact.title || artifact.type.toUpperCase()}</h3>
             <HoloTab items={[{ key: 'code', label: locale.ai.artifactCode }, { key: 'preview', label: locale.ai.artifactPreview }]} activeKey={mode} onChange={(k) => setMode(k as 'code' | 'preview')} />

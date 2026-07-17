@@ -18,6 +18,7 @@ describe('AIMessageBubble', () => {
     }} />)
 
     const block = container.querySelector('[data-shd-markdown-code-block="true"]')
+    const markdown = container.querySelector('.shd-markdown-content')
     const inline = screen.getByText('surface-base')
     expect(block?.className).toContain('shd-markdown-code-block')
     expect(block?.textContent).toContain('const surface = "base"')
@@ -25,6 +26,7 @@ describe('AIMessageBubble', () => {
     expect(screen.getByRole('button', { name: /Copy ts/i })).toBeDefined()
     expect(inline.getAttribute('data-shd-inline-code')).toBe('true')
     expect(inline.closest('[data-shd-markdown-code-block]')).toBeNull()
+    expect(markdown).toBeDefined()
   })
 
   it('aligns standalone tool rows with the shared message track', () => {

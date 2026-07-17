@@ -364,10 +364,13 @@ console.log('public export baselines verified')
   run(join(consumerDirectory, 'node_modules/.bin/vite'), ['build', '--config', 'vite.preset.config.ts', '--outDir', 'dist-preset', '--emptyOutDir'], consumerDirectory)
   const presetCss = globSync('dist-preset/assets/*.css', { cwd: consumerDirectory, absolute: true }).map(file => readFileSync(file, 'utf8')).join('\n')
   if (!/\.border(?:,[^{]+)?\{[^}]*border-style:solid/.test(presetCss)) throw new Error('clean preset consumer did not generate scoped border utility styles')
+  for (const rule of [/\.border-t\{[^}]*border-width:1px 0 0/, /\.border-r\{[^}]*border-width:0 1px 0 0/, /\.border-b\{[^}]*border-width:0 0 1px/, /\.border-l\{[^}]*border-width:0 0 0 1px/]) {
+    if (!rule.test(presetCss)) throw new Error('clean preset consumer did not generate self-contained directional border utilities')
+  }
   if (!/button\.shd-control-focus(?:,[^{]+)?\{[^}]*appearance:none/.test(presetCss)) throw new Error('clean preset consumer did not generate the scoped control reset')
   if (!/button\.shd-local-focus\{[^}]*background-color:transparent[^}]*color:inherit/.test(presetCss)) throw new Error('clean preset consumer did not generate the local control material reset')
   if (/(?:^|})button\{[^}]*(?:appearance:none|border-width:0|background:none)/.test(presetCss)) throw new Error('clean preset consumer reset host buttons globally')
-  for (const selector of ['.shd-spectral-panel-raised{', '.shd-spectral-glass{', '.shd-surface-inset{', '.shd-local-focus:focus-visible{', '.shd-control-focus:focus-visible', '.flex-center{', '.shd-focus-ring:focus-visible{', '.bg-surface-raised{', '.border-stroke-accent{', '.text-content-on-accent{', '.bg-state-warning-soft{']) {
+  for (const selector of ['.shd-spectral-panel-raised{', '.shd-spectral-glass{', '.shd-surface-inset{', '.shd-z-overlay{', '.shd-z-toast{', '.shd-z-tooltip{', '.shd-markdown-content{', '.shd-local-focus:focus-visible{', '.shd-control-focus:focus-visible', '.flex-center{', '.shd-focus-ring:focus-visible{', '.bg-surface-raised{', '.border-stroke-accent{', '.text-content-on-accent{', '.bg-state-warning-soft{']) {
     if (!presetCss.includes(selector)) throw new Error(`clean preset consumer did not generate ${selector}`)
   }
   for (const selector of ['.shd-spectral-panel-raised{', '.shd-spectral-glass{', '.shd-surface-inset{']) {

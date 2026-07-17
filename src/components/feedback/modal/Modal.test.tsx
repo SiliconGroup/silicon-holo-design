@@ -16,6 +16,8 @@ describe('HoloModal', () => {
     const onClose = vi.fn()
     render(<HoloModal open onClose={onClose} title="Settings" closable><button>Action</button></HoloModal>)
     expect(screen.getByRole('dialog', { name: 'Settings' }).className).toContain('text-content-primary')
+    expect(screen.getByRole('dialog', { name: 'Settings' }).parentElement?.className).toContain('shd-z-overlay')
+    expect(screen.getByText('Settings').parentElement?.className).toContain('shd-overlay-header')
     expect(screen.getByRole('button', { name: 'Close' }).className).toContain('bg-transparent')
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(onClose).toHaveBeenCalledOnce()

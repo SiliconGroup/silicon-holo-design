@@ -69,7 +69,7 @@ export function HoloAlert({
   const displayIcon = icon ?? defaultIcons[type]
 
   return (
-    <div role={type === 'warning' || type === 'error' ? 'alert' : 'status'} className={`shd-spectral-panel border border-l-2 rounded-md ${config.bg} ${config.border} ${className}`}>
+    <div role={type === 'warning' || type === 'error' ? 'alert' : 'status'} className={`shd-spectral-panel shd-accent-border rounded-md ${config.bg} ${config.border} ${className}`}>
       <div className="flex items-center gap-3 px-3 py-3">
         <span className={`flex-shrink-0 ${config.text}`}>{displayIcon}</span>
         <div className="flex-1 min-w-0">
