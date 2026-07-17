@@ -120,9 +120,10 @@ export function AITaskExecutionPanel<TTask extends AITaskExecutionTask = AITaskE
     <section
       data-shd-task-execution="true"
       data-shd-task-status={summaryStatus}
+      data-shd-state={summaryStatus}
       role="group"
       aria-label={label}
-      className={`shd-task-execution-panel overflow-hidden rounded-md border ${complete ? 'border-stroke-success' : hasError ? 'border-stroke-warning' : 'border-stroke-subtle'} ${className}`}
+      className={`shd-status-glass shd-task-execution-panel overflow-hidden rounded-md border ${complete ? 'border-stroke-success' : hasError ? 'border-stroke-warning' : 'border-stroke-subtle'} ${className}`}
     >
       <button
         type="button"
@@ -130,7 +131,7 @@ export function AITaskExecutionPanel<TTask extends AITaskExecutionTask = AITaskE
         aria-controls={regionId}
         aria-label={`${expanded ? collapseLabel : expandLabel}, ${summaryStatusLabel}, ${formatMessage(progressTemplate, { completed, total })}`}
         onClick={handleToggle}
-        className="border-none shd-local-focus shd-task-execution-header flex min-h-12 w-full flex-wrap items-center gap-x-2.5 gap-y-1 px-3 py-2.5 text-left transition-colors duration-150"
+        className="border-none shd-local-focus shd-status-glass-header shd-task-execution-header flex min-h-12 w-full flex-wrap items-center gap-x-2.5 gap-y-1 px-3 py-2.5 text-left transition-colors duration-150"
       >
         <svg aria-hidden="true" className={`h-3.5 w-3.5 shrink-0 text-content-tertiary transition-transform duration-150 ${expanded ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 20 20" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="m7 4 6 6-6 6" />
@@ -146,7 +147,7 @@ export function AITaskExecutionPanel<TTask extends AITaskExecutionTask = AITaskE
       </button>
 
       {expanded && (
-        <div id={regionId} role="region" aria-labelledby={headingId} className="shd-task-execution-body border-t border-stroke-muted px-3 pb-3 pt-3">
+        <div id={regionId} role="region" aria-labelledby={headingId} className="shd-status-glass-body shd-task-execution-body border-t border-stroke-muted px-3 pb-3 pt-3">
           <div className="flex items-center gap-3">
             <div
               role="progressbar"
@@ -171,7 +172,7 @@ export function AITaskExecutionPanel<TTask extends AITaskExecutionTask = AITaskE
                 const actions = renderTaskActions?.(task)
                 const style = statusStyle[status]
                 return (
-                  <div key={task.id} data-shd-task-item-status={status} className={`shd-task-execution-item rounded-sm border px-3 py-2.5 ${style.container}`}>
+                  <div key={task.id} data-shd-task-item-status={status} data-shd-state={status} className={`shd-status-glass-item shd-task-execution-item rounded-sm border px-3 py-2.5 ${style.container}`}>
                     <div className="grid grid-cols-[18px_minmax(0,1fr)] gap-2">
                       <span aria-hidden="true" className={`font-mono text-sm leading-5 ${style.iconClass}`}>{style.icon}</span>
                       <div className="min-w-0">

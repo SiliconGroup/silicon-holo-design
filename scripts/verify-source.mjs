@@ -59,6 +59,10 @@ for (const selector of ['shd-spectral-panel', 'shd-spectral-panel-raised', 'shd-
   const presetRule = new RegExp(`\\.${selector}\\{[^}]*color:var\\(--shd-content-primary\\)`, 's')
   if (!baseRule.test(baseCss)) materialContractIssues.push(`base CSS ${selector} lacks semantic foreground`)
   if (!presetRule.test(presetSource)) materialContractIssues.push(`preset ${selector} lacks semantic foreground`)
+  const baseMaterial = baseCss.match(new RegExp(`\\.${selector}\\s*\\{[^}]*\\}`, 's'))?.[0] ?? ''
+  const presetMaterial = presetSource.match(new RegExp(`\\.${selector}\\{[^}]*\\}`, 's'))?.[0] ?? ''
+  if (baseMaterial.includes('gradient(')) materialContractIssues.push(`base CSS ${selector} must remain flat and gradient-free`)
+  if (presetMaterial.includes('gradient(')) materialContractIssues.push(`preset ${selector} must remain flat and gradient-free`)
 }
 if (!/button\.shd-local-focus\{background-color:transparent;color:inherit\}/.test(presetSource)) materialContractIssues.push('preset local-focus buttons do not match the transparent inherited-color reset')
 if (!/button\.shd-local-focus\s*\{[^}]*background-color:\s*transparent;[^}]*color:\s*inherit/.test(baseCss)) materialContractIssues.push('base local-focus buttons do not match the transparent inherited-color reset')

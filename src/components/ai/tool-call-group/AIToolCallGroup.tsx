@@ -52,7 +52,7 @@ export function AIToolCallGroup({ messages }: AIToolCallGroupProps) {
 
   return (
     <div className="my-4 flex justify-start" role="group" aria-label={locale.ai.toolGroupLabel}>
-      <div data-shd-tool-group="true" className={`shd-spectral-panel-raised box-border w-full max-w-[78%] overflow-hidden rounded-md border ${hasErrors ? 'border-stroke-warning' : 'border-stroke-subtle'}`}>
+      <div data-shd-tool-group="true" className={`shd-spectral-glass box-border w-full max-w-[78%] overflow-hidden rounded-md border ${hasErrors ? 'border-stroke-warning' : 'border-stroke-subtle'}`}>
         {allDone ? (
           <button type="button" onClick={() => setExpanded(current => !current)} aria-label={`${groupSummary}, ${groupStatus}, ${isOpen ? locale.common.collapse : locale.common.expand}`} aria-expanded={isOpen} aria-controls={regionId} className="box-border border-none shd-local-focus flex min-h-11 w-full cursor-pointer items-center gap-2.5 px-3 py-2.5 text-left transition-colors duration-150 hover:bg-surface-interactive">
             {headerContent}

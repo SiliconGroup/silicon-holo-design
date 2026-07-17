@@ -19,6 +19,8 @@ describe('AIToolCallGroup', () => {
     const multiple = render(<AIToolCallGroup messages={completeMessages} />)
     expect(multiple.container.firstElementChild?.className).toContain('my-4')
     expect(multiple.container.querySelector('[data-shd-tool-group]')?.className).toContain('max-w-[78%]')
+    expect(multiple.container.querySelector('[data-shd-tool-group]')?.className).toContain('shd-spectral-glass')
+    expect(multiple.container.querySelector('[data-shd-tool-group]')?.className).not.toContain('shd-status-glass')
     expect(multiple.container.firstElementChild?.className).not.toContain('px-2')
   })
 

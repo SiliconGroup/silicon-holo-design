@@ -36,6 +36,11 @@ describe('presetSiliconHolo', () => {
     for (const selector of ['.shd-spectral-panel{', '.shd-spectral-panel-raised{', '.shd-spectral-glass{', '.shd-surface-inset{']) {
       const rule = css.slice(css.indexOf(selector), css.indexOf('}', css.indexOf(selector)) + 1)
       expect(rule, selector).toContain('color:var(--shd-content-primary)')
+      expect(rule, selector).not.toContain('gradient(')
     }
+    expect(css).toContain('.shd-status-glass{')
+    expect(css).toContain('.shd-status-glass-header{')
+    expect(css).toContain('.shd-status-glass-body{')
+    expect(css).toContain('.shd-status-glass-inset{')
   })
 })

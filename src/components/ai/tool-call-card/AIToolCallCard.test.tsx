@@ -7,16 +7,21 @@ describe('AIToolCallCard', () => {
     const { container } = render(<AIToolCallCard name="read_file" status="complete" arguments='{"path":"README.md"}' result='{"ok":true}' durationMs={245} />)
 
     const trigger = screen.getByRole('button', { name: /read_file/i })
+    const card = container.querySelector('[data-shd-tool-card="true"]')
+    expect(card?.getAttribute('data-shd-state')).toBe('complete')
+    expect(card?.className).toContain('shd-status-glass')
     expect(container.firstElementChild?.className).not.toContain('my-2')
     expect(trigger.className).toContain('box-border')
     expect(trigger.getAttribute('aria-label')).toContain('Complete')
     expect(trigger.className).toContain('border-none')
     expect(trigger.getAttribute('aria-expanded')).toBe('false')
     expect(screen.getByText('245ms')).toBeDefined()
+    expect(screen.getByText('Complete').className).toContain('shd-status-text')
 
     fireEvent.click(trigger)
     expect(trigger.getAttribute('aria-expanded')).toBe('true')
     expect(screen.getByRole('region')).toBeDefined()
+    expect(card?.getAttribute('data-shd-open')).toBe('true')
     expect(screen.getByText('Arguments')).toBeDefined()
     expect(screen.getByText('Result')).toBeDefined()
     expect(screen.getAllByRole('button', { name: /copy/i }).every(button => button.className.includes('border-none'))).toBe(true)
@@ -32,8 +37,10 @@ describe('AIToolCallCard', () => {
   })
 
   it('does not expose an empty disclosure for an error without payload', () => {
-    render(<AIToolCallCard name="failed_tool" status="error" />)
+    const { container } = render(<AIToolCallCard name="failed_tool" status="error" />)
     const trigger = screen.getByRole('button', { name: /failed_tool, Failed/i })
+    expect(container.querySelector('[data-shd-tool-card="true"]')?.getAttribute('data-shd-state')).toBe('error')
+    expect(screen.getByText('Failed').className).toContain('shd-status-text')
     expect(trigger.hasAttribute('aria-expanded')).toBe(false)
     expect(trigger.hasAttribute('disabled')).toBe(true)
   })
