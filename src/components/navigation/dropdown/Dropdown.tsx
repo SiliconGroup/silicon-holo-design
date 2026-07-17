@@ -29,6 +29,7 @@ export function HoloDropdown({
 }: HoloDropdownProps) {
   const [open, setOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
+  const [positionVersion, setPositionVersion] = useState(0)
   const menuId = useId()
   const triggerLabelId = useId()
   const triggerRef = useRef<HTMLDivElement>(null)
@@ -57,13 +58,16 @@ export function HoloDropdown({
         if (validItems.length === 0) return
         e.preventDefault()
         setActiveIndex(prev => prev <= 0 ? validItems.length - 1 : prev - 1)
-      } else if (e.key === 'Enter' && activeIndex >= 0) {
+      } else if ((e.key === 'Enter' || e.key === ' ') && activeIndex >= 0) {
         e.preventDefault()
         const item = validItems[activeIndex]
         onSelect?.(item.key)
         setOpen(false)
         setActiveIndex(-1)
         focusTrigger()
+      } else if (e.key === 'Tab') {
+        setOpen(false)
+        setActiveIndex(-1)
       }
     }
 
@@ -77,9 +81,16 @@ export function HoloDropdown({
 
     document.addEventListener('keydown', handleKeyDown)
     document.addEventListener('mousedown', handleClickOutside)
+    const updatePosition = () => setPositionVersion(version => version + 1)
+    const frame = requestAnimationFrame(updatePosition)
+    window.addEventListener('resize', updatePosition)
+    window.addEventListener('scroll', updatePosition, true)
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('mousedown', handleClickOutside)
+      window.removeEventListener('resize', updatePosition)
+      window.removeEventListener('scroll', updatePosition, true)
+      cancelAnimationFrame(frame)
     }
   }, [open, activeIndex, items, onSelect])
 
@@ -158,16 +169,24 @@ export function HoloDropdown({
             onFocusCapture={handleFocus}
             onBlurCapture={handleBlur}
             className={`
-              fixed bg-surface-overlay-soft backdrop-blur-md border border-stroke-default
-              rounded-md p-1 z-60 min-w-32 shadow-[0_16px_40px_rgba(0,0,0,0.32)]
+              shd-spectral-glass fixed border border-stroke-default
+              box-border max-h-[calc(100vh-16px)] max-w-[calc(100vw-16px)] overflow-auto rounded-md p-1 z-60 min-w-32 shadow-[0_16px_40px_rgba(0,0,0,0.32)]
             `}
             style={(() => {
+              void positionVersion
               const rect = triggerRef.current?.getBoundingClientRect()
               if (!rect) return {}
+              const panelWidth = panelRef.current?.offsetWidth ?? 160
+              const panelHeight = panelRef.current?.offsetHeight ?? Math.min(240, items.length * 40 + 8)
+              const edge = 8
+              const gap = 4
+              const top = window.innerHeight - rect.bottom >= panelHeight + gap + edge
+                ? rect.bottom + gap
+                : Math.max(edge, rect.top - panelHeight - gap)
+              const preferredLeft = placement === 'bottomLeft' ? rect.left : rect.right - panelWidth
               return {
-                top: rect.bottom + 4,
-                left: placement === 'bottomLeft' ? rect.left : undefined,
-                right: placement === 'bottomRight' ? window.innerWidth - rect.right : undefined,
+                top,
+                left: Math.min(window.innerWidth - panelWidth - edge, Math.max(edge, preferredLeft)),
               }
             })()}
           >

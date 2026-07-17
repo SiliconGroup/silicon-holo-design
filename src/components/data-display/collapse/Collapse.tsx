@@ -69,7 +69,7 @@ export function HoloCollapse({
               </svg>
             </button>
             {isActive && (
-              <div id={regionId} role="region" className="px-4 py-3 border-t border-stroke-muted text-sm text-content-secondary bg-surface-base">
+              <div id={regionId} role="region" className="shd-surface-inset px-4 py-3 border-t border-stroke-muted text-sm text-content-secondary">
                 {item.content}
               </div>
             )}

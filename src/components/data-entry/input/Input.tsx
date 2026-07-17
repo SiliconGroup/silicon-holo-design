@@ -32,26 +32,32 @@ export const HoloInput = forwardRef<HTMLInputElement, HoloInputProps>(
       className = '',
       disabled,
       readOnly,
+      'aria-invalid': ariaInvalid,
+      onFocus,
+      onBlur,
       ...rest
     },
     ref,
   ) => {
     const [focused, setFocused] = useState(false)
+    const [focusVisible, setFocusVisible] = useState(false)
     const s = sizeMap[size]
 
     const borderColor = status === 'error'
       ? 'border-stroke-error bg-state-error-soft'
       : status === 'success'
         ? 'border-stroke-success bg-state-success-soft'
-        : focused
-          ? 'border-stroke-accent'
+        : focusVisible
+          ? 'border-stroke-accent-strong'
+          : focused
+            ? 'border-stroke-accent'
           : variant === 'ghost'
             ? 'border-transparent hover:border-stroke-subtle'
             : 'border-stroke-default hover:border-stroke-strong'
 
     const wrapperClasses = grouped
       ? `flex items-center ${s.wrapper} bg-transparent`
-      : `relative flex items-center ${s.wrapper} rounded-md border border-solid transition-colors duration-150 ${variant === 'ghost' ? 'bg-transparent' : 'bg-surface-interactive'} ${focused ? 'ring-2 ring-focus ring-offset-1 ring-offset-surface-base' : ''} ${borderColor}`
+      : `relative flex items-center ${s.wrapper} rounded-md border border-solid transition-colors duration-150 ${variant === 'ghost' ? 'bg-transparent' : 'bg-surface-interactive'} ${borderColor}`
 
     return (
       <div
@@ -68,14 +74,15 @@ export const HoloInput = forwardRef<HTMLInputElement, HoloInputProps>(
         )}
         <input
           ref={ref}
+          {...rest}
           disabled={disabled}
           readOnly={readOnly}
-          aria-invalid={status === 'error' || undefined}
+          aria-invalid={status === 'error' ? true : ariaInvalid}
           onChange={(e) => onChange?.(e.target.value, e)}
-          onFocus={(e) => { setFocused(true); rest.onFocus?.(e) }}
-          onBlur={(e) => { setFocused(false); rest.onBlur?.(e) }}
+          onFocus={(e) => { setFocused(true); setFocusVisible(e.currentTarget.matches(':focus-visible')); onFocus?.(e) }}
+          onBlur={(e) => { setFocused(false); setFocusVisible(false); onBlur?.(e) }}
           className={`
-            flex-1 min-w-0 bg-transparent outline-none
+            flex-1 min-w-0 appearance-none border-none bg-transparent outline-none
             text-content-primary placeholder-text-content-tertiary
             font-sans leading-normal
             disabled:cursor-not-allowed
@@ -83,7 +90,6 @@ export const HoloInput = forwardRef<HTMLInputElement, HoloInputProps>(
             ${!suffix ? s.input : 'pl-1'}
             ${prefix && suffix ? 'px-0' : ''}
           `}
-          {...rest}
         />
         {suffix && (
           <span className={`flex-shrink-0 flex-center ${s.icon} text-content-tertiary ${focused ? 'text-content-accent' : ''} transition-colors duration-150`} aria-hidden="true">

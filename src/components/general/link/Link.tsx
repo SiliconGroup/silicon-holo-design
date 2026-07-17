@@ -26,7 +26,7 @@ export function HoloLink({
         text-content-accent hover:text-accent-primary-hover
         border-b border-stroke-accent hover:border-stroke-accent-strong
         transition-colors duration-150 rounded-sm
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus
+        shd-control-focus
         ${disabled ? 'text-content-disabled border-stroke-muted pointer-events-none' : ''}
         ${className}
       `}

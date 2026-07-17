@@ -5,13 +5,13 @@ import { createRoot } from 'react-dom/client'
 import { useState } from 'react'
 import {
   LocaleProvider, ThemeProvider, enUS, zhCN, ToastProvider, useToast,
-  HoloButton, HoloInput, HoloTextarea, HoloSelect, HoloCheckbox, HoloRadio, HoloRadioGroup,
+  HoloButton, HoloInput, HoloInputGroup, HoloInputAddon, HoloTextarea, HoloSelect, HoloCheckbox, HoloRadio, HoloRadioGroup,
   HoloSwitch, HoloSlider, HoloNumberInput, HoloDatePicker,
   HoloModal, HoloDrawer, HoloConfirm, HoloAlert, HoloProgress, HoloSkeleton, HoloSpinner, HexagonLoader,
   HoloTable, HoloTag, HoloBadge, HoloAvatar, HoloTooltip, HoloPopover, HoloTimeline, HoloEmpty, HoloKbd,
   HoloBreadcrumb, HoloPagination, HoloSteps, HoloDropdown, HoloTab,
   HoloDivider, HoloSpace, HoloCollapse, GlowCard, CircuitBorder, IconButton, HoloLink,
-  StatusIndicator,
+  StatusIndicator, ChatBubble, ChatInputArea, AIToolCallCard, AIToolExecutionCard, AITaskExecutionPanel,
 } from '../../../src'
 import type { Locale } from '../../../src'
 
@@ -53,19 +53,19 @@ function App() {
       <ToastProvider>
         <div className="relative min-h-screen overflow-hidden bg-surface-canvas text-content-primary">
           <div aria-hidden="true" className="pointer-events-none fixed inset-0" style={{
-            background: 'linear-gradient(rgba(0,255,255,0.016) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.016) 1px, transparent 1px), radial-gradient(ellipse at 18% 0%, rgba(0,136,255,0.06), transparent 42%), radial-gradient(ellipse at 88% 72%, rgba(170,136,255,0.035), transparent 34%)',
+            background: 'linear-gradient(rgba(0,255,255,0.016) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.016) 1px, transparent 1px), radial-gradient(ellipse at 18% 0%, rgba(0,230,190,0.06), transparent 42%), radial-gradient(ellipse at 88% 72%, rgba(80,220,170,0.035), transparent 34%)',
             backgroundSize: '32px 32px, 32px 32px, auto, auto',
           }} />
           <div className="relative mx-auto max-w-5xl px-6 py-10 lg:px-12">
           {/* Header */}
-          <div className="mb-10 flex items-center gap-4 border-b border-stroke-subtle pb-6">
+          <div className="mb-10 flex flex-wrap items-center gap-4 border-b border-stroke-subtle pb-6">
             <img src="/logo.svg" alt="logo" style={{ height: 32 }} />
-            <div>
+            <div className="min-w-0 flex-1 sm:flex-none">
               <h1 className="holo-text text-2xl font-bold">Component Gallery</h1>
               <p className="mt-1 text-xs text-content-tertiary">Spectral-flat components and interaction states</p>
             </div>
-            <div className="ml-auto">
-              <HoloSpace size="sm">
+            <div className="w-full sm:ml-auto sm:w-auto">
+              <HoloSpace size="sm" wrap>
                 <HoloButton size="sm" variant={locale === enUS ? 'primary' : 'ghost'} onClick={() => setLocale(enUS)}>EN</HoloButton>
                 <HoloButton size="sm" variant={locale === zhCN ? 'primary' : 'ghost'} onClick={() => setLocale(zhCN)}>中文</HoloButton>
               </HoloSpace>
@@ -100,6 +100,11 @@ function App() {
               <HoloInput placeholder="Text input..." style={{ width: 220 }} />
               <HoloInput placeholder="Disabled" disabled style={{ width: 220 }} />
             </Row>
+            <HoloInputGroup>
+              <HoloInputAddon>https://</HoloInputAddon>
+              <HoloInput placeholder="workspace.example" aria-label="Grouped workspace URL" />
+              <HoloInputAddon>.dev</HoloInputAddon>
+            </HoloInputGroup>
             <HoloTextarea placeholder="Textarea..." rows={3} />
             <Row>
               <HoloSelect options={[{ value: 'react', label: 'React' }, { value: 'vue', label: 'Vue' }, { value: 'svelte', label: 'Svelte' }]} value={selectVal} onChange={v => setSelectVal(v as string)} />
@@ -173,6 +178,28 @@ function App() {
             <HoloModal open={modalOpen} onClose={() => setModalOpen(false)} title="Modal Title" closable><p>Modal body content.</p></HoloModal>
             <HoloDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="Drawer Title"><p>Drawer body content.</p></HoloDrawer>
             <HoloConfirm open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={() => setConfirmOpen(false)} title="Confirm" description="Are you sure?" />
+          </Section>
+
+          <Section title="Chat & AI">
+            <ChatBubble align="left" timestamp="10:42">Assistant response on a restrained spectral surface.</ChatBubble>
+            <ChatBubble align="right" timestamp="10:43">User response with a local accent edge.</ChatBubble>
+            <ChatInputArea onSend={() => {}} />
+            <AIToolCallCard name="inspect_components" status="complete" arguments={'{"scope":"src/components"}'} result={'{"valid":true}'} durationMs={184} />
+            <Row>
+              <div className="min-w-[240px] flex-1"><AIToolExecutionCard toolName="Build package" status="running" /></div>
+              <div className="min-w-[240px] flex-1"><AIToolExecutionCard toolName="Verify exports" status="complete" result="Public API preserved" /></div>
+            </Row>
+            <AITaskExecutionPanel
+              defaultExpanded
+              taskList={{
+                description: 'Prepare compatible release',
+                tasks: [
+                  { id: 'tokens', description: 'Validate semantic tokens', status: 'completed' },
+                  { id: 'examples', description: 'Build examples', status: 'running', progress: 72 },
+                  { id: 'audit', description: 'Complete independent audit', status: 'pending' },
+                ],
+              }}
+            />
           </Section>
 
           {/* Navigation */}

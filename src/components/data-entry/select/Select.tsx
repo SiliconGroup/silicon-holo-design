@@ -59,6 +59,7 @@ export const HoloSelect = forwardRef<HTMLDivElement, HoloSelectProps>(
     const [isOpen, setIsOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState('')
     const [activeIndex, setActiveIndex] = useState(-1)
+    const [positionVersion, setPositionVersion] = useState(0)
     const triggerRef = useRef<HTMLDivElement>(null)
     const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -67,7 +68,7 @@ export const HoloSelect = forwardRef<HTMLDivElement, HoloSelectProps>(
       : status === 'success'
         ? 'border-stroke-success bg-state-success-soft'
         : isOpen
-          ? 'border-stroke-accent ring-2 ring-focus ring-offset-1 ring-offset-surface-base'
+          ? 'border-stroke-accent bg-surface-selected'
           : variant === 'ghost'
             ? 'border-transparent hover:border-stroke-subtle'
             : 'border-stroke-default hover:border-stroke-strong'
@@ -111,9 +112,18 @@ export const HoloSelect = forwardRef<HTMLDivElement, HoloSelectProps>(
 
       document.addEventListener('mousedown', handleClickOutside)
       document.addEventListener('keydown', handleKeyDown)
+      const updatePosition = () => setPositionVersion(version => version + 1)
+      const frame = isOpen ? requestAnimationFrame(updatePosition) : 0
+      if (isOpen) {
+        window.addEventListener('resize', updatePosition)
+        window.addEventListener('scroll', updatePosition, true)
+      }
       return () => {
         document.removeEventListener('mousedown', handleClickOutside)
         document.removeEventListener('keydown', handleKeyDown)
+        window.removeEventListener('resize', updatePosition)
+        window.removeEventListener('scroll', updatePosition, true)
+        if (frame) cancelAnimationFrame(frame)
       }
     }, [isOpen])
 
@@ -217,7 +227,7 @@ export const HoloSelect = forwardRef<HTMLDivElement, HoloSelectProps>(
           className={`
             flex items-center justify-between cursor-pointer
             rounded-md border border-solid transition-colors duration-150 bg-surface-interactive
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus
+            shd-control-focus focus-visible:border-stroke-strong
             ${sizeMap[size]}
             ${borderColor}
             ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
@@ -240,12 +250,21 @@ export const HoloSelect = forwardRef<HTMLDivElement, HoloSelectProps>(
               role="listbox"
               aria-multiselectable={multiple || undefined}
               onKeyDown={handleKeyboardNavigation}
-              className="fixed bg-surface-overlay-soft backdrop-blur-md border border-stroke-default rounded-md shadow-[0_16px_40px_rgba(0,0,0,0.32)] z-60 min-w-32 max-h-60 overflow-auto p-1"
-              style={{
-                top: triggerRef.current ? triggerRef.current.getBoundingClientRect().bottom + 4 : 0,
-                left: triggerRef.current ? triggerRef.current.getBoundingClientRect().left : 0,
-                width: triggerRef.current ? triggerRef.current.getBoundingClientRect().width : 'auto',
-              }}
+              className="shd-spectral-glass box-border fixed border border-stroke-default rounded-md shadow-[0_16px_40px_rgba(0,0,0,0.32)] z-60 min-w-32 max-h-60 max-w-[calc(100vw-16px)] overflow-auto p-1"
+              style={(() => {
+                void positionVersion
+                const rect = triggerRef.current?.getBoundingClientRect()
+                if (!rect) return {}
+                const edge = 8
+                const gap = 4
+                const panelHeight = dropdownRef.current?.offsetHeight ?? 240
+                const width = Math.min(Math.max(rect.width, 128), window.innerWidth - edge * 2)
+                return {
+                  top: window.innerHeight - rect.bottom >= panelHeight + gap + edge ? rect.bottom + gap : Math.max(edge, rect.top - panelHeight - gap),
+                  left: Math.min(window.innerWidth - width - edge, Math.max(edge, rect.left)),
+                  width,
+                }
+              })()}
             >
               {searchable && (
                 <div className="p-1.5 border-b border-stroke-muted">
@@ -257,7 +276,7 @@ export const HoloSelect = forwardRef<HTMLDivElement, HoloSelectProps>(
                       if (event.key !== 'Escape') event.stopPropagation()
                     }}
                     placeholder={locale.select.searchPlaceholder}
-                    className="w-full px-2.5 py-1.5 text-sm bg-surface-interactive border border-stroke-default rounded text-content-primary placeholder-text-content-tertiary focus:border-stroke-accent focus:outline-none focus:ring-2 focus:ring-focus"
+                    className="shd-control-focus w-full px-2.5 py-1.5 text-sm bg-surface-interactive border border-stroke-default rounded text-content-primary placeholder-text-content-tertiary focus:border-stroke-accent focus:outline-none"
                   />
                 </div>
               )}

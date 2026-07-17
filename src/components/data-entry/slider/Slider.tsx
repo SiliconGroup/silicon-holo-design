@@ -46,7 +46,7 @@ export function HoloSlider({
         value={value}
         disabled={disabled}
         onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Number(e.target.value))}
-        className="holo-slider w-full h-1.5 rounded-full appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base"
+        className="shd-control-focus holo-slider w-full h-1.5 rounded-full appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
         style={{
           background: `linear-gradient(to right, var(--shd-accent-primary) ${pct}%, var(--shd-stroke-subtle) ${pct}%)`
         }}

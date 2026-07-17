@@ -8,6 +8,7 @@ export function ChatInputArea({ onSend, disabled = false }: ChatInputAreaProps) 
   const locale = useLocale()
   const [input, setInput] = useState('')
   const [focused, setFocused] = useState(false)
+  const [focusVisible, setFocusVisible] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const canSend = !disabled && !!input.trim()
 
@@ -34,14 +35,14 @@ export function ChatInputArea({ onSend, disabled = false }: ChatInputAreaProps) 
   }
 
   return (
-    <div className={`relative rounded-md border bg-surface-overlay transition-colors duration-150 ${focused ? 'border-stroke-accent ring-2 ring-focus ring-offset-1 ring-offset-surface-base' : 'border-stroke-default hover:border-stroke-strong'}`}>
+    <div className={`shd-spectral-panel-raised relative rounded-md border transition-colors duration-150 ${focusVisible ? 'border-stroke-accent-strong' : focused ? 'border-stroke-accent' : 'border-stroke-default hover:border-stroke-strong'}`}>
       <textarea
         ref={textareaRef}
         value={input}
         onChange={(event) => setInput(event.target.value)}
         onKeyDown={handleKeyDown}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
+        onFocus={(event) => { setFocused(true); setFocusVisible(event.currentTarget.matches(':focus-visible')) }}
+        onBlur={() => { setFocused(false); setFocusVisible(false) }}
         disabled={disabled}
         placeholder={locale.chat.inputPlaceholder}
         rows={1}

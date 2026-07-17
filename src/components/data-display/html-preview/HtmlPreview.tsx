@@ -33,11 +33,11 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
   }>({ iframeW: '100%', iframeH: 400, wrapH: 400, scale: 1 })
 
   useEffect(() => {
-    if (mode === 'code' && codeRef.current && !codeRef.current.dataset.highlighted) {
-      hljs.highlightElement(codeRef.current)
-      codeRef.current.dataset.highlighted = 'true'
-    }
-  }, [mode])
+    if (mode !== 'code' || !codeRef.current) return
+    codeRef.current.textContent = code
+    delete codeRef.current.dataset.highlighted
+    hljs.highlightElement(codeRef.current)
+  }, [code, mode])
 
   const getAvailableHeight = useCallback(() => {
     let el = containerRef.current?.parentElement
@@ -67,35 +67,28 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
       const scrollH = Math.max(body.scrollHeight, html.scrollHeight)
       if (scrollW <= 0 || scrollH <= 0) return
 
-      const overflowX = scrollW > containerW + 2 // 2px 容差
+      const overflowX = scrollW > containerW + 2
       const overflowY = scrollH > maxH
-
       if (!overflowX && !overflowY) {
-        // 无溢出：高度自适应内容
         setLayout({ iframeW: '100%', iframeH: scrollH, wrapH: scrollH, scale: 1 })
       } else {
-        // 有溢出：计算缩放
         const scaleX = overflowX ? containerW / scrollW : 1
         const scaleY = overflowY ? maxH / scrollH : 1
-        const s = Math.min(scaleX, scaleY)
-        // iframe 放大到 容器/scale，再 transform scale 缩回
+        const scale = Math.min(scaleX, scaleY)
         setLayout({
-          iframeW: containerW / s,
-          iframeH: Math.max(scrollH, maxH / s),
-          wrapH: Math.round(Math.max(scrollH, maxH / s) * s),
-          scale: s,
+          iframeW: containerW / scale,
+          iframeH: Math.max(scrollH, maxH / scale),
+          wrapH: Math.round(Math.max(scrollH, maxH / scale) * scale),
+          scale,
         })
       }
     } catch {
-      // cross-origin fallback
       setLayout({ iframeW: '100%', iframeH: 400, wrapH: 400, scale: 1 })
     }
   }, [getAvailableHeight])
 
   const handleIframeLoad = useCallback(() => {
-    // 先重置为自然尺寸让内容正常布局
     setLayout({ iframeW: '100%', iframeH: getAvailableHeight(), wrapH: getAvailableHeight(), scale: 1 })
-    // 等内容渲染稳定后测量
     requestAnimationFrame(() => {
       setTimeout(fitContent, 50)
       setTimeout(fitContent, 300)

@@ -28,13 +28,25 @@ if (!/\[data-shd-motion\]\s*\*/.test(css)) {
   process.exit(1)
 }
 
-if (!/\*,:{1,2}before,:{1,2}after\{[^}]*border-width:0[^}]*border-style:solid/.test(css)) {
-  console.error('Dist CSS must include the self-contained UnoCSS border preflight')
+if (!/\.border(?:,[^{]+)?\{[^}]*border-style:solid/.test(css)) {
+  console.error('Dist CSS must make border utilities visible without a global element reset')
   process.exit(1)
 }
 
-if (!/button\{[^}]*appearance:none[^}]*border-width:0/.test(css)) {
-  console.error('Dist CSS must remove native button borders')
+if (!/button\.shd-control-focus(?:,[^{]+)?\{[^}]*appearance:none/.test(css)) {
+  console.error('Dist CSS must remove native appearance only from library buttons')
+  process.exit(1)
+}
+
+if (/(?:^|})body\{[^}]*(?:margin:0|background:var\(--shd-|color:var\(--shd-|font-family:)/.test(css)
+  || /(?:^|})button\{[^}]*(?:appearance:none|border-width:0|background:none)/.test(css)
+  || /(?:^|})input,textarea,select\{[^}]*(?:appearance:none|outline:none|background:none)/.test(css)) {
+  console.error('Dist CSS must not reset host body or controls')
+  process.exit(1)
+}
+
+if (/--un-/.test(css)) {
+  console.error('Dist CSS must namespace UnoCSS runtime variables')
   process.exit(1)
 }
 

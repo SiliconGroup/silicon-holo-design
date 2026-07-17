@@ -1,5 +1,6 @@
 import { cloneElement, isValidElement, useId, useState, useRef, useEffect, type FocusEvent, type MouseEvent as ReactMouseEvent, type ReactElement, type ReactNode } from 'react'
 import { HoloPortal } from '@/utils/portal'
+import { focusFirstOrContainer, trapFocus } from '@/utils/focus'
 
 interface HoloPopoverProps {
   content: ReactNode
@@ -25,6 +26,7 @@ export function HoloPopover({
   const triggerLabelId = useId()
   const triggerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
+  const [positionVersion, setPositionVersion] = useState(0)
   const isControlled = controlledOpen !== undefined
 
   const isOpen = isControlled ? controlledOpen : internalOpen
@@ -54,6 +56,8 @@ export function HoloPopover({
         event.preventDefault()
         setOpen(false)
         triggerRef.current?.querySelector<HTMLElement>('[tabindex], button, a, input, select, textarea')?.focus()
+      } else if (isOpen && trigger === 'click' && panelRef.current) {
+        trapFocus(event, panelRef.current)
       }
     }
 
@@ -65,6 +69,20 @@ export function HoloPopover({
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen, trigger])
+
+  useEffect(() => {
+    if (!isOpen) return
+    const update = () => setPositionVersion(version => version + 1)
+    const frame = requestAnimationFrame(update)
+    window.addEventListener('resize', update)
+    window.addEventListener('scroll', update, true)
+    if (trigger === 'click') queueMicrotask(() => panelRef.current && focusFirstOrContainer(panelRef.current))
+    return () => {
+      window.removeEventListener('resize', update)
+      window.removeEventListener('scroll', update, true)
+      cancelAnimationFrame(frame)
     }
   }, [isOpen, trigger])
 
@@ -97,31 +115,40 @@ export function HoloPopover({
   }
 
   const getPositionStyles = () => {
+    void positionVersion
     if (!triggerRef.current) return {}
-    
     const rect = triggerRef.current.getBoundingClientRect()
-    const styles: React.CSSProperties = { position: 'absolute' }
+    const panelWidth = panelRef.current?.offsetWidth ?? 280
+    const panelHeight = panelRef.current?.offsetHeight ?? 160
+    const gap = 8
+    const edge = 8
+    const canFitTop = rect.top >= panelHeight + gap + edge
+    const canFitBottom = window.innerHeight - rect.bottom >= panelHeight + gap + edge
+    const canFitLeft = rect.left >= panelWidth + gap + edge
+    const canFitRight = window.innerWidth - rect.right >= panelWidth + gap + edge
+    const resolvedPlacement = placement === 'top' && !canFitTop && canFitBottom ? 'bottom'
+      : placement === 'bottom' && !canFitBottom && canFitTop ? 'top'
+        : placement === 'left' && !canFitLeft && canFitRight ? 'right'
+          : placement === 'right' && !canFitRight && canFitLeft ? 'left'
+            : placement
+    const styles: React.CSSProperties = { position: 'fixed' }
 
-    switch (placement) {
+    switch (resolvedPlacement) {
       case 'top':
-        styles.bottom = window.innerHeight - rect.top + 8
-        styles.left = rect.left + rect.width / 2
-        styles.transform = 'translateX(-50%)'
+        styles.top = Math.max(edge, rect.top - panelHeight - gap)
+        styles.left = Math.min(window.innerWidth - panelWidth - edge, Math.max(edge, rect.left + rect.width / 2 - panelWidth / 2))
         break
       case 'bottom':
-        styles.top = rect.bottom + 8
-        styles.left = rect.left + rect.width / 2
-        styles.transform = 'translateX(-50%)'
+        styles.top = Math.min(window.innerHeight - panelHeight - edge, Math.max(edge, rect.bottom + gap))
+        styles.left = Math.min(window.innerWidth - panelWidth - edge, Math.max(edge, rect.left + rect.width / 2 - panelWidth / 2))
         break
       case 'left':
-        styles.right = window.innerWidth - rect.left + 8
-        styles.top = rect.top + rect.height / 2
-        styles.transform = 'translateY(-50%)'
+        styles.left = Math.max(edge, rect.left - panelWidth - gap)
+        styles.top = Math.min(window.innerHeight - panelHeight - edge, Math.max(edge, rect.top + rect.height / 2 - panelHeight / 2))
         break
       case 'right':
-        styles.left = rect.right + 8
-        styles.top = rect.top + rect.height / 2
-        styles.transform = 'translateY(-50%)'
+        styles.left = Math.min(window.innerWidth - panelWidth - edge, Math.max(edge, rect.right + gap))
+        styles.top = Math.min(window.innerHeight - panelHeight - edge, Math.max(edge, rect.top + rect.height / 2 - panelHeight / 2))
         break
     }
 
@@ -160,6 +187,7 @@ export function HoloPopover({
             ref={panelRef}
             id={panelId}
             role="dialog"
+            tabIndex={-1}
             aria-labelledby={triggerLabelId}
             style={getPositionStyles()}
             onMouseEnter={handleTriggerMouseEnter}
@@ -167,8 +195,8 @@ export function HoloPopover({
             onFocusCapture={handleFocus}
             onBlurCapture={handleBlur}
             className={`
-              bg-surface-overlay-soft backdrop-blur-md border border-stroke-default
-              rounded-md p-3 z-40 shadow-[0_16px_40px_rgba(0,0,0,0.32)]
+              shd-spectral-glass border border-stroke-default text-content-primary
+              box-border max-h-[calc(100vh-16px)] max-w-[calc(100vw-16px)] overflow-auto rounded-md p-3 z-40 shadow-[0_16px_40px_rgba(0,0,0,0.32)]
               ${className}
             `}
           >

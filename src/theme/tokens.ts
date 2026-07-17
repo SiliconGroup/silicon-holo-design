@@ -30,6 +30,8 @@ export interface SemanticThemeTokens {
     'surface-raised-soft': string
     'surface-overlay': string
     'surface-overlay-soft': string
+    'surface-inset'?: string
+    'surface-glass'?: string
     'surface-interactive': string
     'surface-interactive-hover': string
     'surface-selected': string
@@ -38,6 +40,7 @@ export interface SemanticThemeTokens {
     'content-tertiary': string
     'content-disabled': string
     'content-accent': string
+    'content-on-accent'?: string
     'stroke-muted': string
     'stroke-subtle': string
     'stroke-default': string
@@ -56,6 +59,10 @@ export interface SemanticThemeTokens {
     'accent-blue-soft': string
     'accent-purple': string
     'accent-purple-soft': string
+    'spectral-film-cyan'?: string
+    'spectral-film-purple'?: string
+    'spectral-highlight'?: string
+    'spectral-edge'?: string
     'focus-ring': string
     'focus-ring-offset': string
     'overlay-scrim': string
@@ -73,15 +80,15 @@ export const defaultTokens: ThemeTokens = {
     'holo-blue': '#0088ff',
     'holo-green': '#00ffaa',
     'holo-purple': '#aa88ff',
-    'scene-void': '#000a0e',
-    'scene-deep': '#001018',
-    'scene-surface': '#001a28',
+    'scene-void': '#000a0f',
+    'scene-deep': '#001219',
+    'scene-surface': '#00212b',
     'status-success': '#00ff88',
     'status-warning': '#ffaa00',
     'status-error': '#ff5566',
     'text-primary': 'rgba(255,255,255,0.95)',
     'text-secondary': 'rgba(255,255,255,0.7)',
-    'text-muted': 'rgba(255,255,255,0.4)',
+    'text-muted': 'rgba(255,255,255,0.55)',
     'border-glow': 'rgba(0,255,255,0.4)',
     'border-subtle': 'rgba(0,255,255,0.15)',
     'border-muted': 'rgba(255,255,255,0.08)',
@@ -90,21 +97,24 @@ export const defaultTokens: ThemeTokens = {
 
 export const defaultSemanticTokens: SemanticThemeTokens = {
   colors: {
-    'surface-canvas': '#000a0e',
-    'surface-base': '#001018',
-    'surface-base-soft': 'rgba(0,16,24,0.72)',
-    'surface-raised': '#00191e',
-    'surface-raised-soft': 'rgba(0,25,30,0.86)',
-    'surface-overlay': '#071a21',
-    'surface-overlay-soft': 'rgba(7,26,33,0.95)',
-    'surface-interactive': '#001b20',
-    'surface-interactive-hover': '#00252b',
-    'surface-selected': '#00323a',
+    'surface-canvas': '#000a0f',
+    'surface-base': '#001219',
+    'surface-base-soft': 'rgba(0,18,25,0.66)',
+    'surface-raised': '#031a24',
+    'surface-raised-soft': 'rgba(3,26,36,0.76)',
+    'surface-overlay': '#061f2b',
+    'surface-overlay-soft': 'rgba(6,31,43,0.82)',
+    'surface-inset': '#000d13',
+    'surface-glass': 'rgba(4,27,36,0.74)',
+    'surface-interactive': 'rgba(4,28,37,0.72)',
+    'surface-interactive-hover': 'rgba(7,39,50,0.82)',
+    'surface-selected': 'rgba(8,49,60,0.82)',
     'content-primary': 'rgba(255,255,255,0.95)',
     'content-secondary': 'rgba(255,255,255,0.70)',
-    'content-tertiary': 'rgba(255,255,255,0.40)',
+    'content-tertiary': 'rgba(255,255,255,0.55)',
     'content-disabled': 'rgba(202,222,232,0.28)',
     'content-accent': '#79e7ee',
+    'content-on-accent': '#000a0f',
     'stroke-muted': 'rgba(179,210,222,0.07)',
     'stroke-subtle': 'rgba(179,210,222,0.12)',
     'stroke-default': 'rgba(179,210,222,0.20)',
@@ -114,17 +124,21 @@ export const defaultSemanticTokens: SemanticThemeTokens = {
     'stroke-success': 'rgba(0,255,136,0.4)',
     'stroke-warning': 'rgba(255,170,0,0.5)',
     'stroke-error': 'rgba(255,85,102,0.65)',
-    'accent-primary': '#42d7e3',
-    'accent-primary-hover': '#66e2ea',
-    'accent-primary-active': '#2fc1ce',
-    'accent-primary-soft': 'rgba(66,215,227,0.12)',
-    'accent-primary-softer': 'rgba(66,215,227,0.07)',
+    'accent-primary': '#38d7e7',
+    'accent-primary-hover': '#65e2ee',
+    'accent-primary-active': '#27bdcf',
+    'accent-primary-soft': 'rgba(56,215,231,0.12)',
+    'accent-primary-softer': 'rgba(56,215,231,0.07)',
     'accent-blue': '#4ea4f5',
     'accent-blue-soft': 'rgba(78,164,245,0.08)',
     'accent-purple': '#a999f5',
     'accent-purple-soft': 'rgba(169,153,245,0.08)',
-    'focus-ring': 'rgba(103,230,239,0.72)',
-    'focus-ring-offset': '#001018',
+    'spectral-film-cyan': 'rgba(0,255,255,0.045)',
+    'spectral-film-purple': 'rgba(170,136,255,0.028)',
+    'spectral-highlight': 'rgba(225,251,255,0.055)',
+    'spectral-edge': 'rgba(80,224,232,0.24)',
+    'focus-ring': 'rgba(151,235,241,0.78)',
+    'focus-ring-offset': '#001219',
     'overlay-scrim': 'rgba(0,5,8,0.72)',
     'success-soft': 'rgba(0,255,136,0.10)',
     'warning-soft': 'rgba(255,170,0,0.10)',

@@ -10,6 +10,7 @@ describe('HoloTooltip', () => {
     fireEvent.focus(trigger)
     const tooltip = screen.getByRole('tooltip')
     expect(trigger.getAttribute('aria-describedby')).toBe(tooltip.id)
+    expect(tooltip.style.position).toBe('fixed')
 
     fireEvent.blur(trigger)
     expect(screen.queryByRole('tooltip')).toBeNull()

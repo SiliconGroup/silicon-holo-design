@@ -12,22 +12,22 @@ interface HoloAlertProps {
 
 const typeConfig = {
   info: {
-    bg: 'bg-accent-primary-softer',
+    bg: 'bg-accent-primary-softer border-l-stroke-accent',
     border: 'border-stroke-subtle',
     text: 'text-content-accent',
   },
   success: {
-    bg: 'bg-state-success-soft',
+    bg: 'bg-state-success-soft border-l-stroke-success',
     border: 'border-stroke-subtle',
     text: 'text-status-success',
   },
   warning: {
-    bg: 'bg-state-warning-soft',
+    bg: 'bg-state-warning-soft border-l-stroke-warning',
     border: 'border-stroke-subtle',
     text: 'text-status-warning',
   },
   error: {
-    bg: 'bg-state-error-soft',
+    bg: 'bg-state-error-soft border-l-stroke-error',
     border: 'border-stroke-subtle',
     text: 'text-status-error',
   },
@@ -69,7 +69,7 @@ export function HoloAlert({
   const displayIcon = icon ?? defaultIcons[type]
 
   return (
-    <div role={type === 'warning' || type === 'error' ? 'alert' : 'status'} className={`border rounded-md ${config.bg} ${config.border} ${className}`}>
+    <div role={type === 'warning' || type === 'error' ? 'alert' : 'status'} className={`shd-spectral-panel border border-l-2 rounded-md ${config.bg} ${config.border} ${className}`}>
       <div className="flex items-center gap-3 px-3 py-3">
         <span className={`flex-shrink-0 ${config.text}`}>{displayIcon}</span>
         <div className="flex-1 min-w-0">
@@ -82,9 +82,10 @@ export function HoloAlert({
         </div>
         {closable && (
           <button
+            type="button"
             onClick={onClose}
             aria-label="Close alert"
-            className="border-none flex-shrink-0 rounded p-1 text-content-tertiary hover:text-content-primary hover:bg-surface-interactive transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+            className="shd-control-focus border-none bg-transparent flex-shrink-0 rounded p-1 text-content-tertiary hover:text-content-primary hover:bg-surface-interactive transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

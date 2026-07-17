@@ -3,8 +3,8 @@ import { presetSiliconHolo } from './src/preset'
 
 export default defineConfig({
   presets: [
-    presetUno(),
-    presetIcons({ scale: 1.2, cdn: 'https://esm.sh/' }),
+    presetUno({ preflight: 'on-demand', variablePrefix: 'shd-un-' }),
+    presetIcons({ scale: 1.2 }),
     presetSiliconHolo(),
   ],
 })

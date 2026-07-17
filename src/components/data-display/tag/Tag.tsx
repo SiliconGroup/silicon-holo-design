@@ -46,8 +46,9 @@ export function HoloTag({
       <span>{children}</span>
       {closable && (
         <button
+          type="button"
           onClick={onClose}
-          className={`border-none flex-shrink-0 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus ${colorConfig.hover}`}
+          className={`shd-control-focus border-none bg-transparent flex-shrink-0 rounded-full transition-colors ${colorConfig.hover}`}
         >
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

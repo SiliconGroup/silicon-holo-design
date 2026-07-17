@@ -70,7 +70,7 @@ export default function NavSection() {
         </div>
       </ComponentDemo>
 
-      <ComponentDemo id="dropdown" title="HoloDropdown" description="Dropdown menus">
+      <ComponentDemo id="dropdown" title="HoloDropdown" description="Dropdown menus" compareSurfaces={false}>
         <HoloDropdown items={dropdownItems} onSelect={(key) => console.log('Selected:', key)}>
           <HoloButton variant="secondary">Actions ▼</HoloButton>
         </HoloDropdown>
@@ -87,7 +87,7 @@ export default function NavSection() {
             onChange={setActiveTab}
             items={tabs}
           />
-          <div className="mt-4 p-4 border rounded">
+          <div className="mt-4 rounded-sm border border-stroke-subtle bg-surface-interactive px-4 py-3 text-content-primary">
             {tabs.find(tab => tab.key === activeTab)?.content}
           </div>
         </div>

@@ -11,5 +11,7 @@ describe('ChatBubble', () => {
     expect(assistant?.className.split(/\s+/)).not.toContain('border')
     expect(user?.className).toContain('border-r-2')
     expect(user?.className.split(/\s+/)).not.toContain('border')
+    expect(assistant?.className).toContain('text-content-primary')
+    expect(user?.className).toContain('text-content-primary')
   })
 })

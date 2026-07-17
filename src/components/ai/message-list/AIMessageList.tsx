@@ -116,7 +116,7 @@ export function AIMessageList({ messages, streamingContent, streamingThinking, p
         <div className="flex justify-start my-4"><div className="shd-spectral-panel-raised max-w-[85%] px-5 py-4 border border-stroke-subtle rounded-md text-content-secondary text-sm whitespace-pre-wrap overflow-hidden"><span className="text-content-tertiary text-xs mr-2">◇</span>{streamingThinking}</div></div>
       )}
 
-      {streamingContent && <AIMessageBubble message={{ id: 'streaming', role: 'assistant', content: streamingContent, timestamp: new Date().toISOString() }} isStreaming />}
+      {streamingContent && <AIMessageBubble message={{ id: 'streaming', role: 'assistant', content: streamingContent }} isStreaming />}
 
       {processing && !streamingContent && (
         <div className="flex justify-start my-4"><div className="shd-spectral-panel-raised flex items-center gap-4 px-5 py-4 border border-stroke-subtle rounded-md overflow-hidden">

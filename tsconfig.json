@@ -18,7 +18,10 @@
     "declaration": true,
     "declarationMap": true,
     "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
+    "paths": {
+      "@/*": ["src/*"],
+      "silicon-holo-design": ["src/index.ts"]
+    }
   },
   "include": ["src", "showcases", "examples"],
   "exclude": ["node_modules", "dist", "examples/*/vite.config.ts"]

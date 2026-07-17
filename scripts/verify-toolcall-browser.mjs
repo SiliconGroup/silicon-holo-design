@@ -37,7 +37,7 @@ try {
     process.stderr.write(result.stderr)
     throw new Error('ToolCall browser contract failed.')
   }
-  console.log('✓ ToolCall group and actions have no native rectangular button borders in real Chrome')
+  console.log('✓ Tool, collapse, input, popover, and modal visual contracts pass in real Chrome')
 } finally {
   preview.kill('SIGTERM')
   rmSync(output, { recursive: true, force: true })

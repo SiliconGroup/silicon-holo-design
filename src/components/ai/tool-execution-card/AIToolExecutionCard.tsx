@@ -12,7 +12,7 @@ export function AIToolExecutionCard({ toolName, status, result }: AIToolExecutio
   const statusText = isRunning ? locale.ai.toolRunning : isComplete ? locale.ai.toolComplete : isError ? locale.ai.toolError : locale.ai.toolPending
 
   return (
-    <article className={`overflow-hidden rounded-md border bg-surface-raised ${isRunning ? 'border-stroke-accent' : isError ? 'border-stroke-error' : 'border-stroke-subtle'}`}>
+    <article className={`shd-spectral-panel-raised overflow-hidden rounded-md border ${isRunning ? 'border-stroke-accent' : isError ? 'border-stroke-error' : 'border-stroke-subtle'}`}>
       <div className="flex items-center gap-3 px-4 py-3">
         <div className="w-8 h-8 flex-center rounded bg-surface-interactive">
           {isRunning ? <HexagonLoader size={24} /> : isComplete ? (
@@ -26,9 +26,9 @@ export function AIToolExecutionCard({ toolName, status, result }: AIToolExecutio
           <div className="text-xs text-content-tertiary mt-1">{statusText}</div>
         </div>
       </div>
-      {result && isComplete && (
+      {result && (isComplete || isError) && (
         <div className="mx-4 mb-4 pt-3 border-t border-stroke-muted">
-          <pre className="m-0 p-3 rounded bg-surface-base border border-stroke-muted text-xs text-content-secondary font-mono whitespace-pre-wrap max-h-40 overflow-auto">{result}</pre>
+          <pre className="shd-surface-inset m-0 p-3 rounded border border-stroke-muted text-xs text-content-secondary font-mono whitespace-pre-wrap max-h-40 overflow-auto">{result}</pre>
         </div>
       )}
     </article>

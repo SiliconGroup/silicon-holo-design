@@ -8,6 +8,7 @@ interface IconButtonProps {
   size?: 'sm' | 'md' | 'lg'
   disabled?: boolean
   title?: string
+  type?: 'button' | 'submit' | 'reset'
 }
 
 const sizeClasses = {
@@ -24,6 +25,7 @@ export function IconButton({
   size = 'md',
   disabled,
   title,
+  type = 'button',
 }: IconButtonProps) {
   const variantClasses = {
     default: `
@@ -49,14 +51,14 @@ export function IconButton({
 
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       title={title}
       className={`
         flex-center rounded
         transition-colors duration-150
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus
-        focus-visible:ring-offset-2 focus-visible:ring-offset-surface-base
+        shd-control-focus focus-visible:border-stroke-strong
         disabled:text-content-disabled disabled:bg-transparent disabled:border-transparent disabled:pointer-events-none
         ${sizeClasses[size]}
         ${variantClasses[variant]}

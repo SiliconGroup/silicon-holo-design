@@ -87,7 +87,7 @@ export default function LayoutSection() {
         <HoloScrollArea maxHeight={200}>
           <div className="space-y-2">
             {scrollItems.map(item => (
-              <div key={item} className="p-2 border rounded">
+              <div key={item} className="rounded-sm border border-stroke-muted bg-surface-interactive px-3 py-2 text-sm text-content-secondary">
                 {item} - This is some content that makes the list long enough to scroll.
               </div>
             ))}

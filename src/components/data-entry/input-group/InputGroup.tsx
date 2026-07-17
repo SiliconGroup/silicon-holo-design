@@ -35,13 +35,16 @@ export function HoloInputGroup({
   disabled = false,
 }: HoloInputGroupProps) {
   const [focused, setFocused] = useState(false)
+  const [focusVisible, setFocusVisible] = useState(false)
 
   const borderColor = status === 'error'
     ? 'border-stroke-error bg-state-error-soft'
     : status === 'success'
       ? 'border-stroke-success bg-state-success-soft'
+      : focusVisible
+        ? 'border-stroke-accent-strong'
       : focused
-        ? 'border-stroke-accent ring-2 ring-focus ring-offset-1 ring-offset-surface-base'
+        ? 'border-stroke-accent'
         : variant === 'ghost'
           ? 'border-transparent hover:border-stroke-subtle'
           : 'border-stroke-default hover:border-stroke-strong'
@@ -54,27 +57,30 @@ export function HoloInputGroup({
 
     if (!isInput) return child
 
-    const childProps = child.props as { disabled?: boolean; onFocus?: (e: React.FocusEvent) => void; onBlur?: (e: React.FocusEvent) => void }
+    const childProps = child.props as { disabled?: boolean; size?: 'sm' | 'md' | 'lg'; variant?: 'default' | 'ghost'; status?: 'error' | 'success' }
 
     return cloneElement(child as ReactElement, {
       grouped: true,
-      size,
-      variant,
-      status,
+      size: childProps.size ?? size,
+      variant: childProps.variant ?? variant,
+      status: childProps.status ?? status,
       disabled: disabled || childProps.disabled,
-      onFocus: (e: React.FocusEvent) => {
-        setFocused(true)
-        childProps.onFocus?.(e)
-      },
-      onBlur: (e: React.FocusEvent) => {
-        setFocused(false)
-        childProps.onBlur?.(e)
-      },
     })
   })
 
   return (
     <div
+      onFocusCapture={(event) => {
+        setFocused(true)
+        const target = event.target as HTMLElement
+        setFocusVisible((target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') && target.matches(':focus-visible'))
+      }}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          setFocused(false)
+          setFocusVisible(false)
+        }
+      }}
       className={`
         flex items-end rounded-md border border-solid overflow-hidden
         transition-colors duration-150 bg-surface-interactive

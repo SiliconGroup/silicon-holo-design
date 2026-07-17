@@ -8,9 +8,9 @@ export const colors = {
     purple: 'rgba(170, 136, 255, %alpha)',
   },
   scene: {
-    void: 'rgba(0, 10, 14, %alpha)',
-    deep: 'rgba(0, 16, 24, %alpha)',
-    surface: 'rgba(0, 26, 40, %alpha)',
+    void: 'rgba(0, 10, 15, %alpha)',
+    deep: 'rgba(0, 18, 25, %alpha)',
+    surface: 'rgba(0, 33, 43, %alpha)',
   },
   status: {
     success: 'rgba(0, 255, 136, %alpha)',
@@ -22,6 +22,8 @@ export const colors = {
     base: { DEFAULT: 'var(--shd-surface-base)', soft: 'var(--shd-surface-base-soft)' },
     raised: { DEFAULT: 'var(--shd-surface-raised)', soft: 'var(--shd-surface-raised-soft)' },
     overlay: { DEFAULT: 'var(--shd-surface-overlay)', soft: 'var(--shd-surface-overlay-soft)' },
+    inset: 'var(--shd-surface-inset)',
+    glass: 'var(--shd-surface-glass)',
     interactive: { DEFAULT: 'var(--shd-surface-interactive)', hover: 'var(--shd-surface-interactive-hover)' },
     selected: 'var(--shd-surface-selected)',
   },
@@ -31,6 +33,7 @@ export const colors = {
     tertiary: 'var(--shd-content-tertiary)',
     disabled: 'var(--shd-content-disabled)',
     accent: 'var(--shd-content-accent)',
+    on: { accent: 'var(--shd-content-on-accent)' },
   },
   stroke: {
     muted: 'var(--shd-stroke-muted)',
@@ -52,6 +55,12 @@ export const colors = {
     },
     blue: { DEFAULT: 'var(--shd-accent-blue)', soft: 'var(--shd-accent-blue-soft)' },
     purple: { DEFAULT: 'var(--shd-accent-purple)', soft: 'var(--shd-accent-purple-soft)' },
+  },
+  spectral: {
+    cyan: 'var(--shd-spectral-film-cyan)',
+    purple: 'var(--shd-spectral-film-purple)',
+    highlight: 'var(--shd-spectral-highlight)',
+    edge: 'var(--shd-spectral-edge)',
   },
   state: {
     success: { soft: 'var(--shd-success-soft)' },

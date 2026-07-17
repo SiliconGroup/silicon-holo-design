@@ -39,8 +39,9 @@ export function HoloBreadcrumb({
                 </a>
               ) : (
                 <button
+                  type="button"
                   onClick={item.onClick}
-                  className="text-sm cursor-pointer transition-colors duration-150 text-content-tertiary hover:text-content-accent border-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus rounded"
+                  className="shd-control-focus bg-transparent text-sm cursor-pointer transition-colors duration-150 text-content-tertiary hover:text-content-accent border-none rounded"
                 >
                   {item.label}
                 </button>

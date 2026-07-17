@@ -38,4 +38,16 @@ describe('HoloDropdown', () => {
     fireEvent.keyDown(document, { key: 'Enter' })
     expect(selected).toBe('inspect')
   })
+
+  it('supports Space activation and closes when Tab leaves the menu', () => {
+    let selected = ''
+    render(<HoloDropdown items={[{ key: 'open', label: 'Open file' }]} onSelect={key => { selected = key }}><button>Actions</button></HoloDropdown>)
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }))
+    fireEvent.keyDown(document, { key: 'ArrowDown' })
+    fireEvent.keyDown(document, { key: ' ' })
+    expect(selected).toBe('open')
+    fireEvent.click(screen.getByRole('button', { name: 'Actions' }))
+    fireEvent.keyDown(document, { key: 'Tab' })
+    expect(screen.queryByRole('menu')).toBeNull()
+  })
 })

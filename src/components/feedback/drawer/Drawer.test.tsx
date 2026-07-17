@@ -5,6 +5,13 @@ import { HoloDrawer } from './Drawer'
 const flushFocus = () => new Promise(resolve => setTimeout(resolve, 0))
 
 describe('HoloDrawer', () => {
+  it('locks background scrolling and keeps long content inside the viewport', () => {
+    const { rerender } = render(<HoloDrawer open onClose={() => {}} ariaLabel="Scrollable drawer"><div>Content</div></HoloDrawer>)
+    expect(document.body.style.overflow).toBe('hidden')
+    expect(screen.getByRole('dialog').className).toContain('overflow-hidden')
+    rerender(<HoloDrawer open={false} onClose={() => {}} ariaLabel="Scrollable drawer"><div>Content</div></HoloDrawer>)
+    expect(document.body.style.overflow).toBe('')
+  })
   it('renders an accessible drawer and closes with Escape', () => {
     const onClose = vi.fn()
     render(<HoloDrawer open onClose={onClose} title="Inspector"><button>Action</button></HoloDrawer>)

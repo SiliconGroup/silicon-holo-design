@@ -5,11 +5,18 @@ import { HoloModal } from './Modal'
 const flushFocus = () => new Promise(resolve => setTimeout(resolve, 0))
 
 describe('HoloModal', () => {
+  it('locks background scrolling and provides an internal scroll region', () => {
+    const { rerender } = render(<HoloModal open onClose={() => {}} ariaLabel="Scrollable dialog"><div>Content</div></HoloModal>)
+    expect(document.body.style.overflow).toBe('hidden')
+    expect(screen.getByRole('dialog').className).toContain('max-h-[calc(100vh-32px)]')
+    rerender(<HoloModal open={false} onClose={() => {}} ariaLabel="Scrollable dialog"><div>Content</div></HoloModal>)
+    expect(document.body.style.overflow).toBe('')
+  })
   it('renders an accessible dialog and closes with Escape', () => {
     const onClose = vi.fn()
     render(<HoloModal open onClose={onClose} title="Settings" closable><button>Action</button></HoloModal>)
-    expect(screen.getByRole('dialog', { name: 'Settings' })).toBeDefined()
-    expect(screen.getByRole('button', { name: 'Close' })).toBeDefined()
+    expect(screen.getByRole('dialog', { name: 'Settings' }).className).toContain('text-content-primary')
+    expect(screen.getByRole('button', { name: 'Close' }).className).toContain('bg-transparent')
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(onClose).toHaveBeenCalledOnce()
   })

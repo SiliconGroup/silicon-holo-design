@@ -40,8 +40,7 @@ export const HoloRadio = forwardRef<HTMLInputElement, HoloRadioProps>(
           />
           <div
             className={`
-              border border-solid rounded-full transition-colors duration-150 bg-surface-interactive
-              peer-focus-visible:ring-2 peer-focus-visible:ring-focus peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-surface-base
+              shd-peer-control-focus border border-solid rounded-full transition-colors duration-150 bg-surface-interactive
               ${sizeMap[size]}
               ${checked
                 ? 'border-stroke-accent-strong bg-accent-primary-soft'

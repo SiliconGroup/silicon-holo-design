@@ -14,6 +14,8 @@ describe('HoloSelect', () => {
     const trigger = screen.getByRole('combobox')
     fireEvent.click(trigger)
     expect(trigger.getAttribute('aria-expanded')).toBe('true')
+    expect(trigger.className).not.toContain('ring-offset')
+    expect(trigger.className).not.toContain('ring-2 ring-focus ring-offset')
     fireEvent.click(screen.getByRole('option', { name: 'React' }))
     expect(value).toBe('react')
   })
@@ -68,5 +70,11 @@ describe('HoloSelect', () => {
     fireEvent.change(input, { target: { value: 'New York' } })
     expect((input as HTMLInputElement).value).toBe('New York')
     expect(screen.getByRole('listbox')).toBeDefined()
+  })
+
+  it('positions its portal listbox against the viewport', () => {
+    render(<HoloSelect options={[{ value: 'react', label: 'React' }]} value="" onChange={() => undefined} />)
+    fireEvent.click(screen.getByRole('combobox'))
+    expect(screen.getByRole('listbox').style.top).not.toBe('')
   })
 })

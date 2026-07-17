@@ -22,7 +22,7 @@ export function CodeBlock({ className, children, ...props }: ComponentPropsWitho
         <button
           type="button"
           onClick={handleCopy}
-          className="border-none rounded px-2 py-1 text-xs text-content-tertiary transition-colors duration-150 hover:bg-surface-interactive hover:text-content-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          className="shd-control-focus border-none bg-transparent rounded px-2 py-1 text-xs text-content-tertiary transition-colors duration-150 hover:bg-surface-interactive hover:text-content-primary"
           aria-label={copied ? 'Code copied' : 'Copy code'}
         >
           {copied ? 'Copied' : 'Copy'}

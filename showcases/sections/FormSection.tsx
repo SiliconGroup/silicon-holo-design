@@ -3,6 +3,8 @@ import { ComponentDemo } from '../ComponentDemo'
 import {
   HoloButton,
   HoloInput,
+  HoloInputGroup,
+  HoloInputAddon,
   HoloTextarea,
   HoloSelect,
   HoloCheckbox,
@@ -91,6 +93,24 @@ export default function FormSection() {
           />
           <HoloInput status="error" placeholder="Error status" />
           <HoloInput status="success" placeholder="Success status" />
+        </div>
+      </ComponentDemo>
+
+      <ComponentDemo id="input-group" title="HoloInputGroup" description="Single-edge grouped controls with addons and focus-within states">
+        <div className="flex flex-col gap-4">
+          <HoloInputGroup>
+            <HoloInputAddon>https://</HoloInputAddon>
+            <HoloInput placeholder="workspace.example" />
+            <HoloInputAddon>.dev</HoloInputAddon>
+          </HoloInputGroup>
+          <HoloInputGroup status="success">
+            <HoloInputAddon>✓</HoloInputAddon>
+            <HoloInput defaultValue="spectral-flat" aria-label="Validated grouped input" />
+          </HoloInputGroup>
+          <HoloInputGroup disabled>
+            <HoloInputAddon>ID</HoloInputAddon>
+            <HoloInput placeholder="Disabled group" />
+          </HoloInputGroup>
         </div>
       </ComponentDemo>
 
@@ -193,7 +213,7 @@ export default function FormSection() {
         <HoloUpload onFiles={(files) => console.log('Files uploaded:', files)} />
       </ComponentDemo>
 
-      <ComponentDemo id="date-picker" title="HoloDatePicker" description="Date selection input">
+      <ComponentDemo id="date-picker" title="HoloDatePicker" description="Date selection input" compareSurfaces={false}>
         <HoloDatePicker
           value={date}
           onChange={setDate}

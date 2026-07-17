@@ -12,7 +12,7 @@ export function GlowCard({ children, className = '', variant = 'default', hoverE
   const variants = {
     default: 'bg-surface-base border-stroke-subtle',
     elevated: 'bg-surface-raised border-stroke-default',
-    intense: 'bg-surface-raised border-stroke-strong',
+    intense: 'shd-spectral-panel-raised border-stroke-accent',
   }
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return
@@ -22,7 +22,7 @@ export function GlowCard({ children, className = '', variant = 'default', hoverE
 
   return (
     <div
-      className={`relative overflow-hidden border rounded-md transition-colors duration-150 ${variants[variant]} ${hoverEffect ? 'hover:bg-surface-interactive hover:border-stroke-strong' : ''} ${onClick ? 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus' : ''} ${className}`}
+      className={`relative overflow-hidden border rounded-md text-content-primary transition-colors duration-150 ${variants[variant]} ${hoverEffect ? 'hover:border-stroke-strong hover:saturate-125' : ''} ${onClick ? 'shd-control-focus cursor-pointer' : ''} ${className}`}
       onClick={onClick}
       onKeyDown={handleKeyDown}
       role={onClick ? 'button' : undefined}

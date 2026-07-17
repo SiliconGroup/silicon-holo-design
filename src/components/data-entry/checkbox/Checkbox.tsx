@@ -44,8 +44,7 @@ export const HoloCheckbox = forwardRef<HTMLInputElement, HoloCheckboxProps>(
           />
           <div
             className={`
-              border border-solid rounded transition-colors duration-150
-              peer-focus-visible:ring-2 peer-focus-visible:ring-focus peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-surface-base
+              shd-peer-control-focus border border-solid rounded transition-colors duration-150
               ${sizeMap[size]}
               ${checked || indeterminate
                 ? 'bg-accent-primary-soft border-stroke-accent-strong'

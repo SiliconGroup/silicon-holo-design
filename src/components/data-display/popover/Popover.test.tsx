@@ -8,6 +8,7 @@ describe('HoloPopover', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open' }))
     const trigger = screen.getByRole('button', { name: 'Open' })
     const dialog = screen.getByRole('dialog')
+    expect(dialog.className).toContain('text-content-primary')
     expect(screen.getByRole('dialog', { name: 'Open' })).toBe(dialog)
     expect(trigger.getAttribute('aria-haspopup')).toBe('dialog')
     expect(trigger.getAttribute('aria-expanded')).toBe('true')
@@ -33,5 +34,11 @@ describe('HoloPopover', () => {
 
     fireEvent.blur(trigger, { relatedTarget: screen.getByRole('button', { name: 'Outside' }) })
     expect(screen.queryByRole('dialog')).toBeNull()
+  })
+
+  it('positions the portal panel against the viewport', () => {
+    render(<HoloPopover content="Details"><button type="button">Open</button></HoloPopover>)
+    fireEvent.click(screen.getByRole('button', { name: 'Open' }))
+    expect(screen.getByRole('dialog').style.position).toBe('fixed')
   })
 })

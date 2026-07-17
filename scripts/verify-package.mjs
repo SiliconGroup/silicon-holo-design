@@ -10,7 +10,7 @@ const packDirectory = join(workspace, 'package')
 const consumerDirectory = join(workspace, 'consumer')
 const expectedPublicExports = {
   'silicon-holo-design': [
-  'AIChatContainer', 'AIMessageBubble', 'AIMessageList', 'AIToolCallCard', 'AIToolCallGroup',
+  'AIChatContainer', 'AIMessageBubble', 'AIMessageList', 'AITaskExecutionPanel', 'AIToolCallCard', 'AIToolCallGroup',
   'AIToolExecutionCard', 'ArtifactPreviewDrawer', 'ChatBubble', 'ChatContainer', 'ChatInputArea',
   'ChatMessageList', 'CircuitBorder', 'CodeBlock', 'DataStreamEffect', 'GlowCard', 'HexagonLoader',
   'HoloAlert', 'HoloAnchor', 'HoloAvatar', 'HoloBadge', 'HoloBreadcrumb', 'HoloButton',
@@ -21,12 +21,12 @@ const expectedPublicExports = {
   'HoloRadioGroup', 'HoloScrollArea', 'HoloSelect', 'HoloSkeleton', 'HoloSlider', 'HoloSpace',
   'HoloSpinner', 'HoloSteps', 'HoloSwitch', 'HoloTab', 'HoloTable', 'HoloTag', 'HoloTextarea',
   'HoloTimeline', 'HoloTooltip', 'HoloUpload', 'HtmlPreviewBlock', 'IconButton', 'LocaleProvider',
-  'MessageBubble', 'MessageList', 'StatusIndicator', 'ThemeProvider', 'ToastProvider',
-  'ToolExecutionCard', 'cn', 'defaultSemanticTokens', 'defaultTokens', 'enUS', 'formatMessage',
+  'MessageBubble', 'MessageList', 'StatusIndicator', 'ThemeProvider', 'ThemeStyle', 'ToastProvider',
+  'ToolExecutionCard', 'cn', 'createThemeCss', 'defaultSemanticTokens', 'defaultTokens', 'enUS', 'formatMessage',
   'isFullHtmlPage', 'presetSiliconHolo', 'useClickOutside', 'useLocale', 'useTheme', 'useToast', 'zhCN',
   ],
   'silicon-holo-design/chat': ['ChatBubble', 'ChatInputArea', 'ChatMessageList'],
-  'silicon-holo-design/ai': ['AIChatContainer', 'AIMessageBubble', 'AIMessageList', 'AIToolCallCard', 'AIToolCallGroup', 'AIToolExecutionCard', 'ArtifactPreviewDrawer'],
+  'silicon-holo-design/ai': ['AIChatContainer', 'AIMessageBubble', 'AIMessageList', 'AITaskExecutionPanel', 'AIToolCallCard', 'AIToolCallGroup', 'AIToolExecutionCard', 'ArtifactPreviewDrawer'],
   'silicon-holo-design/preset': ['colors', 'presetSiliconHolo', 'shortcuts'],
   'silicon-holo-design/locale/en-US': ['default'],
   'silicon-holo-design/locale/zh-CN': ['default'],
@@ -304,9 +304,10 @@ export const compatibilityFixture = (
     <Root.ThemeProvider {...themeProviderProps}><span /></Root.ThemeProvider>
     <Root.ToastProvider><HookFixture /></Root.ToastProvider>
     <Chat.ChatBubble align="left" streaming timestamp="now" className="fixture">chat</Chat.ChatBubble><Chat.ChatInputArea onSend={setString} disabled /><Chat.ChatMessageList scrollDeps={[1]} isEmpty emptyContent="empty" className="fixture">chat</Chat.ChatMessageList>
-    <AI.AIMessageBubble message={message} isStreaming enableCopy actions={<span />} onOpenArtifact={noop} markdownComponents={{}} />
+    <AI.AIMessageBubble message={message} isStreaming enableCopy actions={<span />} onOpenArtifact={noop} markdownComponents={{ a: (props: React.ComponentProps<'a'>) => <a {...props} data-fixture="markdown-link" /> }} />
     <AI.AIMessageList messages={[message]} streamingContent="stream" streamingThinking="thinking" processing emptyContent="empty" onOpenArtifact={noop} enableCopy renderFileGroup={() => <span />} />
     <AI.AIChatContainer messages={[message]} onSend={setString} processing streamingContent="stream" streamingThinking="thinking" showEmptyState noSessionContent="none" emptyContent="empty" onOpenArtifact={noop} />
+    <AI.AITaskExecutionPanel taskList={{ description: 'Release', tasks: [{ id: 'one', description: 'Build', completed: true, files: ['dist'] }] }} defaultExpanded headerMeta="1 call" renderTaskDetails={task => task.files.join(', ')} />
     <AI.AIToolCallCard name="tool" status="complete" arguments="{}" result="{}" durationMs={1} grouped /><AI.AIToolCallGroup messages={[toolMessage]} /><AI.AIToolExecutionCard toolName="tool" status="running" result="result" />
     <AI.ArtifactPreviewDrawer artifact={artifact} onClose={noop} width="50vw" renderers={{ html: () => <span /> }} />
     <Root.MessageBubble message={message} /><Root.MessageList messages={[message]} /><Root.ChatContainer onSend={setString} /><Root.ToolExecutionCard toolName="legacy" status="pending" />
@@ -325,7 +326,7 @@ export const minimalCompatibilityFixture = (
         <Root.HoloTable columns={[]} data={[]} rowKey="id" /><Root.HoloTag>tag</Root.HoloTag><Root.HoloBadge><span /></Root.HoloBadge><Root.HoloAvatar /><Root.HoloDescriptions items={[]} /><Root.HoloTimeline items={[]} /><Root.HoloCollapse items={[]} /><Root.HoloTooltip content="tip"><span /></Root.HoloTooltip><Root.HoloPopover content="popover"><span /></Root.HoloPopover><Root.HoloEmpty /><Root.HoloKbd>key</Root.HoloKbd><Root.StatusIndicator status="connected" /><Root.CodeBlock />
         <Root.HoloModal open={false} onClose={noop}>modal</Root.HoloModal><Root.HoloConfirm open={false} onConfirm={noop} onCancel={noop} title="confirm" /><Root.HoloDrawer open={false} onClose={noop}>drawer</Root.HoloDrawer><Root.HoloAlert type="info" /><Root.HoloProgress percent={0} /><Root.HoloSkeleton loading={false}><span /></Root.HoloSkeleton><Root.HoloSpinner /><Root.HexagonLoader /><Root.DataStreamEffect active={false} />
         <Chat.ChatBubble align="left">chat</Chat.ChatBubble><Chat.ChatInputArea onSend={setString} /><Chat.ChatMessageList>chat</Chat.ChatMessageList>
-        <AI.AIMessageBubble message={message} /><AI.AIMessageList messages={[]} /><AI.AIChatContainer onSend={setString} /><AI.AIToolCallCard name="tool" status="pending" /><AI.AIToolCallGroup messages={[]} /><AI.AIToolExecutionCard toolName="tool" status="pending" /><AI.ArtifactPreviewDrawer artifact={null} onClose={noop} />
+        <AI.AIMessageBubble message={message} /><AI.AIMessageList messages={[]} /><AI.AIChatContainer onSend={setString} /><AI.AITaskExecutionPanel taskList={{ description: 'Tasks', tasks: [] }} /><AI.AIToolCallCard name="tool" status="pending" /><AI.AIToolCallGroup messages={[]} /><AI.AIToolExecutionCard toolName="tool" status="pending" /><AI.ArtifactPreviewDrawer artifact={null} onClose={noop} />
         <Root.MessageBubble message={message} /><Root.MessageList messages={[]} /><Root.ChatContainer onSend={setString} /><Root.ToolExecutionCard toolName="tool" status="pending" /><Root.HoloPortal><span /></Root.HoloPortal><HookFixture />
       </Root.ToastProvider>
     </Root.LocaleProvider>
@@ -346,6 +347,8 @@ console.log('public export baselines verified')
 `)
 
   run('npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund', '--no-package-lock'], consumerDirectory)
+  const installedPresetTypes = readFileSync(join(consumerDirectory, 'node_modules/silicon-holo-design/dist/preset/index.d.ts'), 'utf8')
+  if (/from ["']unocss["']/.test(installedPresetTypes)) throw new Error('package declarations must not require UnoCSS for ordinary consumers')
   run('node', ['verify-exports.mjs'], consumerDirectory)
   run(join(consumerDirectory, 'node_modules/.bin/tsc'), ['--noEmit'], consumerDirectory)
   run(join(consumerDirectory, 'node_modules/.bin/vite'), ['build', '--config', 'vite.styles.config.ts'], consumerDirectory)
@@ -353,17 +356,24 @@ console.log('public export baselines verified')
   const builtHtml = readFileSync(join(consumerDirectory, 'dist/index.html'), 'utf8')
   if (!builtHtml.includes('/assets/')) throw new Error('consumer Vite build did not emit assets')
   const stylesOnlyCss = globSync('dist/assets/*.css', { cwd: consumerDirectory, absolute: true }).map(file => readFileSync(file, 'utf8')).join('\n')
-  for (const value of ['--shd-surface-base:', '.bg-surface-raised{', '.border-stroke-accent{', '.focus-visible\\:ring-focus:focus-visible{', '@media(prefers-reduced-motion:reduce)']) {
+  for (const value of ['--shd-surface-base:', '--shd-surface-inset:', '--shd-content-on-accent:', '.shd-spectral-glass{', '.shd-surface-inset{', '.shd-control-focus:focus-visible', '.bg-surface-raised{', '.border-stroke-accent{', '.text-content-on-accent{', '.focus-visible\\:ring-focus:focus-visible{', '@media(prefers-reduced-motion:reduce)']) {
     if (!stylesOnlyCss.includes(value)) throw new Error(`clean styles-only consumer did not include ${value}`)
   }
 
   writeFileSync(join(consumerDirectory, 'index.html'), '<div id="root"></div><script type="module" src="/src/preset-only.tsx"></script>')
   run(join(consumerDirectory, 'node_modules/.bin/vite'), ['build', '--config', 'vite.preset.config.ts', '--outDir', 'dist-preset', '--emptyOutDir'], consumerDirectory)
   const presetCss = globSync('dist-preset/assets/*.css', { cwd: consumerDirectory, absolute: true }).map(file => readFileSync(file, 'utf8')).join('\n')
-  if (!/\*,:{1,2}before,:{1,2}after\{[^}]*border-width:0[^}]*border-style:solid/.test(presetCss)) throw new Error('clean preset consumer did not generate the border preflight')
-  if (!/button\{[^}]*appearance:none[^}]*border-width:0/.test(presetCss)) throw new Error('clean preset consumer did not generate the control reset')
-  for (const selector of ['.shd-spectral-panel-raised{', '.shd-local-focus:focus-visible{', '.flex-center{', '.shd-focus-ring:focus-visible{', '.bg-surface-raised{', '.border-stroke-accent{', '.bg-state-warning-soft{']) {
+  if (!/\.border(?:,[^{]+)?\{[^}]*border-style:solid/.test(presetCss)) throw new Error('clean preset consumer did not generate scoped border utility styles')
+  if (!/button\.shd-control-focus(?:,[^{]+)?\{[^}]*appearance:none/.test(presetCss)) throw new Error('clean preset consumer did not generate the scoped control reset')
+  if (!/button\.shd-local-focus\{[^}]*background-color:transparent[^}]*color:inherit/.test(presetCss)) throw new Error('clean preset consumer did not generate the local control material reset')
+  if (/(?:^|})button\{[^}]*(?:appearance:none|border-width:0|background:none)/.test(presetCss)) throw new Error('clean preset consumer reset host buttons globally')
+  for (const selector of ['.shd-spectral-panel-raised{', '.shd-spectral-glass{', '.shd-surface-inset{', '.shd-local-focus:focus-visible{', '.shd-control-focus:focus-visible', '.flex-center{', '.shd-focus-ring:focus-visible{', '.bg-surface-raised{', '.border-stroke-accent{', '.text-content-on-accent{', '.bg-state-warning-soft{']) {
     if (!presetCss.includes(selector)) throw new Error(`clean preset consumer did not generate ${selector}`)
+  }
+  for (const selector of ['.shd-spectral-panel-raised{', '.shd-spectral-glass{', '.shd-surface-inset{']) {
+    const start = presetCss.indexOf(selector)
+    const rule = presetCss.slice(start, presetCss.indexOf('}', start) + 1)
+    if (!rule.includes('color:var(--shd-content-primary)')) throw new Error(`clean preset consumer ${selector} lacks semantic foreground`)
   }
   console.log('✓ npm tarball installs, resolves all public types, imports styles, and builds in a clean Vite consumer')
 } finally {

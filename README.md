@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/components-58-00e5ff?style=flat-square" alt="58 components" />
+  <img src="https://img.shields.io/badge/components-59-00e5ff?style=flat-square" alt="59 components" />
   <img src="https://img.shields.io/badge/react-18-61dafb?style=flat-square" alt="React 18" />
   <img src="https://img.shields.io/badge/typescript-5.7-3178c6?style=flat-square" alt="TypeScript" />
   <img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="Apache 2.0" />
@@ -33,8 +33,9 @@
 Version `0.2.0` refines the visual system without changing component calls. The interface uses deep-space near-black surfaces, neutral structural strokes, low-fill controls, and local cyan/blue/purple spectral response. Cyan remains the identity color, but it is concentrated in focus, active state, data signals, and brand moments instead of filling every panel.
 
 - Buttons stay flat through tonal fills and stable neutral boundaries rather than top highlights or glowing frames.
-- Cards and inputs use stable surface roles instead of default blur.
-- Drawers, modals, alerts, and tool cards retain holographic identity through deep surface hierarchy, precise information density, and restrained state color.
+- Cards, tool panels, and message surfaces use translucent spectral thin films over stable deep-space foundations; ordinary controls still avoid blur.
+- Drawers, modals, popovers, tooltips, and toasts use restrained glass overlays, while payload and code regions use a darker inset surface.
+- Selected and open states use tonal fill or a local edge; the outer focus frame is reserved for keyboard focus instead of becoming a second glowing border.
 - `.holo-text` is static and reserved for brand or hero usage; `.holo-text-animated` is explicit and reduced-motion aware.
 
 ---
@@ -61,6 +62,8 @@ function App() {
 ### Styles (Required)
 
 `import 'silicon-holo-design/styles'` is **required** — it provides CSS variables (`--shd-*`) and base styles that all components depend on. Without it, colors and theming will not work.
+
+The prebuilt stylesheet also contains the utility selectors used internally by components so projects without UnoCSS render identically. This preserves the existing zero-configuration CSS contract; applications that already use UnoCSS may use the preset instead. The package targets modern bundler resolution (`moduleResolution: "Bundler"`, as used by Vite), matching the published 0.1.x declaration format.
 
 ### UnoCSS Preset
 
@@ -92,7 +95,7 @@ The preset includes colors, shortcuts, fonts, and a **safelist** of all CSS clas
 
 ## Components
 
-58 components across 7 categories.
+59 components across 7 categories.
 
 ### General
 
@@ -194,7 +197,10 @@ Higher-level components built on top of the chat layer, designed for AI assistan
 | `AIChatContainer` | Full AI chat interface (message list + input + empty state). Supports `noSessionContent` and `emptyContent` for custom empty states. |
 | `AIMessageBubble` | Message bubble with Markdown, math formulas (KaTeX), syntax highlighting, Mermaid diagrams |
 | `AIMessageList` | Message list with streaming, thinking state, and tool call display. Supports custom `emptyContent`. |
+| `AIToolCallCard` | Expandable tool arguments/result card with semantic execution states |
+| `AIToolCallGroup` | Compact grouped audit trail for consecutive tool calls |
 | `AIToolExecutionCard` | Tool call status card (pending → running → complete/error) |
+| `AITaskExecutionPanel` | Protocol-neutral task summary with progress, controlled expansion, and custom task evidence |
 
 > **Note:** Legacy aliases `ChatContainer`, `MessageBubble`, `MessageList`, `ToolExecutionCard` are still available but deprecated. Use the `AI`-prefixed names.
 
@@ -398,8 +404,8 @@ Override CSS variables to customize the theme. All variables use the `--shd-` pr
   --shd-holo-cyan: #00e5ff;
   --shd-holo-green: #00ffaa;
   --shd-holo-purple: #b388ff;
-  --shd-scene-void: #000a0e;
-  --shd-scene-deep: #001018;
+  --shd-scene-void: #000b0c;
+  --shd-scene-deep: #001311;
   --shd-surface-raised: #041218;
   --shd-content-primary: rgba(244, 251, 255, 0.92);
   --shd-stroke-default: rgba(133, 171, 188, 0.24);
@@ -417,6 +423,17 @@ import { ThemeProvider } from 'silicon-holo-design'
 <ThemeProvider theme={{ colors: { 'holo-cyan': '#ff6b35' } }}>
   <App />
 </ThemeProvider>
+```
+
+For backward compatibility, a top-level provider applies variables to the document root without adding a DOM wrapper. Explicitly nested providers inherit the parent override and use a local scope that is also forwarded to library portals.
+
+SSR applications can emit the same variables in the document head before hydration:
+
+```tsx
+import { ThemeProvider, ThemeStyle } from 'silicon-holo-design'
+
+<head><ThemeStyle theme={theme} nonce={cspNonce} /></head>
+<body><ThemeProvider theme={theme}><App /></ThemeProvider></body>
 ```
 
 Semantic roles can be overridden independently while legacy primitive overrides remain valid:
@@ -499,7 +516,7 @@ npm run example:ai-chat
 
 ### `examples/component-gallery`
 
-All 58 components rendered on a single page — useful as a visual reference.
+A broad cross-category component gallery, including the spectral Chat/AI execution surfaces. The main Showcase covers the core visual state matrix; the focused examples complete end-to-end coverage for chat containers, message lists, toasts, and application composition.
 
 ```bash
 npm run example:gallery
@@ -550,7 +567,7 @@ silicon-holo-design/
 │   │   ├── data-display/  # Table, Tag, Badge, Avatar, Tooltip, CodeBlock, ...
 │   │   ├── feedback/      # Modal, Drawer, Alert, Progress, Toast, ...
 │   │   ├── chat/          # ChatBubble, ChatInputArea, ChatMessageList (base layer)
-│   │   └── ai/            # AIChatContainer, AIMessageBubble, AIToolExecutionCard (AI layer)
+│   │   └── ai/            # AIChatContainer, ToolCall, TaskExecution, Artifact preview (AI layer)
 │   ├── locale/            # i18n (en-US, zh-CN)
 │   ├── theme/             # Theme tokens & provider
 │   ├── preset/            # UnoCSS preset

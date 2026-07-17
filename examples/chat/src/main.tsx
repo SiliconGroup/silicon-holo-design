@@ -53,19 +53,19 @@ function App() {
       <ToastProvider>
         <div className="relative h-screen flex flex-col overflow-hidden bg-surface-canvas text-content-primary">
           <div className="absolute inset-0 pointer-events-none" style={{
-            background: 'linear-gradient(rgba(0,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.018) 1px, transparent 1px), radial-gradient(circle at 22% 0%, rgba(0,136,255,0.08), transparent 38%)',
+            background: 'linear-gradient(rgba(0,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.018) 1px, transparent 1px), radial-gradient(circle at 22% 0%, rgba(0,230,190,0.08), transparent 38%)',
             backgroundSize: '32px 32px, 32px 32px, auto',
           }} />
 
-          <header className="relative flex items-center gap-4 px-6 py-3 border-b border-stroke-subtle bg-surface-base">
+          <header className="relative flex flex-wrap items-center gap-3 border-b border-stroke-subtle bg-surface-base px-4 py-3 sm:gap-4 sm:px-6">
             <div className="w-8 h-8 rounded flex-center border border-stroke-default bg-accent-primary-softer text-content-accent font-mono">S</div>
-            <div>
+            <div className="min-w-0 flex-1 sm:flex-none">
               <h1 className="m-0 text-base font-semibold text-content-primary">Spectral Chat</h1>
               <p className="m-0 mt-0.5 text-[11px] text-content-tertiary">ChatBubble · ChatMessageList · ChatInputArea</p>
             </div>
             <HoloTag size="sm" color={replying ? 'purple' : 'green'}>{replying ? 'responding' : 'online'}</HoloTag>
-            <div className="ml-auto">
-              <HoloSpace size="sm">
+            <div className="w-full sm:ml-auto sm:w-auto">
+              <HoloSpace size="sm" wrap>
                 <HoloButton size="sm" variant={locale === enUS ? 'primary' : 'ghost'} onClick={() => setLocale(enUS)}>EN</HoloButton>
                 <HoloButton size="sm" variant={locale === zhCN ? 'primary' : 'ghost'} onClick={() => setLocale(zhCN)}>中文</HoloButton>
               </HoloSpace>

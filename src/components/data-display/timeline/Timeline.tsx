@@ -31,17 +31,17 @@ const timelineColorClasses: Record<string, string> = {
 export function HoloTimeline({ items, className = '' }: HoloTimelineProps) {
   return (
     <div className={`relative ${className}`}>
-      <div className="absolute left-1.5 top-0 bottom-0 w-0.5 border-l-2 border-stroke-subtle" />
+      <div className="absolute left-[5px] top-0 bottom-0 border-l-2 border-stroke-subtle" />
       
       <div className="space-y-6">
         {items.map((item, index) => (
           <div key={index} className="relative flex items-start">
             <div
-              className={`absolute left-0 top-1 w-3 h-3 rounded-full -translate-x-1 ${item.color ? timelineColorClasses[item.color] ?? '' : 'bg-accent-primary'}`}
+              className={`absolute left-0 top-1 w-3 h-3 rounded-full ${item.color ? timelineColorClasses[item.color] ?? '' : 'bg-accent-primary'}`}
               style={item.color && !timelineColorClasses[item.color] ? { backgroundColor: item.color } : undefined}
             >
               {item.icon && (
-                <div className="absolute inset-0 flex-center text-xs text-scene-void">
+                <div className="absolute inset-0 flex-center text-xs text-content-on-accent">
                   {item.icon}
                 </div>
               )}

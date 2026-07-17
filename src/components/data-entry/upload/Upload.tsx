@@ -1,4 +1,4 @@
-import { useRef, useState, type ReactNode, type DragEvent } from 'react'
+import { useRef, useState, type ReactNode, type DragEvent, type KeyboardEvent } from 'react'
 import { useLocale } from '@/locale'
 
 interface HoloUploadProps {
@@ -18,6 +18,7 @@ export function HoloUpload({
   children,
   className = '',
 }: HoloUploadProps) {
+  const [focusVisible, setFocusVisible] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const locale = useLocale()
@@ -32,6 +33,12 @@ export function HoloUpload({
     if (!disabled) {
       fileInputRef.current?.click()
     }
+  }
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (disabled || (event.key !== 'Enter' && event.key !== ' ')) return
+    event.preventDefault()
+    handleClick()
   }
 
   const handleDragEnter = (e: DragEvent) => {
@@ -71,21 +78,31 @@ export function HoloUpload({
 
   return (
     <div
+      role="button"
+      tabIndex={disabled ? -1 : 0}
+      aria-disabled={disabled}
       className={`
         border border-dashed rounded-lg p-6 text-center cursor-pointer bg-surface-raised
-        transition-colors duration-150 focus-within:ring-2 focus-within:ring-focus
+        shd-spectral-panel-raised transition-colors duration-150
         ${isDragOver
           ? 'border-stroke-accent-strong bg-surface-selected'
+          : focusVisible
+            ? 'border-stroke-accent-strong bg-surface-interactive-hover'
           : 'border-stroke-default hover:border-stroke-accent hover:bg-surface-interactive-hover'
         }
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
         ${className}
       `}
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onFocusCapture={(event) => setFocusVisible(event.currentTarget.matches(':focus-visible'))}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocusVisible(false)
+      }}
     >
       <input
         ref={fileInputRef}
@@ -93,6 +110,7 @@ export function HoloUpload({
         accept={accept}
         multiple={multiple}
         disabled={disabled}
+        tabIndex={-1}
         className="hidden"
         onChange={(e) => handleFiles(e.target.files)}
       />

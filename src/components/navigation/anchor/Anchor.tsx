@@ -34,7 +34,7 @@ export function HoloAnchor({ items, activeKey, onChange, className = '' }: HoloA
             key={item.key}
             className={`
               block w-full appearance-none bg-transparent pl-3 py-1.5 text-left text-sm cursor-pointer transition-colors duration-150
-              border-y-0 border-r-0 border-l-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus
+              shd-control-focus border-y-0 border-r-0 border-l-2
               ${isActive
                 ? 'text-content-accent border-l-accent-primary bg-accent-primary-softer'
                 : 'text-content-tertiary hover:text-content-primary border-l-transparent'

@@ -22,6 +22,7 @@ const navCategories: NavCategory[] = [
     title: 'Spectral Flat',
     items: [
       { id: 'foundations', title: 'Foundations' },
+      { id: 'materials', title: 'Surface Materials' },
       { id: 'compatibility', title: 'Compatibility' },
     ]
   },
@@ -31,9 +32,12 @@ const navCategories: NavCategory[] = [
       { id: 'chat-bubble', title: 'ChatBubble' },
       { id: 'chat-input', title: 'ChatInputArea' },
       { id: 'ai-message', title: 'AIMessageBubble' },
+      { id: 'artifact-preview', title: 'ArtifactPreviewDrawer' },
       { id: 'tool-call-card', title: 'AIToolCallCard' },
       { id: 'tool-call-group', title: 'AIToolCallGroup' },
+      { id: 'tool-long-payload', title: 'Long Tool Payload' },
       { id: 'tool-execution', title: 'AIToolExecutionCard' },
+      { id: 'task-execution', title: 'AITaskExecutionPanel' },
       { id: 'data-stream', title: 'DataStreamEffect' },
     ]
   },
@@ -42,6 +46,7 @@ const navCategories: NavCategory[] = [
     items: [
       { id: 'button', title: 'HoloButton' },
       { id: 'input', title: 'HoloInput' },
+      { id: 'input-group', title: 'HoloInputGroup' },
       { id: 'textarea', title: 'HoloTextarea' },
       { id: 'select', title: 'HoloSelect' },
       { id: 'checkbox', title: 'HoloCheckbox' },
@@ -112,6 +117,15 @@ const navCategories: NavCategory[] = [
 export function ShowcaseLayout() {
   const [activeSection, setActiveSection] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 767px)')
+    const sync = () => setIsMobile(media.matches)
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [])
 
   const scrollToComponent = (componentId: string) => {
     const el = document.getElementById(componentId)
@@ -146,8 +160,12 @@ export function ShowcaseLayout() {
     <div className="relative flex h-screen">
       {/* Mobile toggle */}
       <button
+        type="button"
+        aria-label={sidebarOpen ? 'Close component navigation' : 'Open component navigation'}
+        aria-expanded={sidebarOpen}
+        aria-controls="showcase-navigation"
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="md:hidden fixed top-4 left-4 z-50 w-9 h-9 flex-center rounded border border-stroke-default hover:border-stroke-accent bg-surface-overlay text-content-secondary hover:text-content-accent transition-colors duration-150"
+        className="shd-control-focus appearance-none md:hidden fixed top-4 left-4 z-50 w-9 h-9 flex-center rounded border border-stroke-default hover:border-stroke-accent bg-surface-overlay text-content-secondary hover:text-content-accent transition-colors duration-150"
       >
         <span className="i-carbon-menu text-lg" />
       </button>
@@ -157,7 +175,11 @@ export function ShowcaseLayout() {
       )}
 
       {/* Sidebar */}
-      <aside className={`
+      <aside
+        id="showcase-navigation"
+        aria-hidden={isMobile && !sidebarOpen}
+        {...(isMobile && !sidebarOpen ? { inert: '' } : {})}
+        className={`
         fixed md:sticky top-0 left-0 z-40 w-60 flex-shrink-0
         bg-surface-base border-r border-stroke-subtle
         h-screen overflow-y-auto transition-transform duration-250
@@ -173,9 +195,10 @@ export function ShowcaseLayout() {
               <h3 className="text-xs text-content-tertiary uppercase tracking-wider mb-1 mt-4 px-2">{cat.title}</h3>
               {cat.items.map((item) => (
                 <button
+                  type="button"
                   key={item.id}
                   onClick={() => scrollToComponent(item.id)}
-                  className={`text-sm py-1.5 pl-3 block w-full text-left rounded-sm transition-colors duration-200 ${
+                  className={`shd-control-focus appearance-none bg-transparent border-y-0 border-r-0 text-sm py-1.5 pl-3 block w-full text-left rounded-sm transition-colors duration-200 ${
                     activeSection === item.id
                       ? 'text-content-accent bg-accent-primary-softer border-l-2 border-accent-primary'
                       : 'text-content-tertiary hover:text-content-primary hover:bg-surface-interactive border-l-2 border-transparent'

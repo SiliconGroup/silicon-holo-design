@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { HoloPortal } from '@/utils/portal'
 import { focusFirstOrContainer, restoreFocus, trapFocus } from '@/utils/focus'
 import { useLocale } from '@/locale'
+import { lockDocumentScroll } from '@/utils/scroll-lock'
 
 interface HoloModalProps {
   open: boolean
@@ -44,6 +45,7 @@ export function HoloModal({
     }
 
     const previousFocus = document.activeElement as HTMLElement | null
+    const unlockScroll = lockDocumentScroll()
     document.addEventListener('keydown', handleEscape)
     document.addEventListener('keydown', handleTab)
 
@@ -55,6 +57,7 @@ export function HoloModal({
       document.removeEventListener('keydown', handleEscape)
       document.removeEventListener('keydown', handleTab)
       restoreFocus(previousFocus)
+      unlockScroll()
     }
   }, [open, maskClosable, onClose])
 
@@ -76,9 +79,9 @@ export function HoloModal({
           aria-label={title ? undefined : ariaLabel ?? 'Dialog'}
           tabIndex={-1}
           className={`
-            relative bg-surface-overlay border border-stroke-subtle rounded-md z-50
+            shd-spectral-glass relative border border-stroke-default rounded-md z-50 text-content-primary
             shadow-[0_24px_70px_rgba(0,0,0,0.42)]
-            w-full ${width} animate-[fadeInScale_240ms_var(--shd-ease-standard)] ${className}
+            flex max-h-[calc(100vh-32px)] w-full flex-col overflow-hidden ${width} animate-[fadeInScale_240ms_var(--shd-ease-standard)] ${className}
           `}
         >
           {(title || closable) && (
@@ -90,9 +93,10 @@ export function HoloModal({
               )}
               {closable && (
                 <button
+                  type="button"
                   onClick={onClose}
                   aria-label={locale.common.close}
-                  className="border-none rounded p-1 text-content-tertiary hover:text-content-primary hover:bg-surface-interactive transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+                  className="shd-control-focus border-none bg-transparent rounded p-1 text-content-tertiary hover:text-content-primary hover:bg-surface-interactive transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -101,7 +105,7 @@ export function HoloModal({
               )}
             </div>
           )}
-          <div className="p-4">{children}</div>
+          <div className="min-h-0 flex-1 overflow-auto p-4">{children}</div>
           {footer && (
             <div className="p-4 border-t border-stroke-subtle">{footer}</div>
           )}

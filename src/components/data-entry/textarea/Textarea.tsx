@@ -39,11 +39,16 @@ export const HoloTextarea = forwardRef<HTMLTextAreaElement, HoloTextareaProps>(
       readOnly,
       rows = 1,
       value,
+      'aria-invalid': ariaInvalid,
+      onFocus,
+      onBlur,
+      onKeyDown,
       ...rest
     },
     ref,
   ) => {
     const [focused, setFocused] = useState(false)
+    const [focusVisible, setFocusVisible] = useState(false)
     const innerRef = useRef<HTMLTextAreaElement>(null)
 
     useImperativeHandle(ref, () => {
@@ -63,22 +68,24 @@ export const HoloTextarea = forwardRef<HTMLTextAreaElement, HoloTextareaProps>(
         e.preventDefault()
         onSubmit()
       }
-      rest.onKeyDown?.(e)
+      onKeyDown?.(e)
     }
 
     const borderColor = status === 'error'
       ? 'border-stroke-error bg-state-error-soft'
       : status === 'success'
         ? 'border-stroke-success bg-state-success-soft'
-        : focused
-          ? 'border-stroke-accent'
+        : focusVisible
+          ? 'border-stroke-accent-strong'
+          : focused
+            ? 'border-stroke-accent'
           : variant === 'ghost'
             ? 'border-transparent hover:border-stroke-subtle'
             : 'border-stroke-default hover:border-stroke-strong'
 
     const wrapperClasses = grouped
       ? 'flex-1 min-w-0'
-      : `rounded-md border border-solid transition-colors duration-150 ${variant === 'ghost' ? 'bg-transparent' : 'bg-surface-interactive'} ${focused ? 'ring-2 ring-focus ring-offset-1 ring-offset-surface-base' : ''} ${borderColor}`
+      : `rounded-md border border-solid transition-colors duration-150 ${variant === 'ghost' ? 'bg-transparent' : 'bg-surface-interactive'} ${borderColor}`
 
     return (
       <div
@@ -90,23 +97,23 @@ export const HoloTextarea = forwardRef<HTMLTextAreaElement, HoloTextareaProps>(
       >
         <textarea
           ref={innerRef}
+          {...rest}
           disabled={disabled}
           readOnly={readOnly}
           rows={rows}
           value={value}
-          aria-invalid={status === 'error' || undefined}
+          aria-invalid={status === 'error' ? true : ariaInvalid}
           onChange={(e) => onChange?.(e.target.value, e)}
-          onFocus={(e) => { setFocused(true); rest.onFocus?.(e) }}
-          onBlur={(e) => { setFocused(false); rest.onBlur?.(e) }}
+          onFocus={(e) => { setFocused(true); setFocusVisible(e.currentTarget.matches(':focus-visible')); onFocus?.(e) }}
+          onBlur={(e) => { setFocused(false); setFocusVisible(false); onBlur?.(e) }}
           onKeyDown={handleKeyDown}
           className={`
-            w-full bg-transparent resize-none outline-none
+            w-full appearance-none border-none bg-transparent resize-none outline-none
             text-content-primary placeholder-text-content-tertiary
             font-sans leading-relaxed
             disabled:cursor-not-allowed
             ${sizeMap[size]}
           `}
-          {...rest}
         />
       </div>
     )

@@ -91,7 +91,7 @@ export function HoloConfirm({
           <div className="flex-shrink-0">{iconElement}</div>
           <div className="flex-1">
             <h3 className="text-base font-semibold text-content-primary">{title}</h3>
-            {description && <p className="text-content-tertiary text-sm mt-0.5">{description}</p>}
+            {description && <p className="text-content-secondary text-sm mt-0.5">{description}</p>}
             <div className="flex gap-3 justify-end mt-4">{buttons}</div>
           </div>
         </div>
@@ -104,7 +104,7 @@ export function HoloConfirm({
       <div className="flex flex-col items-center text-center py-2">
         {iconElement}
         <h3 className="text-xl font-semibold text-content-primary mt-3">{title}</h3>
-        {description && <p className="text-content-tertiary text-sm mt-1.5">{description}</p>}
+        {description && <p className="text-content-secondary text-sm mt-1.5">{description}</p>}
         <div className="flex gap-3 mt-6">{buttons}</div>
       </div>
     </HoloModal>

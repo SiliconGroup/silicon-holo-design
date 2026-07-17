@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { AIToolCallGroup } from '../../../src/components/ai/tool-call-group'
 import { HoloCollapse } from '../../../src/components/data-display/collapse'
@@ -8,6 +8,9 @@ import { HoloSwitch } from '../../../src/components/data-entry/switch'
 import { HoloPagination } from '../../../src/components/navigation/pagination'
 import { HoloTab } from '../../../src/components/navigation/tabs'
 import { HoloDatePicker } from '../../../src/components/data-entry/date-picker'
+import { HoloNumberInput } from '../../../src/components/data-entry/number-input'
+import { HoloModal } from '../../../src/components/feedback/modal'
+import { HoloPopover } from '../../../src/components/data-display/popover'
 import { LocaleProvider, enUS } from '../../../src/locale'
 import type { ChatMessage } from '../../../src/types'
 import 'virtual:uno.css'
@@ -19,9 +22,17 @@ const messages: ChatMessage[] = [
   { id: 'three', role: 'tool', content: '', toolName: 'render_preview', toolStatus: 'pending' },
 ]
 
+const narrowMessages: ChatMessage[] = [
+  { id: 'narrow-complete', role: 'tool', content: '', toolName: 'read_workspace', toolStatus: 'complete', toolDuration: 186 },
+  { id: 'narrow-running', role: 'tool', content: '', toolName: 'run_quality_gate_with_an_intentionally_long_name', toolStatus: 'running', toolDuration: 1200 },
+  { id: 'narrow-pending', role: 'tool', content: '', toolName: 'publish_preview', toolStatus: 'pending' },
+]
+
 const nextFrame = () => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
 
 function App() {
+  const [number, setNumber] = useState(10)
+
   useEffect(() => {
     void (async () => {
       await nextFrame()
@@ -51,11 +62,29 @@ function App() {
       const whiteStructures = structuralBorders.filter(element => ['rgb(255, 255, 255)', 'white'].includes(getComputedStyle(element).borderTopColor))
       if (whiteStructures.length > 0) throw new Error('ToolGroup or Collapse rendered a white structural border.')
 
+      const toolGroup = document.querySelector<HTMLElement>('[data-shd-tool-group]')
+      const assistantBubble = document.querySelector<HTMLElement>('[data-shd-chat-bubble="assistant"]')
+      if (!toolGroup || !assistantBubble
+        || Math.abs(toolGroup.getBoundingClientRect().left - assistantBubble.getBoundingClientRect().left) > 1
+        || Math.abs(toolGroup.getBoundingClientRect().right - assistantBubble.getBoundingClientRect().right) > 1) {
+        throw new Error(`ToolGroup and assistant messages do not share the same track: ${JSON.stringify({ tool: toolGroup?.getBoundingClientRect(), assistant: assistantBubble?.getBoundingClientRect() })}`)
+      }
+
+      const narrowGroup = document.querySelector<HTMLElement>('[data-shd-narrow-group] [data-shd-tool-group]')
+      const narrowSummary = narrowGroup?.querySelector<HTMLElement>('[data-shd-tool-summary]')
+      const narrowMeta = narrowGroup?.querySelector<HTMLElement>('[data-shd-tool-meta]')
+      if (!narrowGroup || !narrowSummary || !narrowMeta
+        || narrowMeta.getBoundingClientRect().right > narrowGroup.getBoundingClientRect().right
+        || narrowSummary.scrollWidth <= narrowSummary.clientWidth
+        || getComputedStyle(narrowMeta).whiteSpace !== 'nowrap') {
+        throw new Error(`Narrow ToolGroup did not reserve the completion suffix: ${JSON.stringify({ groupRight: narrowGroup?.getBoundingClientRect().right, metaRight: narrowMeta?.getBoundingClientRect().right, summaryWidth: narrowSummary?.clientWidth, summaryScrollWidth: narrowSummary?.scrollWidth, whiteSpace: narrowMeta ? getComputedStyle(narrowMeta).whiteSpace : undefined })}`)
+      }
+
       const collapseTrigger = document.querySelector<HTMLButtonElement>('[data-shd-collapse] button')
       collapseTrigger?.focus()
       await nextFrame()
-      if (!collapseTrigger || getComputedStyle(collapseTrigger).borderTopWidth !== '0px' || getComputedStyle(collapseTrigger).boxShadow === 'none') {
-        throw new Error('Collapse focus must use a local spectral response without a native border.')
+      if (!collapseTrigger || getComputedStyle(collapseTrigger).borderTopWidth !== '0px' || getComputedStyle(collapseTrigger).outlineStyle === 'none') {
+        throw new Error('Collapse focus must use an independent visible outline without a native border.')
       }
 
       const designedBorders = Array.from(document.querySelectorAll<HTMLElement>('[data-shd-designed-border] button, button[data-shd-designed-border]'))
@@ -66,6 +95,43 @@ function App() {
           : []
       })
       if (invalidDesignedBorders.length > 0) throw new Error(`Designed control borders are invalid: ${JSON.stringify(invalidDesignedBorders)}`)
+
+      const paginationButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-shd-designed-border] [aria-label*="page" i]'))
+      const nativePaginationBackgrounds = paginationButtons.filter(button => ['rgb(255, 255, 255)', 'white'].includes(getComputedStyle(button).backgroundColor))
+      if (nativePaginationBackgrounds.length > 0) throw new Error('Pagination rendered native white button backgrounds.')
+
+      const tabButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-shd-designed-border] [role="tab"]'))
+      const nativeTabBackgrounds = tabButtons.filter(button => ['rgb(255, 255, 255)', 'white'].includes(getComputedStyle(button).backgroundColor))
+      if (nativeTabBackgrounds.length > 0) throw new Error('Tabs rendered native white button backgrounds.')
+
+      const switchControl = document.querySelector<HTMLElement>('[role="switch"]')
+      const switchThumb = switchControl?.firstElementChild as HTMLElement | undefined
+      if (!switchControl || !switchThumb) throw new Error('Switch fixture is missing.')
+      const switchRect = switchControl.getBoundingClientRect()
+      const thumbRect = switchThumb.getBoundingClientRect()
+      const leftInset = thumbRect.left - switchRect.left
+      const verticalOffset = Math.abs((thumbRect.top + thumbRect.height / 2) - (switchRect.top + switchRect.height / 2))
+      if (leftInset < 1 || leftInset > 4 || verticalOffset > 1) {
+        throw new Error(`Off switch thumb is not anchored: ${JSON.stringify({ leftInset, verticalOffset, switchRect, thumbRect })}`)
+      }
+
+      const nonWhiteButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-shd-number-input] button, [data-shd-modal-fixture] button, [data-shd-tool-card] > button'))
+      const whiteButtons = nonWhiteButtons.flatMap(button => {
+        const background = getComputedStyle(button).backgroundColor
+        return ['rgb(255, 255, 255)', 'rgba(255, 255, 255, 1)', 'white'].includes(background)
+          ? [{ label: button.getAttribute('aria-label') || button.textContent?.trim(), background }]
+          : []
+      })
+      if (whiteButtons.length > 0) throw new Error(`Native white button backgrounds remain: ${JSON.stringify(whiteButtons)}`)
+
+      const readableSurfaces = Array.from(document.querySelectorAll<HTMLElement>('[data-shd-popover-content], [data-shd-modal-content]'))
+      const blackText = readableSurfaces.flatMap(element => {
+        const color = getComputedStyle(element).color
+        return ['rgb(0, 0, 0)', 'black'].includes(color) ? [{ text: element.textContent?.trim(), color }] : []
+      })
+      if (readableSurfaces.length !== 2 || blackText.length > 0) {
+        throw new Error(`Portal text did not inherit semantic foreground: ${JSON.stringify({ count: readableSurfaces.length, blackText })}`)
+      }
 
       document.body.dataset.toolContract = 'pass'
     })().catch(error => {
@@ -90,6 +156,9 @@ function App() {
             <ChatBubble align="left" timestamp="09:42">Assistant surfaces use restrained cyan and violet spectral layers.</ChatBubble>
             <ChatBubble align="right" timestamp="09:43">User messages remain flat and clearly differentiated.</ChatBubble>
           </div>
+          <div className="mt-10 w-[320px]" data-shd-narrow-group>
+            <AIToolCallGroup messages={narrowMessages} />
+          </div>
           <div className="mt-10 grid grid-cols-2 gap-4" data-shd-designed-border>
             <HoloButton>Primary action</HoloButton>
             <HoloSwitch checked={false} onChange={() => undefined} />
@@ -97,6 +166,17 @@ function App() {
             <HoloTab items={[{ key: 'one', label: 'One' }, { key: 'two', label: 'Two' }]} activeKey="one" onChange={() => undefined} />
             <HoloDatePicker placeholder="Choose date" onChange={() => undefined} />
           </div>
+          <div className="mt-10 max-w-sm" data-shd-number-input>
+            <HoloNumberInput value={number} onChange={setNumber} />
+          </div>
+          <div className="mt-10">
+            <HoloPopover open content={<span data-shd-popover-content>Semantic popover text</span>}>
+              <button type="button" data-shd-popover-trigger>Open popover</button>
+            </HoloPopover>
+          </div>
+          <HoloModal open onClose={() => undefined} title="Confirm action" closable>
+            <p data-shd-modal-content>Semantic modal text</p>
+          </HoloModal>
         </div>
       </main>
     </LocaleProvider>
