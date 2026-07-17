@@ -126,7 +126,91 @@ const markdownMessage: ChatMessage = {
   id: 'assistant-markdown',
   role: 'assistant',
   timestamp: '10:42',
-  content: 'The interface now uses **deep-space surfaces**, neutral structural strokes, and local spectral response.\n\n```ts\nconst surface = "var(--shd-surface-raised)"\n```',
+  content: `## Migration assessment
+
+The new surface system keeps the interface **flat**, **semantic**, and compatible with existing application components.
+
+> The visual hierarchy comes from material roles and restrained state color—not decorative gradients.
+
+| Layer | Token | Responsibility |
+| --- | --- | --- |
+| Canvas | \`surface-canvas\` | Application background |
+| Raised | \`surface-raised\` | Cards and persistent controls |
+| Glass | \`surface-glass\` | Overlays and contextual panels |
+
+- [x] Preserve public exports
+- [x] Verify semantic contrast
+- [ ] Complete application visual review
+
+\`\`\`ts
+const material = {
+  surface: 'var(--shd-surface-raised)',
+  stroke: 'var(--shd-stroke-subtle)',
+}
+\`\`\``,
+}
+
+const mathMessage: ChatMessage = {
+  id: 'assistant-mathematics',
+  role: 'assistant',
+  timestamp: '10:43',
+  content: String.raw`### Spectral response model
+
+For a state-aware surface, the perceived response can be represented as
+
+$$
+\begin{aligned}
+S(\lambda, t) &= B(\lambda) + \alpha(t)R_s(\lambda), \\
+\alpha(t) &= \operatorname{clamp}\!\left(\frac{p(t)-p_0}{p_1-p_0},0,1\right), \\
+L(\theta) &= \sum_{i=1}^{n} w_i\left\|f_\theta(x_i)-y_i\right\|_2^2
+ + \beta\int_{\Omega}\left\|\nabla f_\theta(x)\right\|_2^2\,dx.
+\end{aligned}
+$$
+
+The normalized attention distribution is
+
+$$
+P(z_k\mid x)=\frac{\exp\!\left(q(x)^\top k_k/\sqrt{d}\right)}
+{\sum_{j=1}^{m}\exp\!\left(q(x)^\top k_j/\sqrt{d}\right)}.
+$$`,
+}
+
+const mermaidMessage: ChatMessage = {
+  id: 'assistant-mermaid',
+  role: 'assistant',
+  timestamp: '10:44',
+  content: `### Multi-agent execution topology
+
+\`\`\`mermaid
+flowchart LR
+  subgraph Client[Client Layer]
+    U[User Request] --> C[Chat Composer]
+    C --> V[Validation Gate]
+  end
+
+  subgraph Runtime[Agent Runtime]
+    V --> O{Orchestrator}
+    O -->|plan| P[Planner Agent]
+    O -->|research| R[Research Agent]
+    O -->|implement| W[Worker Agent]
+    P --> Q[(Shared Task Queue)]
+    R --> Q
+    Q --> W
+  end
+
+  subgraph Services[Tool and Data Services]
+    W --> T{Tool Router}
+    T --> FS[Workspace Files]
+    T --> API[External APIs]
+    T --> DB[(Session Store)]
+  end
+
+  FS --> A[Artifact Review]
+  API --> A
+  DB --> A
+  A -->|approved| OUT[Final Response]
+  A -->|revision required| O
+\`\`\``,
 }
 
 const consoleArtifact: Artifact = {
@@ -214,9 +298,20 @@ export default function ChatAISection() {
         </div>
       </ComponentDemo>
 
-      <ComponentDemo id="ai-message" title="AIMessageBubble" description="Markdown, code, and tool output share one restrained technical surface language">
-        <div className="max-w-3xl">
-          <AIMessageBubble message={markdownMessage} enableCopy />
+      <ComponentDemo id="ai-message" title="AIMessageBubble" description="Rich Markdown, mathematical notation, and Mermaid diagrams share the same restrained assistant surface">
+        <div className="max-w-4xl space-y-5">
+          <div>
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-content-tertiary">Markdown · GFM table · task list · code</div>
+            <AIMessageBubble message={markdownMessage} enableCopy />
+          </div>
+          <div>
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-content-tertiary">Mathematics · aligned equations · probability</div>
+            <AIMessageBubble message={mathMessage} enableCopy />
+          </div>
+          <div>
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-content-tertiary">Mermaid · multi-agent execution topology</div>
+            <AIMessageBubble message={mermaidMessage} enableCopy />
+          </div>
         </div>
       </ComponentDemo>
 

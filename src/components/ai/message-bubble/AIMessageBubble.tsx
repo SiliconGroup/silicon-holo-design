@@ -25,6 +25,26 @@ interface AIMessageBubbleProps {
 
 type AIMessageBubblePropsWithMarkdown = Omit<AIMessageBubbleProps, 'markdownComponents'> & { markdownComponents?: Components }
 
+function resolveMermaidColor(container: HTMLElement, variable: string, fallback: string) {
+  const probe = document.createElement('span')
+  probe.style.color = `var(${variable}, ${fallback})`
+  probe.style.display = 'none'
+  container.appendChild(probe)
+  const resolved = getComputedStyle(probe).color
+  probe.remove()
+
+  const canvas = document.createElement('canvas')
+  canvas.width = 1
+  canvas.height = 1
+  const context = canvas.getContext('2d')
+  if (!context) return fallback
+  context.clearRect(0, 0, 1, 1)
+  context.fillStyle = resolved || fallback
+  context.fillRect(0, 0, 1, 1)
+  const [red, green, blue, alpha] = context.getImageData(0, 0, 1, 1).data
+  return `rgba(${red}, ${green}, ${blue}, ${(alpha / 255).toFixed(3)})`
+}
+
 function MermaidBlock({ code }: { code: string }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [error, setError] = useState<string | null>(null)
@@ -35,15 +55,15 @@ function MermaidBlock({ code }: { code: string }) {
     ;(async () => {
       try {
         const { default: mermaid } = await import('mermaid')
-        const styles = getComputedStyle(containerRef.current ?? document.documentElement)
-        const token = (name: string) => styles.getPropertyValue(name).trim()
+        const container = containerRef.current
+        if (!container) return
         mermaid.initialize({ startOnLoad: false, theme: 'dark', themeVariables: {
-          primaryColor: token('--shd-accent-primary-soft'),
-          primaryBorderColor: token('--shd-stroke-accent'),
-          primaryTextColor: token('--shd-content-primary'),
-          lineColor: token('--shd-accent-primary-hover'),
-          secondaryColor: token('--shd-accent-primary-softer'),
-          tertiaryColor: token('--shd-surface-base'),
+          primaryColor: resolveMermaidColor(container, '--shd-accent-primary-soft', 'rgba(56, 215, 231, 0.12)'),
+          primaryBorderColor: resolveMermaidColor(container, '--shd-stroke-accent', 'rgba(69, 218, 229, 0.52)'),
+          primaryTextColor: resolveMermaidColor(container, '--shd-content-primary', 'rgba(255, 255, 255, 0.95)'),
+          lineColor: resolveMermaidColor(container, '--shd-accent-primary-hover', '#65e2ee'),
+          secondaryColor: resolveMermaidColor(container, '--shd-accent-primary-softer', 'rgba(56, 215, 231, 0.07)'),
+          tertiaryColor: resolveMermaidColor(container, '--shd-surface-base', '#001219'),
           fontFamily: 'Inter, -apple-system, sans-serif',
           fontSize: '13px',
         }})
@@ -54,8 +74,8 @@ function MermaidBlock({ code }: { code: string }) {
     return () => { cancelled = true }
   }, [code])
 
-  if (error) return <pre className="text-xs text-status-error font-mono whitespace-pre-wrap">{code}</pre>
-  return <div ref={containerRef} className="flex justify-center py-2 [&_svg]:max-w-full" />
+  if (error) return <pre data-shd-mermaid="error" data-shd-mermaid-error={error} className="text-xs text-status-error font-mono whitespace-pre-wrap">{code}</pre>
+  return <div ref={containerRef} data-shd-mermaid="rendering" className="flex justify-center py-2 [&_svg]:max-w-full" />
 }
 
 /** 紧凑的 Artifact 卡片，替代气泡内的代码块 */
@@ -131,10 +151,51 @@ function CopyButton({ content }: { content: string }) {
   )
 }
 
+function MarkdownCodeBlock({ code, language, highlighted }: { code: string; language?: string; highlighted?: string }) {
+  const locale = useLocale()
+  const [copied, setCopied] = useState(false)
+  const label = language?.trim() || 'code'
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 1600)
+    } catch { setCopied(false) }
+  }, [code])
+
+  return (
+    <div data-shd-markdown-code-block="true" className="shd-markdown-code-block my-3 max-w-full overflow-hidden rounded-sm border border-stroke-muted">
+      <div className="shd-markdown-code-toolbar flex items-center justify-between border-b border-stroke-muted px-3 py-1.5">
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-content-tertiary">{label}</span>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="shd-control-focus border-none bg-transparent rounded-sm px-2 py-0.5 text-[10px] text-content-tertiary transition-colors hover:bg-surface-interactive hover:text-content-primary"
+          aria-label={copied ? locale.ai.copied : `${locale.ai.copy} ${label}`}
+        >
+          {copied ? locale.ai.copied : locale.ai.copy}
+        </button>
+      </div>
+      <pre className="m-0 max-w-full overflow-x-auto p-3.5 text-left font-mono text-[12px] leading-[1.65] text-content-secondary">
+        {highlighted
+          ? <code className={`hljs language-${label}`} dangerouslySetInnerHTML={{ __html: highlighted }} />
+          : <code>{code}</code>}
+      </pre>
+    </div>
+  )
+}
+
+function MarkdownPre({ children }: ComponentPropsWithoutRef<'pre'>) {
+  return <>{children}</>
+}
+
 function createCodeBlock(messageId: string, onOpenArtifact?: (artifact: Artifact) => void) {
-  return function InternalCodeBlock({ className, children, ...props }: ComponentPropsWithoutRef<'code'>) {
+  return function InternalCodeBlock({ className, children, node, ...props }: ComponentPropsWithoutRef<'code'> & { node?: { position?: { start: { line: number }; end: { line: number } } } }) {
     const lang = className?.replace('language-', '')
     const codeStr = String(children).replace(/\n$/, '')
+    const isBlock = Boolean(lang) || Boolean(node?.position && node.position.end.line > node.position.start.line)
+
+    if (!isBlock) return <code data-shd-inline-code="true" className={className} {...props}>{children}</code>
 
     if (lang === 'mermaid') return <MermaidBlock code={codeStr} />
 
@@ -146,9 +207,8 @@ function createCodeBlock(messageId: string, onOpenArtifact?: (artifact: Artifact
       return <ArtifactCard code={codeStr} onPreview={handlePreview} onCopy={() => navigator.clipboard.writeText(codeStr)} />
     }
 
-    const highlighted = lang ? (hljs.getLanguage(lang) ? hljs.highlight(codeStr, { language: lang }).value : hljs.highlightAuto(codeStr).value) : null
-    if (highlighted) return <code className={className} dangerouslySetInnerHTML={{ __html: highlighted }} {...props} />
-    return <code className={className} {...props}>{children}</code>
+    const highlighted = lang ? (hljs.getLanguage(lang) ? hljs.highlight(codeStr, { language: lang }).value : hljs.highlightAuto(codeStr).value) : undefined
+    return <MarkdownCodeBlock code={codeStr} language={lang} highlighted={highlighted} />
   }
 }
 
@@ -207,7 +267,7 @@ export function AIMessageBubble({ message, isStreaming = false, onOpenArtifact, 
   return (
     <ChatBubble align={isUser ? 'right' : 'left'} streaming={isStreaming} timestamp={displayTimestamp}>
       <div className={`prose prose-sm max-w-none text-content-primary ${isStreaming ? 'typing-cursor' : ''}`}>
-        <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={{ code: CodeBlock, ...markdownComponents }}>{normalizeMath(message.content || ' ')}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={remarkPlugins} rehypePlugins={rehypePlugins} components={{ pre: MarkdownPre, code: CodeBlock, ...markdownComponents }}>{normalizeMath(message.content || ' ')}</ReactMarkdown>
       </div>
       {!isStreaming && (enableCopy || actions) && (
         <div className="relative flex items-center justify-end gap-1 pt-1 opacity-60 transition-opacity duration-200 group-hover/bubble:opacity-100 group-focus-within/bubble:opacity-100">

@@ -64,6 +64,14 @@ for (const selector of ['shd-spectral-panel', 'shd-spectral-panel-raised', 'shd-
   if (baseMaterial.includes('gradient(')) materialContractIssues.push(`base CSS ${selector} must remain flat and gradient-free`)
   if (presetMaterial.includes('gradient(')) materialContractIssues.push(`preset ${selector} must remain flat and gradient-free`)
 }
+for (const selector of ['shd-chat-bubble', 'shd-chat-bubble-assistant', 'shd-chat-bubble-user']) {
+  const baseMaterial = baseCss.match(new RegExp(`\\.${selector}(?::before)?\\s*\\{[^}]*\\}`, 's'))?.[0] ?? ''
+  const presetMaterial = presetSource.match(new RegExp(`\\.${selector}(?::before)?\\{[^}]*\\}`, 's'))?.[0] ?? ''
+  if (!baseMaterial) materialContractIssues.push(`base CSS ${selector} is missing`)
+  if (!presetMaterial) materialContractIssues.push(`preset ${selector} is missing`)
+  if (baseMaterial.includes('gradient(')) materialContractIssues.push(`base CSS ${selector} must remain flat and gradient-free`)
+  if (presetMaterial.includes('gradient(')) materialContractIssues.push(`preset ${selector} must remain flat and gradient-free`)
+}
 if (!/button\.shd-local-focus\{background-color:transparent;color:inherit\}/.test(presetSource)) materialContractIssues.push('preset local-focus buttons do not match the transparent inherited-color reset')
 if (!/button\.shd-local-focus\s*\{[^}]*background-color:\s*transparent;[^}]*color:\s*inherit/.test(baseCss)) materialContractIssues.push('base local-focus buttons do not match the transparent inherited-color reset')
 

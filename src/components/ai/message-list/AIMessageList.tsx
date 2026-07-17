@@ -113,13 +113,13 @@ export function AIMessageList({ messages, streamingContent, streamingThinking, p
       })}
 
       {streamingThinking && (
-        <div className="flex justify-start my-4"><div className="shd-spectral-panel-raised max-w-[85%] px-5 py-4 border border-stroke-subtle rounded-md text-content-secondary text-sm whitespace-pre-wrap overflow-hidden"><span className="text-content-tertiary text-xs mr-2">◇</span>{streamingThinking}</div></div>
+        <div className="flex justify-start my-4"><div data-shd-chat-bubble="assistant" data-shd-state="running" className="shd-chat-bubble shd-chat-bubble-assistant box-border max-w-[85%] rounded-r-md rounded-tl-md rounded-bl-sm px-5 py-4 text-content-secondary text-sm whitespace-pre-wrap"><span className="text-content-accent text-xs mr-2">◇</span>{streamingThinking}</div></div>
       )}
 
       {streamingContent && <AIMessageBubble message={{ id: 'streaming', role: 'assistant', content: streamingContent }} isStreaming />}
 
       {processing && !streamingContent && (
-        <div className="flex justify-start my-4"><div className="shd-spectral-panel-raised flex items-center gap-4 px-5 py-4 border border-stroke-subtle rounded-md overflow-hidden">
+        <div className="flex justify-start my-4"><div data-shd-chat-bubble="assistant" data-shd-state="running" className="shd-chat-bubble shd-chat-bubble-assistant box-border flex items-center gap-4 rounded-r-md rounded-tl-md rounded-bl-sm px-5 py-4">
           <HexagonLoader size={28} /><div><p className="text-sm text-content-primary">{locale.ai.thinking}</p><p className="text-xs text-content-tertiary mt-0.5">{locale.ai.thinkingDescription}</p></div>
         </div></div>
       )}

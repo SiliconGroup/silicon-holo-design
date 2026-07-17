@@ -10,6 +10,23 @@ const htmlMessage = {
 }
 
 describe('AIMessageBubble', () => {
+  it('renders fenced code as a technical inset block while keeping inline code lightweight', () => {
+    const { container } = render(<AIMessageBubble message={{
+      id: 'code-material',
+      role: 'assistant',
+      content: 'Use `surface-base` here.\n\n```ts\nconst surface = "base"\n```',
+    }} />)
+
+    const block = container.querySelector('[data-shd-markdown-code-block="true"]')
+    const inline = screen.getByText('surface-base')
+    expect(block?.className).toContain('shd-markdown-code-block')
+    expect(block?.textContent).toContain('const surface = "base"')
+    expect(screen.getByText('ts').className).toContain('uppercase')
+    expect(screen.getByRole('button', { name: /Copy ts/i })).toBeDefined()
+    expect(inline.getAttribute('data-shd-inline-code')).toBe('true')
+    expect(inline.closest('[data-shd-markdown-code-block]')).toBeNull()
+  })
+
   it('aligns standalone tool rows with the shared message track', () => {
     const { container } = render(<AIMessageBubble message={{ id: 'tool-track', role: 'tool', content: '', toolName: 'inspect_tokens', toolStatus: 'complete' }} />)
     expect(container.firstElementChild?.className).not.toContain('px-2')

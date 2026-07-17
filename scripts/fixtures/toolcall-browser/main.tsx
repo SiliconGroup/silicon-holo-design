@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { AIToolCallGroup } from '../../../src/components/ai/tool-call-group'
+import { AIMessageBubble } from '../../../src/components/ai/message-bubble'
 import { HoloCollapse } from '../../../src/components/data-display/collapse'
 import { ChatBubble } from '../../../src/components/chat/chat-bubble'
 import { HoloButton } from '../../../src/components/general/button'
@@ -29,6 +30,31 @@ const narrowMessages: ChatMessage[] = [
 ]
 
 const nextFrame = () => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+const mermaidMessage: ChatMessage = {
+  id: 'mermaid-contract',
+  role: 'assistant',
+  content: `\`\`\`mermaid
+flowchart LR
+  subgraph clientGroup["Client Layer"]
+    request["User Request"] --> composer["Chat Composer"]
+    composer --> validation["Validation Gate"]
+  end
+  subgraph runtimeGroup["Agent Runtime"]
+    validation --> orchestrator{"Orchestrator"}
+    orchestrator -->|plan| planner["Planner Agent"]
+    orchestrator -->|implement| worker["Worker Agent"]
+    planner --> queue[("Shared Task Queue")]
+    queue --> worker
+  end
+  worker --> review["Artifact Review"]
+  review -->|revision required| orchestrator
+\`\`\``,
+}
+const codeMessage: ChatMessage = {
+  id: 'code-contract',
+  role: 'assistant',
+  content: 'Use `surface-base` for the shell.\n\n```ts\nconst surface = "base"\n```',
+}
 
 function App() {
   const [number, setNumber] = useState(10)
@@ -36,6 +62,30 @@ function App() {
   useEffect(() => {
     void (async () => {
       await nextFrame()
+      for (let attempt = 0; attempt < 80; attempt += 1) {
+        const mermaid = document.querySelector<HTMLElement>('[data-shd-mermaid]')
+        if (mermaid?.querySelector('svg')) break
+        if (mermaid?.dataset.shdMermaid === 'error') throw new Error(`Mermaid render failed: ${mermaid.dataset.shdMermaidError}`)
+        await new Promise(resolve => setTimeout(resolve, 50))
+      }
+      const mermaid = document.querySelector<HTMLElement>('[data-shd-mermaid]')
+      if (!mermaid?.querySelector('svg')) throw new Error('Complex Mermaid message did not render an SVG.')
+
+      const assistantBubbles = Array.from(document.querySelectorAll<HTMLElement>('[data-shd-chat-bubble="assistant"]'))
+      const settledAssistant = assistantBubbles.find(element => !element.hasAttribute('data-shd-state'))
+      const streamingAssistant = assistantBubbles.find(element => element.dataset.shdState === 'running')
+      if (!settledAssistant || !streamingAssistant) throw new Error('Assistant material fixtures are missing.')
+      const settledSignal = getComputedStyle(settledAssistant).getPropertyValue('--shd-bubble-signal').trim()
+      const streamingSignal = getComputedStyle(streamingAssistant).getPropertyValue('--shd-bubble-signal').trim()
+      if (settledSignal !== streamingSignal) throw new Error(`Streaming assistant changed palette: ${JSON.stringify({ settledSignal, streamingSignal })}`)
+
+      const markdownCode = document.querySelector<HTMLElement>('[data-shd-markdown-code-block="true"]')
+      const markdownToolbar = markdownCode?.querySelector<HTMLElement>('.shd-markdown-code-toolbar')
+      const highlightedToken = markdownCode?.querySelector<HTMLElement>('.hljs-keyword')
+      const inlineCode = document.querySelector<HTMLElement>('[data-shd-inline-code="true"]')
+      if (!markdownCode || !markdownToolbar || !highlightedToken || !inlineCode) throw new Error('Markdown code material fixtures are incomplete.')
+      if (getComputedStyle(highlightedToken).backgroundColor !== 'rgba(0, 0, 0, 0)') throw new Error('Markdown syntax token retained an opaque background.')
+
       const cardTrigger = document.querySelector<HTMLElement>('[data-shd-tool-card] > button')
       cardTrigger?.click()
       await nextFrame()
@@ -154,7 +204,10 @@ function App() {
           </div>
           <div className="mt-10">
             <ChatBubble align="left" timestamp="09:42">Assistant surfaces use restrained cyan and violet spectral layers.</ChatBubble>
+            <ChatBubble align="left" streaming timestamp="09:42">Assistant streaming stays on the assistant palette.</ChatBubble>
             <ChatBubble align="right" timestamp="09:43">User messages remain flat and clearly differentiated.</ChatBubble>
+            <AIMessageBubble message={codeMessage} />
+            <AIMessageBubble message={mermaidMessage} />
           </div>
           <div className="mt-10 w-[320px]" data-shd-narrow-group>
             <AIToolCallGroup messages={narrowMessages} />
