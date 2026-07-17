@@ -40,9 +40,9 @@ export function HoloAvatar({
     <div
       className={`
         ${sizeClasses[size]} ${shapeClasses}
-        border border-holo-cyan/20 overflow-hidden
+        border border-stroke-default overflow-hidden
         flex items-center justify-center
-        ${showFallback ? 'bg-holo-cyan/10 text-holo-cyan' : ''}
+        ${showFallback ? 'bg-surface-selected text-content-accent' : ''}
         ${className}
       `}
     >

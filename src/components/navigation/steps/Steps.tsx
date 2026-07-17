@@ -41,12 +41,12 @@ export function HoloSteps({
               <div
                 className={`
                   w-8 h-8 rounded-full flex-center text-sm font-medium
-                  transition-all duration-200 relative
+                  transition-colors duration-150 relative border
                   ${isCompleted 
-                    ? 'bg-holo-cyan text-scene-void shadow-[0_0_8px_rgba(0,255,255,0.5)]' 
+                    ? 'bg-state-success-soft text-status-success border-stroke-success'
                     : isCurrent 
-                      ? 'bg-holo-cyan text-scene-void shadow-[0_0_12px_rgba(0,255,255,0.6)]' 
-                      : 'bg-white/30 text-white/60'
+                      ? 'bg-surface-selected text-content-accent border-stroke-accent'
+                      : 'bg-surface-interactive text-content-tertiary border-stroke-subtle'
                   }
                 `}
               >
@@ -63,13 +63,13 @@ export function HoloSteps({
                 <div
                   className={`
                     text-sm font-medium
-                    ${isCurrent ? 'text-holo-cyan' : 'text-white/70'}
+                    ${isCurrent ? 'text-content-primary' : 'text-content-secondary'}
                   `}
                 >
                   {item.title}
                 </div>
                 {item.description && (
-                  <div className="text-xs text-white/40 mt-1">
+                  <div className="text-xs text-content-tertiary mt-1">
                     {item.description}
                   </div>
                 )}
@@ -83,7 +83,7 @@ export function HoloSteps({
                     ? 'flex-1 h-0.5 mx-4' 
                     : 'w-0.5 h-6 mx-auto my-2'
                   }
-                  ${isCompleted ? 'bg-holo-cyan/40' : 'bg-white/10'}
+                  ${isCompleted ? 'bg-stroke-success' : 'bg-stroke-subtle'}
                   transition-colors duration-200
                 `}
               />

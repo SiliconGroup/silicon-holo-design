@@ -1,20 +1,29 @@
 import 'virtual:uno.css'
+import '../../../src/styles/base.css'
+import '../../../src/styles/animations.css'
 import { createRoot } from 'react-dom/client'
 import { useState, useCallback } from 'react'
 import {
   LocaleProvider, enUS, zhCN, ToastProvider,
-  AIChatContainer, AIToolExecutionCard, StatusIndicator, DataStreamEffect,
-  HoloButton, HoloSpace, HoloDivider,
+  AIChatContainer, AIToolExecutionCard, AITaskExecutionPanel, ArtifactPreviewDrawer, StatusIndicator, DataStreamEffect,
+  HoloButton, HoloSpace, HoloTag,
 } from '../../../src'
-import type { ChatMessage, Locale, ConnectionStatus, ToolStatus } from '../../../src'
+import type { Artifact, ChatMessage, Locale, ConnectionStatus, ToolStatus } from '../../../src'
 
-const MOCK_REPLIES: Record<string, string> = {
-  hello: 'Hello! I\'m a holographic AI assistant. How can I help you today?',
-  help: 'I can help with:\n- **Code generation** — write functions, components, etc.\n- **Explanation** — break down complex concepts\n- **Analysis** — review and optimize your code\n\nJust ask me anything!',
+const SAMPLE_ARTIFACT: Artifact = {
+  id: 'ai-chat-preview',
+  type: 'html',
+  title: 'Spectral Interface Report',
+  content: '<!doctype html><html><body style="margin:0;background:#000a0f;color:#eaffff;font-family:system-ui;padding:32px"><section style="border:1px solid #1a6570;background:#001219;padding:24px"><strong style="color:#65e2ee">AUDIT COMPLETE</strong><p>Semantic surfaces, tool execution, and compatibility gates passed.</p></section></body></html>',
 }
 
-let msgId = 0
-const id = () => `msg-${++msgId}`
+const MOCK_REPLIES: Record<string, string> = {
+  hello: 'Hello! I am the spectral interface assistant. The visual system now uses deep-space surfaces and local optical response instead of heavy glass panels.',
+  help: 'I can demonstrate:\n- **Streaming responses**\n- **Grouped tool execution**\n- **Markdown and code**\n- **Artifact-ready output**\n\nType `tool` to run the tool sequence.',
+}
+
+let messageId = 0
+const id = () => `msg-${++messageId}`
 
 function App() {
   const [locale, setLocale] = useState<Locale>(enUS)
@@ -24,110 +33,136 @@ function App() {
   const [thinking, setThinking] = useState('')
   const [status, setStatus] = useState<ConnectionStatus>('connected')
   const [toolDemo, setToolDemo] = useState<{ name: string; status: ToolStatus; result?: string } | null>(null)
+  const [taskDemo, setTaskDemo] = useState<{
+    description: string
+    tasks: { id: string; description: string; completed: boolean }[]
+  } | null>(null)
+  const [staticMotion, setStaticMotion] = useState(false)
+  const [artifactOpen, setArtifactOpen] = useState(false)
+
+  const streamReply = useCallback((reply: string) => {
+    const thinkingSteps = ['Mapping request context…', 'Evaluating component states…', 'Preparing response…']
+    let thinkingIndex = 0
+    const thinkingTimer = setInterval(() => {
+      if (thinkingIndex < thinkingSteps.length) {
+        setThinking(thinkingSteps[thinkingIndex++])
+        return
+      }
+      clearInterval(thinkingTimer)
+      setThinking('')
+      let cursor = 0
+      const streamingTimer = setInterval(() => {
+        cursor += 2
+        if (cursor >= reply.length) {
+          clearInterval(streamingTimer)
+          setStreaming('')
+          setMessages(previous => [...previous, { id: id(), role: 'assistant', content: reply, timestamp: new Date().toISOString() }])
+          setProcessing(false)
+          return
+        }
+        setStreaming(reply.slice(0, cursor))
+      }, 18)
+    }, 380)
+  }, [])
 
   const handleSend = useCallback((text: string) => {
-    const userMsg: ChatMessage = { id: id(), role: 'user', content: text, timestamp: new Date().toISOString() }
-    setMessages(prev => [...prev, userMsg])
+    setMessages(previous => [...previous, { id: id(), role: 'user', content: text, timestamp: new Date().toISOString() }])
     setProcessing(true)
     setStreaming('')
     setThinking('')
 
-    // If user types "tool", simulate a tool call flow
     if (text.toLowerCase().trim() === 'tool') {
-      setToolDemo({ name: 'search_codebase', status: 'running' })
+      setToolDemo({ name: 'inspect_design_system', status: 'running' })
+      setTaskDemo({
+        description: 'Validate spectral-flat release',
+        tasks: [
+          { id: 'scan', description: 'Scan component surfaces', completed: true },
+          { id: 'focus', description: 'Verify focus and selected states', completed: false },
+          { id: 'preview', description: 'Render showcase previews', completed: false },
+        ],
+      })
+      const toolMessages: ChatMessage[] = Array.from({ length: 12 }, (_, index) => ({
+        id: id(),
+        role: 'tool',
+        content: '',
+        toolName: ['scan_component', 'inspect_token', 'validate_state', 'render_preview'][index % 4] + `_${index + 1}`,
+        toolStatus: 'complete',
+        toolArguments: index === 4
+          ? JSON.stringify({ workspace: '/Users/example/Dev/silicon-holo-design', constraints: Array.from({ length: 14 }, (_, item) => `compatibility-rule-${item + 1}`), viewport: '320px' }, null, 2)
+          : JSON.stringify({ index, scope: index % 2 === 0 ? 'src/components' : 'semantic-tokens' }),
+        toolResult: JSON.stringify({ valid: true, issues: 0, surface: index % 3 === 0 ? 'raised' : 'base' }),
+        toolDuration: 120 + index * 31,
+        timestamp: new Date().toISOString(),
+      }))
       setTimeout(() => {
-        setToolDemo({ name: 'search_codebase', status: 'complete', result: 'Found 3 matching files' })
-        setMessages(prev => [...prev, {
-          id: id(), role: 'tool', content: '', toolName: 'search_codebase',
-          toolCallId: 'call-1', toolResult: 'Found 3 matching files', timestamp: new Date().toISOString(),
-        }])
-      }, 1500)
+        setMessages(previous => [...previous, ...toolMessages])
+        setToolDemo({ name: 'inspect_design_system', status: 'complete', result: 'Component, token, and preview checks completed.' })
+        setTaskDemo(previous => previous ? { ...previous, tasks: previous.tasks.map(task => ({ ...task, completed: true })) } : null)
+      }, 1000)
       setTimeout(() => {
         setToolDemo(null)
-        const reply = 'I searched the codebase and found **3 matching files**. Here\'s a summary:\n\n```ts\n// src/utils/search.ts\nexport function search(query: string) { ... }\n```'
-        streamReply(reply)
-      }, 2500)
+        streamReply('The inspection completed successfully. The interface now uses **low-fill deep surfaces**, **local spectral edges**, and a compact tool audit trail.\n\n```ts\nconst visualLanguage = "spectral-flat";\n```')
+      }, 1750)
       return
     }
 
-    const reply = MOCK_REPLIES[text.toLowerCase().trim()] ??
-      `You said: *"${text}"*\n\nThis is a mock response demonstrating **Markdown** rendering with \`inline code\` and:\n\n\`\`\`ts\nconst greeting = "Hello from Silicon Holo!";\nconsole.log(greeting);\n\`\``
-
+    const reply = MOCK_REPLIES[text.toLowerCase().trim()] ?? `You said: *"${text}"*\n\nThis mock response demonstrates the upgraded streaming, Markdown, and code presentation.\n\n\`\`\`ts\nconst theme = { surface: 'deep-space', edge: 'spectral' };\n\`\`\``
     streamReply(reply)
-  }, [])
-
-  function streamReply(reply: string) {
-    // Phase 1: Simulate thinking (1.2s with incremental thinking text)
-    const thinkingSteps = ['Analyzing request...', 'Analyzing request...\nSearching knowledge base...', 'Analyzing request...\nSearching knowledge base...\nFormulating response...']
-    let step = 0
-    const thinkInterval = setInterval(() => {
-      if (step < thinkingSteps.length) {
-        setThinking(thinkingSteps[step++])
-      } else {
-        clearInterval(thinkInterval)
-        setThinking('')
-        // Phase 2: Stream the reply
-        let i = 0
-        const interval = setInterval(() => {
-          i += Math.floor(Math.random() * 3) + 1
-          if (i >= reply.length) {
-            clearInterval(interval)
-            setStreaming('')
-            setMessages(prev => [...prev, { id: id(), role: 'assistant', content: reply, timestamp: new Date().toISOString() }])
-            setProcessing(false)
-          } else {
-            setStreaming(reply.slice(0, i))
-          }
-        }, 20)
-      }
-    }, 400)
-  }
+  }, [streamReply])
 
   return (
     <LocaleProvider locale={locale}>
       <ToastProvider>
-        <div style={{ background: '#000a0e', height: '100vh', display: 'flex', flexDirection: 'column', color: 'rgba(255,255,255,0.9)' }}>
-          {/* Header */}
-          <div style={{ padding: '12px 24px', borderBottom: '1px solid rgba(0,255,255,0.12)', display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-            <img src="/logo.svg" alt="logo" style={{ height: 28 }} />
-            <span style={{ fontSize: 16, fontWeight: 600, color: 'rgba(0,255,255,0.85)' }}>AI Chat Demo</span>
-            <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
-              <StatusIndicator status={status} />
-              <HoloSpace size="sm">
+        <div className="relative h-screen flex flex-col overflow-hidden bg-surface-canvas text-content-primary">
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: 'linear-gradient(rgba(0,255,255,0.016) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.016) 1px, transparent 1px), radial-gradient(circle at 18% 0%, rgba(0,230,190,0.09), transparent 38%), radial-gradient(circle at 82% 100%, rgba(80,220,170,0.045), transparent 34%)',
+            backgroundSize: '32px 32px, 32px 32px, auto, auto',
+          }} />
+
+          <header className="shd-spectral-panel-raised relative flex flex-wrap items-center gap-3 border-b border-stroke-subtle px-4 py-3 sm:gap-4 sm:px-6">
+            <img src="/logo.svg" alt="logo" className="h-7" />
+            <div className="min-w-0 flex-1 sm:flex-none">
+              <h1 className="m-0 text-base font-semibold text-content-primary">Spectral AI Console</h1>
+              <p className="m-0 mt-0.5 text-[11px] text-content-tertiary">Streaming · tool audit · artifact preview</p>
+            </div>
+            <StatusIndicator status={status} />
+            {processing && <HoloTag size="sm" color="purple">processing</HoloTag>}
+            <div className="w-full sm:ml-auto sm:w-auto">
+              <HoloSpace size="sm" wrap>
+                <HoloButton size="sm" variant="ghost" onClick={() => setStaticMotion(current => !current)}>{staticMotion ? 'Motion' : 'Static'}</HoloButton>
+                <HoloButton size="sm" variant="ghost" onClick={() => setArtifactOpen(true)}>Artifact</HoloButton>
                 <HoloButton size="sm" variant={locale === enUS ? 'primary' : 'ghost'} onClick={() => setLocale(enUS)}>EN</HoloButton>
                 <HoloButton size="sm" variant={locale === zhCN ? 'primary' : 'ghost'} onClick={() => setLocale(zhCN)}>中文</HoloButton>
               </HoloSpace>
             </div>
-          </div>
+          </header>
 
-          {/* Chat area */}
-          <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-            <DataStreamEffect active={processing} />
-            <AIChatContainer
-              messages={messages}
-              onSend={handleSend}
-              processing={processing}
-              streamingContent={streaming}
-              streamingThinking={thinking}
-              showEmptyState={messages.length === 0 && !processing}
-            />
-          </div>
-
-          {/* Tool execution card demo */}
-          {toolDemo && (
-            <div style={{ padding: '12px 24px', borderTop: '1px solid rgba(0,255,255,0.08)', flexShrink: 0 }}>
-              <AIToolExecutionCard toolName={toolDemo.name} status={toolDemo.status} result={toolDemo.result} />
+          {taskDemo && (
+            <div className="relative flex-shrink-0 px-6 pt-3">
+              <div className="mx-auto max-w-6xl">
+                <AITaskExecutionPanel taskList={taskDemo} headerMeta="4 updates" />
+              </div>
             </div>
           )}
 
-          {/* Status bar */}
-          <div style={{ padding: '6px 24px', borderTop: '1px solid rgba(0,255,255,0.08)', fontSize: 11, color: 'rgba(255,255,255,0.25)', display: 'flex', gap: 16, flexShrink: 0 }}>
-            <span>{messages.length} messages</span>
-            <span>Type &quot;tool&quot; to see ToolExecutionCard demo</span>
-            <span onClick={() => setStatus(s => s === 'connected' ? 'disconnected' : 'connected')} style={{ cursor: 'pointer' }}>
-              Toggle status: {status}
-            </span>
-          </div>
+          <main className="relative flex-1 overflow-hidden min-h-0 flex flex-col w-full max-w-6xl mx-auto">
+            <DataStreamEffect active={processing && !staticMotion} className="opacity-55" />
+            {processing && staticMotion && <div aria-hidden="true" className="absolute inset-x-[12%] top-1/2 h-24 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,var(--shd-accent-primary-soft),transparent_68%)] opacity-40 pointer-events-none" />}
+            <AIChatContainer messages={messages} onSend={handleSend} processing={processing} streamingContent={streaming} streamingThinking={thinking} showEmptyState={messages.length === 0 && !processing} />
+          </main>
+
+          {toolDemo && (
+            <div className="relative px-6 py-3 border-t border-stroke-muted bg-surface-base-soft flex-shrink-0">
+              <div className="max-w-6xl mx-auto"><AIToolExecutionCard toolName={toolDemo.name} status={toolDemo.status} result={toolDemo.result} /></div>
+            </div>
+          )}
+
+          <footer className="relative px-6 py-2 border-t border-stroke-muted bg-surface-base text-[11px] text-content-tertiary flex gap-5 flex-shrink-0">
+            <span className="font-mono">{messages.length.toString().padStart(2, '0')} messages</span>
+            <span>Type <strong className="text-content-accent font-mono">tool</strong> for a 12-step group with a long 320px-safe payload</span>
+            <button onClick={() => setStatus(current => current === 'connected' ? 'disconnected' : 'connected')} className="shd-control-focus ml-auto border-none bg-transparent text-content-tertiary hover:text-content-accent">toggle link · {status}</button>
+          </footer>
+          <ArtifactPreviewDrawer artifact={artifactOpen ? SAMPLE_ARTIFACT : null} onClose={() => setArtifactOpen(false)} width="min(48rem, calc(100vw - 16px))" />
         </div>
       </ToastProvider>
     </LocaleProvider>

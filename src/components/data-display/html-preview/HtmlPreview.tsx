@@ -33,11 +33,11 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
   }>({ iframeW: '100%', iframeH: 400, wrapH: 400, scale: 1 })
 
   useEffect(() => {
-    if (mode === 'code' && codeRef.current && !codeRef.current.dataset.highlighted) {
-      hljs.highlightElement(codeRef.current)
-      codeRef.current.dataset.highlighted = 'true'
-    }
-  }, [mode])
+    if (mode !== 'code' || !codeRef.current) return
+    codeRef.current.textContent = code
+    delete codeRef.current.dataset.highlighted
+    hljs.highlightElement(codeRef.current)
+  }, [code, mode])
 
   const getAvailableHeight = useCallback(() => {
     let el = containerRef.current?.parentElement
@@ -67,35 +67,28 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
       const scrollH = Math.max(body.scrollHeight, html.scrollHeight)
       if (scrollW <= 0 || scrollH <= 0) return
 
-      const overflowX = scrollW > containerW + 2 // 2px 容差
+      const overflowX = scrollW > containerW + 2
       const overflowY = scrollH > maxH
-
       if (!overflowX && !overflowY) {
-        // 无溢出：高度自适应内容
         setLayout({ iframeW: '100%', iframeH: scrollH, wrapH: scrollH, scale: 1 })
       } else {
-        // 有溢出：计算缩放
         const scaleX = overflowX ? containerW / scrollW : 1
         const scaleY = overflowY ? maxH / scrollH : 1
-        const s = Math.min(scaleX, scaleY)
-        // iframe 放大到 容器/scale，再 transform scale 缩回
+        const scale = Math.min(scaleX, scaleY)
         setLayout({
-          iframeW: containerW / s,
-          iframeH: Math.max(scrollH, maxH / s),
-          wrapH: Math.round(Math.max(scrollH, maxH / s) * s),
-          scale: s,
+          iframeW: containerW / scale,
+          iframeH: Math.max(scrollH, maxH / scale),
+          wrapH: Math.round(Math.max(scrollH, maxH / scale) * scale),
+          scale,
         })
       }
     } catch {
-      // cross-origin fallback
       setLayout({ iframeW: '100%', iframeH: 400, wrapH: 400, scale: 1 })
     }
   }, [getAvailableHeight])
 
   const handleIframeLoad = useCallback(() => {
-    // 先重置为自然尺寸让内容正常布局
     setLayout({ iframeW: '100%', iframeH: getAvailableHeight(), wrapH: getAvailableHeight(), scale: 1 })
-    // 等内容渲染稳定后测量
     requestAnimationFrame(() => {
       setTimeout(fitContent, 50)
       setTimeout(fitContent, 300)
@@ -110,9 +103,9 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
   }, [mode])
 
   return (
-    <div ref={containerRef} className="my-2 rounded-md overflow-hidden border border-holo-blue/15">
+    <div ref={containerRef} className="my-2 rounded-md overflow-hidden border border-stroke-subtle bg-surface-base">
       {/* 工具栏 */}
-      <div className="flex items-center gap-1 px-3 py-1.5 bg-scene-void/60 border-b border-holo-blue/10">
+      <div className="flex items-center gap-1 px-3 py-1.5 bg-surface-raised border-b border-stroke-muted">
         <HoloTab
           items={[
             { key: 'code', label: locale.chat.codeTab, icon: <CodeIcon /> },
@@ -123,14 +116,14 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
         />
         <div className="flex-1" />
         {mode === 'preview' && layout.scale < 0.99 && (
-          <span className="text-[10px] font-mono text-white/30">{Math.round(layout.scale * 100)}%</span>
+          <span className="text-[10px] font-mono text-content-tertiary">{Math.round(layout.scale * 100)}%</span>
         )}
-        <span className="text-[10px] font-mono text-white/25 uppercase ml-2">html</span>
+        <span className="text-[10px] font-mono text-content-disabled uppercase ml-2">html</span>
       </div>
 
       {/* 内容区 */}
       {mode === 'code' ? (
-        <pre className="m-0 p-4 bg-scene-void/80 overflow-auto text-sm" style={{ maxHeight: 500 }}>
+        <pre className="m-0 p-4 bg-surface-base overflow-auto text-sm" style={{ maxHeight: 500 }}>
           <code ref={codeRef} className="language-html">{code}</code>
         </pre>
       ) : (

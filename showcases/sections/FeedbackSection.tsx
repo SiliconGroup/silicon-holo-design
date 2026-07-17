@@ -26,7 +26,7 @@ export default function FeedbackSection() {
 
   return (
     <div className="space-y-8">
-      <ComponentDemo id="modal" title="HoloModal" description="Modal dialogs with customizable content">
+      <ComponentDemo id="modal" title="HoloModal" description="Modal dialogs with customizable content" compareSurfaces={false}>
         <HoloButton onClick={() => setModalOpen(true)}>Open Modal</HoloButton>
         <HoloModal
           open={modalOpen}
@@ -44,7 +44,7 @@ export default function FeedbackSection() {
         </HoloModal>
       </ComponentDemo>
 
-      <ComponentDemo id="drawer" title="HoloDrawer" description="Slide-out panels from left or right">
+      <ComponentDemo id="drawer" title="HoloDrawer" description="Slide-out panels from left or right" compareSurfaces={false}>
         <div className="flex gap-4">
           <HoloButton onClick={() => setLeftDrawerOpen(true)}>Left Drawer</HoloButton>
           <HoloButton onClick={() => setRightDrawerOpen(true)}>Right Drawer</HoloButton>
@@ -67,7 +67,7 @@ export default function FeedbackSection() {
         </HoloDrawer>
       </ComponentDemo>
 
-      <ComponentDemo id="confirm" title="HoloConfirm" description="Confirmation dialogs with different types and layouts">
+      <ComponentDemo id="confirm" title="HoloConfirm" description="Confirmation dialogs with different types and layouts" compareSurfaces={false}>
         <div className="flex flex-wrap gap-4">
           <HoloButton variant="secondary" onClick={() => setConfirmInfo(true)}>Info</HoloButton>
           <HoloButton variant="secondary" onClick={() => setConfirmSuccess(true)}>Success</HoloButton>

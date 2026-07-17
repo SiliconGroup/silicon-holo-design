@@ -3,16 +3,17 @@ export interface Locale {
   common: {
     confirm: string; cancel: string; close: string; loading: string; empty: string
     search: string; reset: string; submit: string; save: string; delete: string
-    edit: string; more: string; expand: string; collapse: string; selectAll: string
+    edit: string; more: string; expand: string; collapse: string; selectAll: string; notifications?: string
   }
   modal: { okText: string; cancelText: string }
-  pagination: { total: string; itemsPerPage: string; goto: string; page: string }
+  pagination: { total: string; itemsPerPage: string; goto: string; page: string; previous?: string; next?: string }
   table: { emptyText: string; sortAscend: string; sortDescend: string; filterConfirm: string; filterReset: string }
   select: { placeholder: string; noData: string; searchPlaceholder: string }
   upload: { dragText: string; clickText: string; limitText: string }
   datePicker: {
     placeholder: string; months: string[]; shortMonths: string[]
     weekdays: string[]; shortWeekdays: string[]; today: string; monthYearFormat: string
+    previousMonth?: string; nextMonth?: string
   }
   chat: {
     inputPlaceholder: string; inputAriaLabel: string; sendButton: string; shiftEnterHint: string
@@ -36,5 +37,18 @@ export interface Locale {
     toolGroupRunning: string
     toolGroupProgress: string
     toolGroupLabel: string
+    taskExecutionLabel?: string
+    taskExecutionProgress?: string
+    taskExecutionProgressLabel?: string
+    taskExecutionExpand?: string
+    taskExecutionCollapse?: string
+    taskCompleted?: string
+    taskPending?: string
+    taskRunning?: string
+    taskError?: string
+    taskCancelled?: string
+    taskBlocked?: string
+    taskSkipped?: string
+    taskExecutionEmpty?: string
   }
 }

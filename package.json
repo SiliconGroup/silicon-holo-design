@@ -1,6 +1,6 @@
 {
   "name": "silicon-holo-design",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "license": "Apache-2.0",
   "type": "module",
   "module": "./dist/index.js",
@@ -41,9 +41,20 @@
     "react-dom": ">=18.0.0"
   },
   "dependencies": {
-    "motion": "^11.15.0"
+    "highlight.js": "^11.10.0",
+    "katex": "^0.16.28",
+    "mermaid": "^11.16.0",
+    "motion": "^11.15.0",
+    "react-markdown": "^9.0.1",
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
   },
   "devDependencies": {
+    "@iconify-json/carbon": "^1.2.24",
     "@testing-library/react": "^16.1.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
@@ -51,28 +62,25 @@
     "@unocss/preset-uno": "^0.65.3",
     "@vitejs/plugin-react": "^4.3.4",
     "glob": "^11.0.0",
-    "highlight.js": "^11.10.0",
     "jsdom": "^25.0.0",
-    "katex": "^0.16.28",
-    "mermaid": "^11.12.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-markdown": "^9.0.1",
-    "rehype-katex": "^7.0.1",
-    "remark-gfm": "^4.0.1",
-    "remark-math": "^6.0.0",
+    "tsx": "^4.23.1",
     "typescript": "^5.7.2",
-    "unocss": "^0.65.3",
-    "vite": "^6.0.0",
+    "unocss": "^0.65.4",
+    "vite": "^6.4.3",
     "vite-plugin-dts": "^4.3.0",
-    "vitest": "^2.1.0"
+    "vitest": "^4.1.10"
   },
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "node scripts/prepare.mjs",
     "dev": "vite",
-    "build": "tsc --noEmit && vite build && node scripts/extract-safelist.mjs && vite build",
-    "test": "vitest run",
+    "build": "tsc --noEmit && vite build && node scripts/extract-safelist.mjs && vite build && node scripts/verify-dist.mjs && node scripts/verify-public-types.mjs && node scripts/verify-additive-api.mjs && node scripts/verify-package.mjs && node scripts/verify-theme-browser.mjs && node scripts/verify-toolcall-browser.mjs && node scripts/verify-surfaces.mjs",
+    "test": "vitest run && node scripts/verify-source.mjs",
     "typecheck": "tsc --noEmit",
+    "verify:surfaces": "node scripts/verify-surfaces.mjs",
+    "verify:theme-browser": "node scripts/verify-theme-browser.mjs",
+    "verify:toolcall-browser": "node scripts/verify-toolcall-browser.mjs",
     "showcase": "vite --config vite.showcase.config.ts",
     "example:basic": "vite --config examples/vite-basic/vite.config.ts",
     "example:chat": "vite --config examples/chat/vite.config.ts",

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { KeyboardEvent, ReactNode } from 'react'
 
 interface GlowCardProps {
   children: ReactNode
@@ -8,38 +8,27 @@ interface GlowCardProps {
   onClick?: () => void
 }
 
-export function GlowCard({
-  children,
-  className = '',
-  variant = 'default',
-  hoverEffect = true,
-  onClick,
-}: GlowCardProps) {
+export function GlowCard({ children, className = '', variant = 'default', hoverEffect = true, onClick }: GlowCardProps) {
   const variants = {
-    default: `
-      bg-scene-deep/70 border-holo-cyan/15
-    `,
-    elevated: `
-      bg-scene-deep/80 border-holo-cyan/25
-    `,
-    intense: `
-      bg-scene-surface/80 border-holo-cyan/35
-    `,
+    default: 'bg-surface-base border-stroke-subtle',
+    elevated: 'bg-surface-raised border-stroke-default',
+    intense: 'shd-spectral-panel-raised border-stroke-accent',
+  }
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (!onClick || (event.key !== 'Enter' && event.key !== ' ')) return
+    event.preventDefault()
+    onClick()
   }
 
   return (
     <div
-      className={`
-        relative overflow-hidden backdrop-blur-sm border rounded-md
-        transition-all duration-250
-        ${variants[variant]}
-        ${hoverEffect ? 'hover:border-holo-cyan/35' : ''}
-        ${onClick ? 'cursor-pointer' : ''}
-        ${className}
-      `}
+      className={`relative overflow-hidden border rounded-md text-content-primary transition-colors duration-150 ${variants[variant]} ${hoverEffect ? 'hover:border-stroke-strong hover:saturate-125' : ''} ${onClick ? 'shd-control-focus cursor-pointer' : ''} ${className}`}
       onClick={onClick}
+      onKeyDown={handleKeyDown}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
     >
-      <div className="relative z-10">{children}</div>
+      {children}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useId, useState, type ReactNode } from 'react'
 
 interface CollapseItem {
   key: string
@@ -22,53 +22,54 @@ export function HoloCollapse({
   accordion = false,
   className = '',
 }: HoloCollapseProps) {
+  const baseId = useId()
   const [internalActiveKeys, setInternalActiveKeys] = useState<string[]>([])
   const activeKeys = controlledActiveKeys ?? internalActiveKeys
 
   const handleToggle = (key: string) => {
-    let newActiveKeys: string[]
-    
-    if (accordion) {
-      newActiveKeys = activeKeys.includes(key) ? [] : [key]
-    } else {
-      newActiveKeys = activeKeys.includes(key)
-        ? activeKeys.filter(k => k !== key)
-        : [...activeKeys, key]
-    }
+    const newActiveKeys = accordion
+      ? activeKeys.includes(key) ? [] : [key]
+      : activeKeys.includes(key) ? activeKeys.filter(activeKey => activeKey !== key) : [...activeKeys, key]
 
-    if (!controlledActiveKeys) {
-      setInternalActiveKeys(newActiveKeys)
-    }
+    if (!controlledActiveKeys) setInternalActiveKeys(newActiveKeys)
     onChange?.(newActiveKeys)
   }
 
   return (
-    <div className={className}>
+    <div data-shd-collapse="true" className={`shd-spectral-panel overflow-hidden rounded-md border border-stroke-subtle ${className}`}>
       {items.map((item) => {
         const isActive = activeKeys.includes(item.key)
-        
+        const regionId = `${baseId}-${item.key}`
+
         return (
-          <div key={item.key} className="border-b border-holo-cyan/10 last:border-b-0">
-            <div
+          <div key={item.key} className="border-b border-stroke-muted last:border-b-0">
+            <button
+              type="button"
+              aria-expanded={isActive}
+              aria-controls={regionId}
+              disabled={item.disabled}
               className={`
-                px-4 py-3 flex items-center justify-between cursor-pointer
-                hover:bg-holo-cyan/5 text-sm text-white/80 transition-colors duration-200
-                ${item.disabled ? 'opacity-50 cursor-not-allowed' : ''}
+                border-none shd-local-focus w-full px-4 py-3 flex items-center justify-between text-left
+                text-sm text-content-secondary transition-colors duration-150
+                hover:bg-surface-interactive hover:text-content-primary
+                disabled:text-content-disabled disabled:cursor-not-allowed
+                ${isActive ? 'shd-local-active text-content-primary' : ''}
               `}
-              onClick={() => !item.disabled && handleToggle(item.key)}
+              onClick={() => handleToggle(item.key)}
             >
-              <div>{item.title}</div>
+              <span>{item.title}</span>
               <svg
-                className={`w-4 h-4 transition-transform duration-200 ${isActive ? 'rotate-90' : ''}`}
+                className={`w-4 h-4 text-content-tertiary transition-transform duration-150 ${isActive ? 'rotate-90 text-content-accent' : ''}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </div>
+            </button>
             {isActive && (
-              <div className="px-4 py-3 border-t border-holo-cyan/10 text-sm text-white/60">
+              <div id={regionId} role="region" className="shd-surface-inset px-4 py-3 border-t border-stroke-muted text-sm text-content-secondary">
                 {item.content}
               </div>
             )}

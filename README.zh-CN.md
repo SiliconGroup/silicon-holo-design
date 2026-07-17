@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/组件-58-00e5ff?style=flat-square" alt="58 components" />
+  <img src="https://img.shields.io/badge/组件-59-00e5ff?style=flat-square" alt="59 components" />
   <img src="https://img.shields.io/badge/react-18-61dafb?style=flat-square" alt="React 18" />
   <img src="https://img.shields.io/badge/typescript-5.7-3178c6?style=flat-square" alt="TypeScript" />
   <img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="Apache 2.0" />
@@ -25,6 +25,18 @@
   <a href="#示例">示例</a> ·
   <a href="./README.md">English</a>
 </p>
+
+---
+
+## 光谱扁平设计
+
+`0.2.0` 在不改变组件调用方式的前提下升级了整体视觉。新版采用深空近黑表面、中性结构描边、低填充控件与局部青蓝紫光谱响应。青色仍是核心识别色，但主要用于焦点、激活状态、数据信号与品牌场景，而不再铺满每一个面板。
+
+- 按钮使用 tonal fill 与稳定的中性边界保持扁平，不再依赖顶部高光或发光框体。
+- Card、工具面板和消息表面使用叠加在深空底色上的半透明光谱薄膜；普通控件仍默认不使用 blur。
+- Drawer、Modal、Popover、Tooltip 与 Toast 使用克制的玻璃浮层材质，Payload 与代码区域使用更深的 inset surface。
+- selected/open 通过 tonal fill 或局部边缘表达；外层 focus frame 仅服务键盘焦点，不再形成第二圈发光边框。
+- `.holo-text` 默认静态，仅用于品牌或 Hero；动态效果需显式使用 `.holo-text-animated`，并支持 reduced motion。
 
 ---
 
@@ -79,15 +91,15 @@ export default defineConfig({
 
 ## 组件列表
 
-共 58 个组件，分为 7 大类。
+共 59 个组件，分为 7 大类。
 
 ### 通用
 
 | 组件 | 说明 |
 |------|------|
-| `HoloButton` | 主操作按钮，支持多种发光变体 |
+| `HoloButton` | 扁平光谱操作按钮，支持多种 tonal 变体 |
 | `HoloLink` | 样式化链接 |
-| `GlowCard` | 全息发光边框卡片 |
+| `GlowCard` | 支持局部光谱响应的表面卡片 |
 | `IconButton` | 图标按钮 |
 | `CircuitBorder` | 电路纹理装饰边框 |
 
@@ -180,7 +192,10 @@ export default defineConfig({
 | `AIChatContainer` | 完整 AI 聊天界面（消息列表 + 输入框 + 空状态）。支持 `noSessionContent` 和 `emptyContent` 自定义空状态。 |
 | `AIMessageBubble` | 消息气泡，支持 Markdown、数学公式（KaTeX）、语法高亮、Mermaid 图表 |
 | `AIMessageList` | 消息列表，支持流式输出、思考状态、工具调用展示。支持自定义 `emptyContent`。 |
+| `AIToolCallCard` | 可展开的工具参数/结果卡片，支持语义执行状态 |
+| `AIToolCallGroup` | 连续工具调用的紧凑审计分组 |
 | `AIToolExecutionCard` | 工具调用状态卡片（pending → running → complete/error） |
+| `AITaskExecutionPanel` | 与协议无关的任务摘要，支持进度、受控展开与自定义任务证据 |
 
 > **注意：** 旧名称 `ChatContainer`、`MessageBubble`、`MessageList`、`ToolExecutionCard` 仍可使用但已弃用，请使用 `AI` 前缀的新名称。
 
@@ -364,6 +379,10 @@ import { StatusIndicator } from 'silicon-holo-design'
   --shd-holo-cyan: #00e5ff;
   --shd-holo-green: #00ffaa;
   --shd-scene-void: #000a0e;
+  --shd-surface-raised: #041218;
+  --shd-content-primary: rgba(244, 251, 255, 0.92);
+  --shd-stroke-default: rgba(133, 171, 188, 0.24);
+  --shd-accent-primary: #00e5ff;
 }
 ```
 
@@ -373,6 +392,22 @@ import { StatusIndicator } from 'silicon-holo-design'
 import { ThemeProvider } from 'silicon-holo-design'
 
 <ThemeProvider theme={{ colors: { 'holo-cyan': '#ff6b35' } }}>
+  <App />
+</ThemeProvider>
+```
+
+在保留旧 primitive 覆盖能力的同时，也可以单独覆盖语义角色：
+
+```tsx
+<ThemeProvider
+  theme={{
+    semanticColors: {
+      'surface-raised': '#07151c',
+      'stroke-accent': 'rgba(0, 229, 255, 0.42)',
+      'accent-primary-soft': 'rgba(0, 229, 255, 0.08)',
+    },
+  }}
+>
   <App />
 </ThemeProvider>
 ```
@@ -398,8 +433,8 @@ import { LocaleProvider, zhCN, enUS } from 'silicon-holo-design'
 | `examples/vite-basic` | 最小化入门 — 按钮、输入、弹窗、语言切换 | `npm run example:basic` |
 | `examples/chat` | 基础聊天 — 使用 `ChatBubble`、`ChatInputArea`、`ChatMessageList` | `npm run example:chat` |
 | `examples/ai-chat` | AI 聊天 — 流式输出、工具执行卡片、状态指示器 | `npm run example:ai-chat` |
-| `examples/component-gallery` | 全部 58 个组件一览 | `npm run example:gallery` |
-| Showcase | 交互式组件展示（类似 Storybook） | `npm run showcase` |
+| `examples/component-gallery` | 跨分类组件与 Chat/AI 视觉参考 | `npm run example:gallery` |
+| Showcase | 核心组件视觉状态矩阵；Chat 容器、消息列表、Toast 与应用组合由专项 examples 补充覆盖 | `npm run showcase` |
 
 ---
 
@@ -428,7 +463,7 @@ silicon-holo-design/
 │   │   ├── data-display/  # Table, Tag, Badge, Avatar, Tooltip, CodeBlock, ...
 │   │   ├── feedback/      # Modal, Drawer, Alert, Progress, Toast, ...
 │   │   ├── chat/          # ChatBubble, ChatInputArea, ChatMessageList（基础层）
-│   │   └── ai/            # AIChatContainer, AIMessageBubble, AIToolExecutionCard（AI 层）
+│   │   └── ai/            # AIChatContainer、ToolCall、TaskExecution、Artifact 预览（AI 层）
 │   ├── locale/            # 国际化（en-US, zh-CN）
 │   ├── theme/             # 主题 tokens 与 provider
 │   ├── preset/            # UnoCSS 预设

@@ -11,6 +11,7 @@ import {
   HoloTimeline,
   HoloDescriptions,
   HoloKbd,
+  CodeBlock,
   GlowCard,
   StatusIndicator,
   HoloButton,
@@ -105,6 +106,10 @@ export default function DataSection() {
         </div>
       </ComponentDemo>
 
+      <ComponentDemo id="code-block" title="CodeBlock" description="Stable deep code surface with neutral edge hierarchy">
+        <CodeBlock>{`const visualLanguage = 'spectral-flat'\nconst surface = 'raised'`}</CodeBlock>
+      </ComponentDemo>
+
       <ComponentDemo id="avatar" title="HoloAvatar" description="User avatars with images, fallbacks, and shapes">
         <div className="flex flex-wrap gap-4 items-center">
           <HoloAvatar src="https://api.dicebear.com/7.x/avataaars/svg?seed=Silicon" />
@@ -115,7 +120,7 @@ export default function DataSection() {
         </div>
       </ComponentDemo>
 
-      <ComponentDemo id="tooltip" title="HoloTooltip" description="Tooltips with different placements">
+      <ComponentDemo id="tooltip" title="HoloTooltip" description="Tooltips with different placements" compareSurfaces={false}>
         <div className="flex flex-wrap gap-4 items-center">
           <HoloTooltip content="Top tooltip" placement="top">
             <HoloButton>Top</HoloButton>
@@ -132,7 +137,7 @@ export default function DataSection() {
         </div>
       </ComponentDemo>
 
-      <ComponentDemo id="popover" title="HoloPopover" description="Popovers with click and hover triggers">
+      <ComponentDemo id="popover" title="HoloPopover" description="Popovers with click and hover triggers" compareSurfaces={false}>
         <div className="flex flex-wrap gap-4 items-center">
           <HoloPopover
             content={<div className="p-4">Click popover content</div>}
@@ -173,9 +178,15 @@ export default function DataSection() {
       </ComponentDemo>
 
       <ComponentDemo id="descriptions" title="HoloDescriptions" description="Key-value descriptions with layouts">
-        <div className="flex flex-col gap-4">
-          <HoloDescriptions items={descriptionsData} layout="horizontal" />
-          <HoloDescriptions items={descriptionsData} layout="vertical" />
+        <div className="grid gap-5 xl:grid-cols-2">
+          <div className="min-w-0">
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-content-tertiary">Horizontal · dense metadata</div>
+            <HoloDescriptions items={descriptionsData} layout="horizontal" />
+          </div>
+          <div className="min-w-0">
+            <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em] text-content-tertiary">Vertical · responsive cards</div>
+            <HoloDescriptions items={descriptionsData} layout="vertical" column={2} />
+          </div>
         </div>
       </ComponentDemo>
 

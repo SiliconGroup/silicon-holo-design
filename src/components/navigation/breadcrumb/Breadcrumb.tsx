@@ -26,27 +26,28 @@ export function HoloBreadcrumb({
           return (
             <li key={index} className="flex items-center">
               {isLast ? (
-                <span className="text-sm text-holo-cyan" aria-current="page">
+                <span className="text-sm text-content-primary" aria-current="page">
                   {item.label}
                 </span>
               ) : item.href ? (
                 <a
                   href={item.href}
                   onClick={item.onClick}
-                  className="text-sm cursor-pointer transition-colors duration-200 text-white/50 hover:text-holo-cyan/70"
+                  className="text-sm cursor-pointer transition-colors duration-150 text-content-tertiary hover:text-content-accent"
                 >
                   {item.label}
                 </a>
               ) : (
                 <button
+                  type="button"
                   onClick={item.onClick}
-                  className="text-sm cursor-pointer transition-colors duration-200 text-white/50 hover:text-holo-cyan/70 border-none"
+                  className="shd-control-focus bg-transparent text-sm cursor-pointer transition-colors duration-150 text-content-tertiary hover:text-content-accent border-none rounded"
                 >
                   {item.label}
                 </button>
               )}
               {!isLast && (
-                <span className="text-white/20 mx-2" aria-hidden="true">
+                <span className="text-content-disabled mx-2" aria-hidden="true">
                   {separator}
                 </span>
               )}

@@ -7,6 +7,8 @@ interface HoloSwitchProps {
   disabled?: boolean
   size?: 'sm' | 'md' | 'lg'
   className?: string
+  ariaLabel?: string
+  ariaLabelledBy?: string
 }
 
 const sizeMap = {
@@ -16,16 +18,16 @@ const sizeMap = {
 }
 
 export const HoloSwitch = forwardRef<HTMLButtonElement, HoloSwitchProps>(
-  ({ checked, onChange, label, disabled = false, size = 'md', className = '' }, ref) => {
+  ({ checked, onChange, label, disabled = false, size = 'md', className = '', ariaLabel, ariaLabelledBy }, ref) => {
     const s = sizeMap[size]
 
     const trackClasses = checked
-      ? 'bg-holo-cyan/20 border-holo-cyan/50'
-      : 'bg-white/10 border-holo-cyan/20'
+      ? 'bg-accent-primary-soft border-stroke-accent'
+      : 'bg-surface-interactive border-stroke-default'
 
     const thumbClasses = checked
-      ? `${s.translate} bg-holo-cyan shadow-[0_0_8px_#00ffff]`
-      : 'translate-x-0.5 bg-white/60'
+      ? `${s.translate} bg-accent-primary border border-stroke-accent-strong`
+      : 'translate-x-0 bg-content-tertiary border border-stroke-subtle'
 
     const handleClick = () => {
       if (!disabled) onChange(!checked)
@@ -33,20 +35,24 @@ export const HoloSwitch = forwardRef<HTMLButtonElement, HoloSwitchProps>(
 
     const switchElement = (
       <button
+        type="button"
         ref={ref}
         role="switch"
         aria-checked={checked}
+        aria-label={ariaLabelledBy ? undefined : ariaLabel ?? (typeof label === 'string' ? label : 'Switch')}
+        aria-labelledby={ariaLabelledBy}
         disabled={disabled}
         onClick={handleClick}
         className={`
-          relative inline-flex items-center rounded-full border transition-all duration-200
+          relative inline-flex items-center rounded-full border transition-colors duration-150
+          shd-control-focus
           disabled:opacity-50 disabled:cursor-not-allowed
           ${s.track} ${trackClasses} ${className}
         `}
       >
         <span
           className={`
-            absolute rounded-full transition-all duration-200
+            absolute left-0.5 top-1/2 -translate-y-1/2 rounded-full transition-transform duration-150
             ${s.thumb} ${thumbClasses}
           `}
         />
@@ -57,7 +63,7 @@ export const HoloSwitch = forwardRef<HTMLButtonElement, HoloSwitchProps>(
       return (
         <label className="inline-flex items-center gap-2 cursor-pointer">
           {switchElement}
-          <span className="text-white/80">{label}</span>
+          <span className="text-content-primary">{label}</span>
         </label>
       )
     }

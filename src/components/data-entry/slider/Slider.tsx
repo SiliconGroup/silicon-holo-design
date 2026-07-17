@@ -29,13 +29,13 @@ export function HoloSlider({
         .holo-slider::-webkit-slider-thumb {
           -webkit-appearance: none; appearance: none;
           width: 16px; height: 16px; border-radius: 9999px;
-          background: #00ffff; border: 2px solid #00ffff;
-          box-shadow: 0 0 8px rgba(0,255,255,0.5); cursor: pointer;
+          background: var(--shd-accent-primary); border: 2px solid var(--shd-surface-base);
+          box-shadow: 0 0 0 1px var(--shd-stroke-accent-strong); cursor: pointer;
         }
         .holo-slider::-moz-range-thumb {
           width: 16px; height: 16px; border-radius: 9999px;
-          background: #00ffff; border: none;
-          box-shadow: 0 0 8px rgba(0,255,255,0.5); cursor: pointer;
+          background: var(--shd-accent-primary); border: 2px solid var(--shd-surface-base);
+          box-shadow: 0 0 0 1px var(--shd-stroke-accent-strong); cursor: pointer;
         }
       `}</style>
       <input
@@ -46,13 +46,13 @@ export function HoloSlider({
         value={value}
         disabled={disabled}
         onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(Number(e.target.value))}
-        className="holo-slider w-full h-1.5 rounded-full appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+        className="shd-control-focus holo-slider w-full h-1.5 rounded-full appearance-none cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
         style={{
-          background: `linear-gradient(to right, rgba(0,255,255,0.4) ${pct}%, rgba(255,255,255,0.1) ${pct}%)`
+          background: `linear-gradient(to right, var(--shd-accent-primary) ${pct}%, var(--shd-stroke-subtle) ${pct}%)`
         }}
       />
       {showValue && (
-        <span className="text-xs text-holo-cyan font-mono min-w-8 text-right">{value}</span>
+        <span className="text-xs text-content-accent font-mono min-w-8 text-right">{value}</span>
       )}
     </div>
   )

@@ -1,12 +1,13 @@
-import 'virtual:uno.css'
+import 'silicon-holo-design/styles'
+import './app.css'
 import { createRoot } from 'react-dom/client'
 import { useState } from 'react'
 import {
   LocaleProvider, enUS, zhCN, ToastProvider, useToast,
   HoloButton, HoloInput, HoloModal, HoloAlert, HoloTag, HoloSwitch,
   HoloSelect, HoloSpace, HoloDivider, HoloProgress, HoloSpinner,
-} from '../../../src'
-import type { Locale } from '../../../src'
+} from 'silicon-holo-design'
+import type { Locale } from 'silicon-holo-design'
 
 function App() {
   const [locale, setLocale] = useState<Locale>(enUS)
@@ -17,8 +18,17 @@ function App() {
   return (
     <LocaleProvider locale={locale}>
       <ToastProvider>
-        <div style={{ background: '#000a0e', minHeight: '100vh', padding: 40, color: 'rgba(255,255,255,0.9)', display: 'flex', flexDirection: 'column', gap: 24 }}>
-          <h1 style={{ fontSize: 24, margin: 0 }}>Silicon Holo Design — Basic Example</h1>
+        <div className="example-app bg-surface-canvas text-content-primary">
+          <div aria-hidden="true" className="example-backdrop" style={{
+            background: 'linear-gradient(rgba(0,255,255,0.016) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.016) 1px, transparent 1px), radial-gradient(ellipse at 50% 0%, rgba(0,230,190,0.065), transparent 45%)',
+            backgroundSize: '32px 32px, 32px 32px, auto',
+          }} />
+          <main className="example-main">
+          <header className="example-header border border-stroke-subtle bg-surface-raised">
+            <p className="example-eyebrow text-content-accent">Reference Integration</p>
+            <h1 className="holo-text example-title">Silicon Holo Design</h1>
+            <p className="example-description text-content-tertiary">Deep-space surfaces, neutral structure, local spectral response.</p>
+          </header>
 
           <HoloSpace size="md">
             <HoloButton onClick={() => setLocale(enUS)}>English</HoloButton>
@@ -57,8 +67,9 @@ function App() {
           </HoloSpace>
 
           <HoloModal open={modalOpen} onClose={() => setModalOpen(false)} title="Hello" closable>
-            <p>Welcome to Silicon Holo Design!</p>
+            <p className="text-content-secondary">Welcome to the spectral-flat Silicon Holo interface.</p>
           </HoloModal>
+          </main>
         </div>
       </ToastProvider>
     </LocaleProvider>

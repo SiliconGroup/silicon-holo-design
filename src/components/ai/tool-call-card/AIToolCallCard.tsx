@@ -1,7 +1,6 @@
-import { useState, useCallback } from 'react'
+import { useId, useState } from 'react'
 import hljs from 'highlight.js'
 import { useLocale } from '@/locale'
-import { HoloTag } from '@/components/data-display/tag'
 import { HexagonLoader } from '@/components/feedback/hexagon-loader'
 import type { ToolStatus } from '@/types'
 
@@ -11,68 +10,97 @@ interface AIToolCallCardProps {
   arguments?: string
   result?: string
   durationMs?: number
+  grouped?: boolean
 }
 
-function formatJson(str: string): string {
-  try { return JSON.stringify(JSON.parse(str), null, 2) } catch { return str }
+function formatJson(value: string): string {
+  try { return JSON.stringify(JSON.parse(value), null, 2) } catch { return value }
 }
 
-function HighlightedJson({ code }: { code: string }) {
+function PayloadBlock({ code }: { code: string }) {
+  const locale = useLocale()
+  const [copied, setCopied] = useState(false)
+  let isJson = true
+  try { JSON.parse(code) } catch { isJson = false }
   const formatted = formatJson(code)
-  const html = hljs.getLanguage('json') ? hljs.highlight(formatted, { language: 'json' }).value : formatted
+  const highlighted = hljs.getLanguage('json') ? hljs.highlight(formatted, { language: 'json' }).value : hljs.highlightAuto(formatted).value
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1600)
+    } catch { setCopied(false) }
+  }
   return (
-    <pre className="m-0 p-3 bg-scene-void/80 rounded text-xs overflow-auto" style={{ maxHeight: 200 }}>
-      <code className="language-json" dangerouslySetInnerHTML={{ __html: html }} />
-    </pre>
+    <div className="shd-status-glass-inset overflow-hidden rounded-sm border border-stroke-subtle">
+      <div className="flex items-center justify-between border-b border-stroke-muted px-3 py-1.5">
+        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-content-tertiary">{isJson ? 'JSON' : 'TEXT'}</span>
+        <button type="button" onClick={handleCopy} className="shd-control-focus border-none bg-transparent rounded-sm px-1.5 py-0.5 text-[10px] text-content-tertiary hover:bg-surface-interactive hover:text-content-primary">{copied ? locale.ai.copied : locale.ai.copy}</button>
+      </div>
+      <pre className="m-0 max-h-60 overflow-auto p-3 text-xs text-content-secondary">
+        <code className={isJson ? 'language-json' : undefined} dangerouslySetInnerHTML={{ __html: highlighted }} />
+      </pre>
+    </div>
   )
 }
 
 function StatusIcon({ status }: { status: ToolStatus }) {
   switch (status) {
-    case 'running': return <HexagonLoader size={16} />
-    case 'complete': return <svg className="w-4 h-4 text-status-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-    case 'error': return <svg className="w-4 h-4 text-status-error" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-    default: return <div className="w-2 h-2 rounded-full bg-white/30" />
+    case 'running': return <span aria-hidden="true"><HexagonLoader size={16} /></span>
+    case 'complete': return <svg aria-hidden="true" className="h-4 w-4 text-status-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+    case 'error': return <svg aria-hidden="true" className="h-4 w-4 text-status-error" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+    default: return <span aria-hidden="true" className="h-2 w-2 rounded-full bg-content-tertiary" />
   }
 }
 
-export function AIToolCallCard({ name, status, arguments: args, result, durationMs }: AIToolCallCardProps) {
-  const locale = useLocale()
-  const [open, setOpen] = useState(false)
-  const toggle = useCallback(() => setOpen((v) => !v), [])
+function Chevron({ open }: { open: boolean }) {
+  return <svg aria-hidden="true" className={`h-3.5 w-3.5 text-content-tertiary transition-transform duration-150 ${open ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 20 20" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="m7 4 6 6-6 6" /></svg>
+}
 
-  const isRunning = status === 'running'
-  const hasDetails = args || result
+const statusBorder: Record<ToolStatus, string> = {
+  pending: 'border-stroke-muted',
+  running: 'border-stroke-accent',
+  complete: 'border-stroke-success',
+  error: 'border-stroke-error',
+}
+
+export function AIToolCallCard({ name, status, arguments: args, result, durationMs, grouped = false }: AIToolCallCardProps) {
+  const locale = useLocale()
+  const regionId = useId()
+  const [open, setOpen] = useState(false)
+  const hasDetails = Boolean(args || result || status === 'complete')
+  const statusLabel = status === 'running' ? locale.ai.toolRunning : status === 'complete' ? locale.ai.toolComplete : status === 'error' ? locale.ai.toolError : locale.ai.toolPending
+  const actionLabel = hasDetails ? (open ? locale.common.collapse : locale.common.expand) : ''
 
   return (
-    <div className={`my-2 rounded-md overflow-hidden border backdrop-blur-sm ${isRunning ? 'border-holo-cyan/20 bg-holo-cyan/5' : 'border-holo-blue/15 bg-holo-blue/5'}`}>
-      <div onClick={hasDetails ? toggle : undefined} className={`flex items-center gap-2 px-3 py-2 ${hasDetails ? 'cursor-pointer' : ''}`}>
-        {hasDetails && (
-          <span className={`text-white/30 text-[10px] transition-transform duration-150 ${open ? 'rotate-90' : ''}`}>▶</span>
-        )}
+    <article
+      data-shd-tool-card="true"
+      data-shd-state={status}
+      data-shd-open={open ? 'true' : 'false'}
+      className={`shd-status-glass overflow-hidden border ${statusBorder[status]} ${grouped ? 'mx-2 my-1 rounded-sm' : 'rounded-md'}`}
+    >
+      <button
+        type="button"
+        disabled={!hasDetails}
+        aria-label={`${name}, ${statusLabel}${actionLabel ? `, ${actionLabel}` : ''}`}
+        aria-expanded={hasDetails ? open : undefined}
+        aria-controls={hasDetails ? regionId : undefined}
+        onClick={() => hasDetails && setOpen(current => !current)}
+        className="box-border border-none shd-local-focus shd-status-glass-header flex min-h-10 w-full items-center gap-2.5 px-3 py-2 text-left transition-colors duration-150 disabled:cursor-default"
+      >
+        <span className={`w-4 ${hasDetails ? '' : 'invisible'}`}><Chevron open={open} /></span>
         <StatusIcon status={status} />
-        <span className="font-mono text-sm text-holo-cyan flex-1 min-w-0 truncate">⚡ {name}</span>
-        {durationMs != null && <HoloTag size="sm">{durationMs}ms</HoloTag>}
-      </div>
+        <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-content-primary">{name}</span>
+        <span data-shd-tool-status className="shd-status-text shrink-0 whitespace-nowrap text-[11px]">{statusLabel}</span>
+        <span className="shrink-0 whitespace-nowrap font-mono text-[11px] tabular-nums text-content-tertiary">{durationMs == null ? '' : durationMs >= 1000 ? `${(durationMs / 1000).toFixed(1)}s` : `${durationMs}ms`}</span>
+      </button>
 
       {open && hasDetails && (
-        <div className="px-3 pb-3 border-t border-holo-blue/10">
-          {args && (
-            <div className="mt-2">
-              <div className="text-[11px] text-white/35 mb-1">{locale.ai.toolArguments}</div>
-              <HighlightedJson code={args} />
-            </div>
-          )}
-          {result ? (
-            <div className="mt-2">
-              <div className="text-[11px] text-white/35 mb-1">{locale.ai.toolResult}</div>
-              <HighlightedJson code={result} />
-            </div>
-          ) : status === 'complete' && (
-            <div className="mt-2 text-xs text-white/25 italic">{locale.ai.toolNoResult}</div>
-          )}
+        <div id={regionId} role="region" aria-label={`${name} ${locale.ai.toolResult}`} className="shd-status-glass-body border-t border-stroke-muted px-3 pb-3">
+          {args && <section className="mt-2"><div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-content-tertiary">{locale.ai.toolArguments}</div><PayloadBlock code={args} /></section>}
+          {result ? <section className="mt-2"><div className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-content-tertiary">{locale.ai.toolResult}</div><PayloadBlock code={result} /></section> : status === 'complete' && <div className="mt-2 text-xs italic text-content-disabled">{locale.ai.toolNoResult}</div>}
         </div>
       )}
-    </div>
+    </article>
   )
 }

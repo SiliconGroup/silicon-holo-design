@@ -44,7 +44,7 @@ export function HoloTable<T extends Record<string, any>>({
   if (data.length === 0) {
     return (
       <div className={`flex justify-center items-center py-12 ${className}`}>
-        <span className="text-white/40 text-sm">{resolvedEmptyText}</span>
+        <span className="text-content-tertiary text-sm">{resolvedEmptyText}</span>
       </div>
     )
   }
@@ -56,7 +56,7 @@ export function HoloTable<T extends Record<string, any>>({
           {columns.map((column) => (
             <th
               key={column.key}
-              className="bg-holo-blue/10 border border-holo-cyan/15 px-3 py-2 text-left text-xs font-semibold text-holo-cyan font-mono"
+              className="bg-surface-raised border border-stroke-subtle px-3 py-2 text-left text-xs font-semibold text-content-secondary font-mono"
               style={{ width: column.width, textAlign: column.align }}
             >
               {column.title}
@@ -66,11 +66,11 @@ export function HoloTable<T extends Record<string, any>>({
       </thead>
       <tbody>
         {data.map((record, index) => (
-          <tr key={getRowKey(record, index)} className="hover:bg-holo-cyan/3">
+          <tr key={getRowKey(record, index)} className="hover:bg-surface-interactive transition-colors duration-150">
             {columns.map((column) => (
               <td
                 key={column.key}
-                className="border border-white/8 px-3 py-2 text-sm text-white/70"
+                className="border border-stroke-muted px-3 py-2 text-sm text-content-secondary"
                 style={{ textAlign: column.align }}
               >
                 {column.render

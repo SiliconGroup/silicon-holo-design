@@ -34,6 +34,7 @@ export const HoloNumberInput = forwardRef<HTMLInputElement, HoloNumberInputProps
     ref,
   ) => {
     const [focused, setFocused] = useState(false)
+    const [focusVisible, setFocusVisible] = useState(false)
     const s = sizeMap[size]
 
     const clampValue = (val: number) => {
@@ -58,14 +59,16 @@ export const HoloNumberInput = forwardRef<HTMLInputElement, HoloNumberInputProps
     }
 
     const borderColor = focused
-      ? 'border-holo-cyan/50'
-      : 'border-holo-cyan/30 hover:border-holo-cyan/40'
+      ? focusVisible
+        ? 'border-stroke-accent-strong'
+        : 'border-stroke-accent'
+      : 'border-stroke-default hover:border-stroke-strong'
 
     return (
       <div
         className={`
           flex items-center ${s.wrapper} rounded-md border border-solid
-          transition-colors duration-200 bg-scene-void/80 backdrop-blur-sm
+          transition-colors duration-150 bg-surface-interactive
           ${borderColor}
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${className}
@@ -73,10 +76,11 @@ export const HoloNumberInput = forwardRef<HTMLInputElement, HoloNumberInputProps
       >
         <button
           type="button"
+          aria-label="Decrease value"
           onClick={handleDecrement}
           disabled={disabled || (min !== undefined && value <= min)}
           className={`
-            ${s.button} h-full flex-center border-none text-white/40 hover:text-holo-cyan/70
+            ${s.button} shd-control-focus h-full flex-center border-none bg-transparent text-content-tertiary hover:text-content-accent hover:bg-surface-interactive-hover
             transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed
           `}
         >
@@ -92,11 +96,11 @@ export const HoloNumberInput = forwardRef<HTMLInputElement, HoloNumberInputProps
           disabled={disabled}
           onChange={(e) => onChange(clampValue(Number(e.target.value) || 0))}
           onKeyDown={handleKeyDown}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          onFocus={(event) => { setFocused(true); setFocusVisible(event.currentTarget.matches(':focus-visible')) }}
+          onBlur={() => { setFocused(false); setFocusVisible(false) }}
           className={`
-            flex-1 min-w-0 bg-transparent outline-none text-center
-            text-white/90 font-mono leading-normal
+            flex-1 min-w-0 border-none bg-transparent outline-none text-center
+            text-content-primary font-mono leading-normal
             disabled:cursor-not-allowed appearance-none
             [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none
             ${s.input}
@@ -104,10 +108,11 @@ export const HoloNumberInput = forwardRef<HTMLInputElement, HoloNumberInputProps
         />
         <button
           type="button"
+          aria-label="Increase value"
           onClick={handleIncrement}
           disabled={disabled || (max !== undefined && value >= max)}
           className={`
-            ${s.button} h-full flex-center border-none text-white/40 hover:text-holo-cyan/70
+            ${s.button} shd-control-focus h-full flex-center border-none bg-transparent text-content-tertiary hover:text-content-accent hover:bg-surface-interactive-hover
             transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed
           `}
         >

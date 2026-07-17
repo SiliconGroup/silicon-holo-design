@@ -36,27 +36,26 @@ export const HoloRadio = forwardRef<HTMLInputElement, HoloRadioProps>(
             checked={checked}
             onChange={(e) => !disabled && onChange(e.target.checked)}
             disabled={disabled}
-            className="sr-only"
+            className="sr-only peer"
           />
           <div
             className={`
-              border border-solid rounded-full transition-colors duration-200
-              focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-holo-cyan/50
+              shd-peer-control-focus border border-solid rounded-full transition-colors duration-150 bg-surface-interactive
               ${sizeMap[size]}
               ${checked
-                ? 'border-holo-cyan/60'
-                : 'border-holo-cyan/30 hover:border-holo-cyan/50'
+                ? 'border-stroke-accent-strong bg-accent-primary-soft'
+                : 'border-stroke-default hover:border-stroke-strong'
               }
             `}
           >
             {checked && (
               <div className="w-full h-full flex items-center justify-center">
-                <div className={`rounded-full bg-holo-cyan ${size === 'sm' ? 'w-1.5 h-1.5' : size === 'md' ? 'w-2 h-2' : 'w-2.5 h-2.5'}`} />
+                <div className={`rounded-full bg-accent-primary ${size === 'sm' ? 'w-1.5 h-1.5' : size === 'md' ? 'w-2 h-2' : 'w-2.5 h-2.5'}`} />
               </div>
             )}
           </div>
         </div>
-        {label && <span className="text-white/90 text-sm select-none">{label}</span>}
+        {label && <span className="text-content-primary text-sm select-none">{label}</span>}
       </label>
     )
   },

@@ -1,5 +1,8 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { HoloPortal } from '@/utils/portal'
+import { focusFirstOrContainer, restoreFocus, trapFocus } from '@/utils/focus'
+import { useLocale } from '@/locale'
+import { lockDocumentScroll } from '@/utils/scroll-lock'
 
 interface HoloModalProps {
   open: boolean
@@ -11,6 +14,7 @@ interface HoloModalProps {
   maskClosable?: boolean
   children: ReactNode
   className?: string
+  ariaLabel?: string
 }
 
 export function HoloModal({
@@ -23,7 +27,10 @@ export function HoloModal({
   maskClosable = true,
   children,
   className = '',
+  ariaLabel,
 }: HoloModalProps) {
+  const locale = useLocale()
+  const titleId = useId()
   const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -34,69 +41,62 @@ export function HoloModal({
     }
 
     const handleTab = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab' || !modalRef.current) return
-
-      const focusable = modalRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      )
-      const first = focusable[0] as HTMLElement
-      const last = focusable[focusable.length - 1] as HTMLElement
-
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault()
-        last?.focus()
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault()
-        first?.focus()
-      }
+      if (modalRef.current) trapFocus(e, modalRef.current)
     }
 
+    const previousFocus = document.activeElement as HTMLElement | null
+    const unlockScroll = lockDocumentScroll()
     document.addEventListener('keydown', handleEscape)
     document.addEventListener('keydown', handleTab)
 
-    // Focus first focusable element
-    setTimeout(() => {
-      const first = modalRef.current?.querySelector(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      ) as HTMLElement
-      first?.focus()
-    }, 0)
+    queueMicrotask(() => {
+      if (modalRef.current) focusFirstOrContainer(modalRef.current)
+    })
 
     return () => {
       document.removeEventListener('keydown', handleEscape)
       document.removeEventListener('keydown', handleTab)
+      restoreFocus(previousFocus)
+      unlockScroll()
     }
-  }, [open, closable, onClose])
+  }, [open, maskClosable, onClose])
 
   if (!open) return null
 
   return (
     <HoloPortal>
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="fixed inset-0 bg-[var(--shd-overlay-scrim)] backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div
           className="fixed inset-0"
           onClick={maskClosable ? onClose : undefined}
         />
         <div
           ref={modalRef}
+          data-shd-motion="overlay"
           role="dialog"
           aria-modal="true"
+          aria-labelledby={title ? titleId : undefined}
+          aria-label={title ? undefined : ariaLabel ?? 'Dialog'}
+          tabIndex={-1}
           className={`
-            relative bg-scene-deep/95 border border-holo-cyan/25 backdrop-blur rounded-lg z-50
-            w-full ${width} animate-[fadeInScale_200ms_ease-out] ${className}
+            shd-spectral-glass relative border border-stroke-default rounded-md z-50 text-content-primary
+            shadow-[0_24px_70px_rgba(0,0,0,0.42)]
+            flex max-h-[calc(100vh-32px)] w-full flex-col overflow-hidden ${width} animate-[fadeInScale_240ms_var(--shd-ease-standard)] ${className}
           `}
         >
           {(title || closable) && (
-            <div className="flex items-center justify-between p-4 border-b border-holo-cyan/15">
+            <div className="flex items-center justify-between p-4 border-b border-stroke-subtle">
               {title && (
-                <h2 className="text-lg font-semibold bg-gradient-to-r from-holo-cyan to-white bg-clip-text text-transparent">
+                <h2 id={titleId} className="text-lg font-semibold text-content-primary holo-title">
                   {title}
                 </h2>
               )}
               {closable && (
                 <button
+                  type="button"
                   onClick={onClose}
-                  className="border-none text-white/40 hover:text-white/80 transition-colors"
+                  aria-label={locale.common.close}
+                  className="shd-control-focus border-none bg-transparent rounded p-1 text-content-tertiary hover:text-content-primary hover:bg-surface-interactive transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -105,9 +105,9 @@ export function HoloModal({
               )}
             </div>
           )}
-          <div className="p-4">{children}</div>
+          <div className="min-h-0 flex-1 overflow-auto p-4">{children}</div>
           {footer && (
-            <div className="p-4 border-t border-holo-cyan/15">{footer}</div>
+            <div className="p-4 border-t border-stroke-subtle">{footer}</div>
           )}
         </div>
       </div>

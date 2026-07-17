@@ -18,10 +18,14 @@ export function HoloPagination({
   className = '',
 }: HoloPaginationProps) {
   const locale = useLocale()
-  const totalPages = Math.ceil(total / pageSize)
+  const safePageSize = Number.isFinite(pageSize) && pageSize > 0 ? Math.max(1, Math.trunc(pageSize)) : 10
+  const safeTotal = Number.isFinite(total) ? Math.max(0, Math.trunc(total)) : 0
+  const totalPages = Math.ceil(safeTotal / safePageSize)
   
   if (totalPages <= 1) return null
 
+  const normalizedCurrent = Number.isFinite(current) ? Math.trunc(current) : 1
+  const safeCurrent = Math.min(totalPages, Math.max(1, normalizedCurrent))
   const getPageNumbers = () => {
     const pages: (number | string)[] = []
     const showEllipsis = totalPages > 7
@@ -31,18 +35,18 @@ export function HoloPagination({
         pages.push(i)
       }
     } else {
-      if (current <= 4) {
+      if (safeCurrent <= 4) {
         for (let i = 1; i <= 5; i++) pages.push(i)
         pages.push('...')
         pages.push(totalPages)
-      } else if (current >= totalPages - 3) {
+      } else if (safeCurrent >= totalPages - 3) {
         pages.push(1)
         pages.push('...')
         for (let i = totalPages - 4; i <= totalPages; i++) pages.push(i)
       } else {
         pages.push(1)
         pages.push('...')
-        for (let i = current - 1; i <= current + 1; i++) pages.push(i)
+        for (let i = safeCurrent - 1; i <= safeCurrent + 1; i++) pages.push(i)
         pages.push('...')
         pages.push(totalPages)
       }
@@ -54,41 +58,47 @@ export function HoloPagination({
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       {showTotal && (
-        <span className="text-white/50 text-sm mr-4">
+        <span className="text-content-tertiary text-sm mr-4">
           {formatMessage(locale.pagination.total, { total })}
         </span>
       )}
       
       <button
-        onClick={() => onChange(current - 1)}
-        disabled={current <= 1}
-        className="w-8 h-8 rounded flex items-center justify-center text-sm border border-holo-cyan/20 text-white/50 hover:text-holo-cyan/70 hover:bg-holo-cyan/5 disabled:opacity-50 disabled:cursor-not-allowed"
+        type="button"
+        aria-label={locale.pagination.previous ?? 'Previous page'}
+        onClick={() => onChange(safeCurrent - 1)}
+        disabled={safeCurrent <= 1}
+        className="shd-control-focus w-8 h-8 rounded flex items-center justify-center bg-transparent text-sm border border-stroke-subtle text-content-secondary hover:text-content-primary hover:bg-surface-interactive hover:border-stroke-default disabled:text-content-disabled disabled:cursor-not-allowed"
       >
         ‹
       </button>
 
-      {getPageNumbers().map((page, index) => (
+      {getPageNumbers().map((page, index) => typeof page === 'number' ? (
         <button
+          type="button"
+          aria-label={typeof page === 'number' ? `${locale.pagination.page} ${page}` : undefined}
+          aria-current={page === safeCurrent ? 'page' : undefined}
           key={index}
           onClick={() => typeof page === 'number' && onChange(page)}
           disabled={typeof page !== 'number'}
           className={`
-            w-8 h-8 rounded flex items-center justify-center text-sm border border-holo-cyan/20
-            ${page === current
-              ? 'border-holo-cyan/40 bg-holo-cyan/10 text-holo-cyan'
-              : 'text-white/50 hover:text-holo-cyan/70 hover:bg-holo-cyan/5'
+            shd-control-focus w-8 h-8 rounded flex items-center justify-center text-sm border
+            ${page === safeCurrent
+              ? 'border-stroke-accent bg-surface-selected text-content-accent'
+              : 'border-stroke-subtle bg-transparent text-content-secondary hover:text-content-primary hover:bg-surface-interactive'
             }
-            ${typeof page !== 'number' ? 'cursor-default' : ''}
           `}
         >
           {page}
         </button>
-      ))}
+      ) : <span key={index} aria-hidden="true" className="w-8 text-center text-content-tertiary">…</span>)}
 
       <button
-        onClick={() => onChange(current + 1)}
-        disabled={current >= totalPages}
-        className="w-8 h-8 rounded flex items-center justify-center text-sm border border-holo-cyan/20 text-white/50 hover:text-holo-cyan/70 hover:bg-holo-cyan/5 disabled:opacity-50 disabled:cursor-not-allowed"
+        type="button"
+        aria-label={locale.pagination.next ?? 'Next page'}
+        onClick={() => onChange(safeCurrent + 1)}
+        disabled={safeCurrent >= totalPages}
+        className="shd-control-focus w-8 h-8 rounded flex items-center justify-center bg-transparent text-sm border border-stroke-subtle text-content-secondary hover:text-content-primary hover:bg-surface-interactive hover:border-stroke-default disabled:text-content-disabled disabled:cursor-not-allowed"
       >
         ›
       </button>

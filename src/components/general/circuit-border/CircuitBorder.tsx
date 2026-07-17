@@ -14,18 +14,12 @@ export function CircuitBorder({ children, className = '', animated = true }: Cir
   return (
     <div className={`relative ${className}`}>
       {/* 顶部/底部扫描线 */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
+      <svg data-shd-motion={animated ? 'decorative' : undefined} className={`absolute inset-0 w-full h-full pointer-events-none overflow-visible ${animated ? 'animate-pulse' : ''}`}>
         <defs>
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="var(--holo-cyan)" stopOpacity="0" />
             <stop offset="50%" stopColor="var(--holo-cyan)" stopOpacity="0.5" />
             <stop offset="100%" stopColor="var(--holo-cyan)" stopOpacity="0" />
-            {animated && (
-              <animate attributeName="x1" values="-100%;100%" dur="3s" repeatCount="indefinite" />
-            )}
-            {animated && (
-              <animate attributeName="x2" values="0%;200%" dur="3s" repeatCount="indefinite" />
-            )}
           </linearGradient>
         </defs>
         <line x1="0" y1="0" x2="100%" y2="0" stroke={`url(#${gradientId})`} strokeWidth="1" />

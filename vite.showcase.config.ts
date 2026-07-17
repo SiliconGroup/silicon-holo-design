@@ -6,6 +6,7 @@ import { resolve } from 'node:path'
 export default defineConfig({
   plugins: [react(), UnoCSS()],
   resolve: { alias: { '@': resolve(__dirname, 'src') } },
-  root: '.',
+  root: resolve(__dirname, 'showcases'),
+  publicDir: resolve(__dirname, 'assets'),
   server: { port: 6007 },
 })

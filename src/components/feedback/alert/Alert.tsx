@@ -12,31 +12,23 @@ interface HoloAlertProps {
 
 const typeConfig = {
   info: {
-    color: 'holo-cyan',
-    bg: 'bg-holo-cyan/5',
-    border: 'border-holo-cyan/20',
-    bar: 'bg-holo-cyan shadow-[0_0_8px_#00ffff]',
-    text: 'text-holo-cyan',
+    bg: 'bg-accent-primary-softer border-l-stroke-accent',
+    border: 'border-stroke-subtle',
+    text: 'text-content-accent',
   },
   success: {
-    color: 'status-success',
-    bg: 'bg-status-success/5',
-    border: 'border-status-success/20',
-    bar: 'bg-status-success shadow-[0_0_8px_#00ff88]',
+    bg: 'bg-state-success-soft border-l-stroke-success',
+    border: 'border-stroke-subtle',
     text: 'text-status-success',
   },
   warning: {
-    color: 'status-warning',
-    bg: 'bg-status-warning/5',
-    border: 'border-status-warning/20',
-    bar: 'bg-status-warning shadow-[0_0_8px_#ffaa00]',
+    bg: 'bg-state-warning-soft border-l-stroke-warning',
+    border: 'border-stroke-subtle',
     text: 'text-status-warning',
   },
   error: {
-    color: 'status-error',
-    bg: 'bg-status-error/5',
-    border: 'border-status-error/20',
-    bar: 'bg-status-error shadow-[0_0_8px_#ff5566]',
+    bg: 'bg-state-error-soft border-l-stroke-error',
+    border: 'border-stroke-subtle',
     text: 'text-status-error',
   },
 }
@@ -77,22 +69,23 @@ export function HoloAlert({
   const displayIcon = icon ?? defaultIcons[type]
 
   return (
-    <div className={`relative border rounded-lg ${config.bg} ${config.border} ${className}`}>
-      <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-lg ${config.bar}`} />
-      <div className="flex items-center gap-3 pl-4 pr-3 py-3">
+    <div role={type === 'warning' || type === 'error' ? 'alert' : 'status'} className={`shd-spectral-panel border border-l-2 rounded-md ${config.bg} ${config.border} ${className}`}>
+      <div className="flex items-center gap-3 px-3 py-3">
         <span className={`flex-shrink-0 ${config.text}`}>{displayIcon}</span>
         <div className="flex-1 min-w-0">
           {title && (
             <div className={`font-medium ${config.text} mb-1`}>{title}</div>
           )}
           {description && (
-            <div className="text-white/70 text-sm">{description}</div>
+            <div className="text-content-secondary text-sm">{description}</div>
           )}
         </div>
         {closable && (
           <button
+            type="button"
             onClick={onClose}
-            className="border-none flex-shrink-0 text-white/40 hover:text-white/80 transition-colors"
+            aria-label="Close alert"
+            className="shd-control-focus border-none bg-transparent flex-shrink-0 rounded p-1 text-content-tertiary hover:text-content-primary hover:bg-surface-interactive transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

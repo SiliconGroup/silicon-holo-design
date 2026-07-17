@@ -20,7 +20,7 @@ interface HoloConfirmProps {
 
 const typeConfig = {
   info: {
-    iconColor: 'text-holo-cyan',
+    iconColor: 'text-content-accent',
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
     ),
@@ -90,8 +90,8 @@ export function HoloConfirm({
         <div className="flex gap-3 items-center">
           <div className="flex-shrink-0">{iconElement}</div>
           <div className="flex-1">
-            <h3 className="text-base font-semibold text-white">{title}</h3>
-            {description && <p className="text-white/50 text-sm mt-0.5">{description}</p>}
+            <h3 className="text-base font-semibold text-content-primary">{title}</h3>
+            {description && <p className="text-content-secondary text-sm mt-0.5">{description}</p>}
             <div className="flex gap-3 justify-end mt-4">{buttons}</div>
           </div>
         </div>
@@ -103,8 +103,8 @@ export function HoloConfirm({
     <HoloModal open={open} onClose={onCancel} width="max-w-sm" maskClosable={maskClosable} className={className}>
       <div className="flex flex-col items-center text-center py-2">
         {iconElement}
-        <h3 className="text-xl font-semibold text-white mt-3">{title}</h3>
-        {description && <p className="text-white/45 text-sm mt-1.5">{description}</p>}
+        <h3 className="text-xl font-semibold text-content-primary mt-3">{title}</h3>
+        {description && <p className="text-content-secondary text-sm mt-1.5">{description}</p>}
         <div className="flex gap-3 mt-6">{buttons}</div>
       </div>
     </HoloModal>

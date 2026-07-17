@@ -8,6 +8,7 @@ interface IconButtonProps {
   size?: 'sm' | 'md' | 'lg'
   disabled?: boolean
   title?: string
+  type?: 'button' | 'submit' | 'reset'
 }
 
 const sizeClasses = {
@@ -24,39 +25,41 @@ export function IconButton({
   size = 'md',
   disabled,
   title,
+  type = 'button',
 }: IconButtonProps) {
   const variantClasses = {
     default: `
-      text-white/50 hover:text-holo-cyan
-      bg-transparent hover:bg-holo-cyan/8
-      border border-holo-cyan/30 hover:border-holo-cyan/50
+      text-content-secondary hover:text-content-primary
+      bg-surface-interactive hover:bg-surface-interactive-hover
+      border border-stroke-default hover:border-stroke-strong
     `,
     ghost: `
-      text-white/40 hover:text-holo-cyan
-      bg-transparent hover:bg-white/5
-      border border-holo-cyan/30 hover:border-holo-cyan/50
+      text-content-tertiary hover:text-content-primary
+      bg-transparent hover:bg-surface-interactive border border-transparent
     `,
     glow: `
-      text-holo-cyan/80 hover:text-holo-cyan
-      bg-holo-cyan/8 hover:bg-holo-cyan/12
-      border border-holo-cyan/50 hover:border-holo-cyan/70
+      text-content-accent hover:text-content-primary
+      bg-accent-primary-soft hover:bg-surface-selected
+      border border-stroke-accent hover:border-stroke-accent-strong
     `,
     danger: `
-      text-white/40 hover:text-status-error
-      bg-transparent hover:bg-status-error/8
-      border border-status-error/30 hover:border-status-error/50
+      text-content-tertiary hover:text-status-error
+      bg-transparent hover:bg-state-error-soft
+      border border-transparent hover:border-stroke-error
     `,
   }
 
   return (
     <button
+      type={type}
       onClick={onClick}
       disabled={disabled}
       title={title}
       className={`
         flex-center rounded
-        transition-colors duration-200
-        disabled:opacity-30 disabled:pointer-events-none
+        transition-colors duration-150
+        shd-control-focus focus-visible:border-stroke-strong
+        disabled:text-content-disabled disabled:bg-transparent disabled:border-transparent disabled:pointer-events-none
         ${sizeClasses[size]}
         ${variantClasses[variant]}
         ${className}

@@ -1,29 +1,36 @@
 import 'virtual:uno.css'
+import '../../../src/styles/base.css'
+import '../../../src/styles/animations.css'
 import { createRoot } from 'react-dom/client'
 import { useState } from 'react'
 import {
   LocaleProvider, ThemeProvider, enUS, zhCN, ToastProvider, useToast,
-  HoloButton, HoloInput, HoloTextarea, HoloSelect, HoloCheckbox, HoloRadio, HoloRadioGroup,
+  HoloButton, HoloInput, HoloInputGroup, HoloInputAddon, HoloTextarea, HoloSelect, HoloCheckbox, HoloRadio, HoloRadioGroup,
   HoloSwitch, HoloSlider, HoloNumberInput, HoloDatePicker,
   HoloModal, HoloDrawer, HoloConfirm, HoloAlert, HoloProgress, HoloSkeleton, HoloSpinner, HexagonLoader,
   HoloTable, HoloTag, HoloBadge, HoloAvatar, HoloTooltip, HoloPopover, HoloTimeline, HoloEmpty, HoloKbd,
   HoloBreadcrumb, HoloPagination, HoloSteps, HoloDropdown, HoloTab,
   HoloDivider, HoloSpace, HoloCollapse, GlowCard, CircuitBorder, IconButton, HoloLink,
-  StatusIndicator,
+  StatusIndicator, ChatBubble, ChatInputArea, AIToolCallCard, AIToolExecutionCard, AITaskExecutionPanel,
 } from '../../../src'
 import type { Locale } from '../../../src'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginBottom: 48 }}>
-      <h2 style={{ fontSize: 18, fontWeight: 600, color: 'rgba(0,255,255,0.85)', marginBottom: 16, paddingBottom: 8, borderBottom: '1px solid rgba(0,255,255,0.15)' }}>{title}</h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>{children}</div>
-    </div>
+    <section className="mb-12">
+      <h2 className="mb-4 flex items-center gap-3 border-b border-stroke-subtle pb-2 text-lg font-semibold text-content-primary">
+        <span className="h-1.5 w-1.5 rotate-45 border border-stroke-accent bg-accent-primary-soft" />
+        {title}
+      </h2>
+      <div className="flex flex-col gap-4 overflow-hidden rounded-md border border-stroke-subtle bg-surface-base p-5">
+        {children}
+      </div>
+    </section>
   )
 }
 
 function Row({ children }: { children: React.ReactNode }) {
-  return <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>{children}</div>
+  return <div className="flex flex-wrap items-center gap-3">{children}</div>
 }
 
 function App() {
@@ -44,16 +51,21 @@ function App() {
   return (
     <LocaleProvider locale={locale}>
       <ToastProvider>
-        <div style={{ background: '#000a0e', minHeight: '100vh', padding: '32px 48px', color: 'rgba(255,255,255,0.9)', maxWidth: 960, margin: '0 auto' }}>
+        <div className="relative min-h-screen overflow-hidden bg-surface-canvas text-content-primary">
+          <div aria-hidden="true" className="pointer-events-none fixed inset-0" style={{
+            background: 'linear-gradient(rgba(0,255,255,0.016) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.016) 1px, transparent 1px), radial-gradient(ellipse at 18% 0%, rgba(0,230,190,0.06), transparent 42%), radial-gradient(ellipse at 88% 72%, rgba(80,220,170,0.035), transparent 34%)',
+            backgroundSize: '32px 32px, 32px 32px, auto, auto',
+          }} />
+          <div className="relative mx-auto max-w-5xl px-6 py-10 lg:px-12">
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 40 }}>
+          <div className="mb-10 flex flex-wrap items-center gap-4 border-b border-stroke-subtle pb-6">
             <img src="/logo.svg" alt="logo" style={{ height: 32 }} />
-            <div>
-              <h1 style={{ fontSize: 24, fontWeight: 700, color: 'rgba(0,255,255,0.9)' }}>Component Gallery</h1>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>All components at a glance</p>
+            <div className="min-w-0 flex-1 sm:flex-none">
+              <h1 className="holo-text text-2xl font-bold">Component Gallery</h1>
+              <p className="mt-1 text-xs text-content-tertiary">Spectral-flat components and interaction states</p>
             </div>
-            <div style={{ marginLeft: 'auto' }}>
-              <HoloSpace size="sm">
+            <div className="w-full sm:ml-auto sm:w-auto">
+              <HoloSpace size="sm" wrap>
                 <HoloButton size="sm" variant={locale === enUS ? 'primary' : 'ghost'} onClick={() => setLocale(enUS)}>EN</HoloButton>
                 <HoloButton size="sm" variant={locale === zhCN ? 'primary' : 'ghost'} onClick={() => setLocale(zhCN)}>中文</HoloButton>
               </HoloSpace>
@@ -88,6 +100,11 @@ function App() {
               <HoloInput placeholder="Text input..." style={{ width: 220 }} />
               <HoloInput placeholder="Disabled" disabled style={{ width: 220 }} />
             </Row>
+            <HoloInputGroup>
+              <HoloInputAddon>https://</HoloInputAddon>
+              <HoloInput placeholder="workspace.example" aria-label="Grouped workspace URL" />
+              <HoloInputAddon>.dev</HoloInputAddon>
+            </HoloInputGroup>
             <HoloTextarea placeholder="Textarea..." rows={3} />
             <Row>
               <HoloSelect options={[{ value: 'react', label: 'React' }, { value: 'vue', label: 'Vue' }, { value: 'svelte', label: 'Svelte' }]} value={selectVal} onChange={v => setSelectVal(v as string)} />
@@ -163,6 +180,28 @@ function App() {
             <HoloConfirm open={confirmOpen} onCancel={() => setConfirmOpen(false)} onConfirm={() => setConfirmOpen(false)} title="Confirm" description="Are you sure?" />
           </Section>
 
+          <Section title="Chat & AI">
+            <ChatBubble align="left" timestamp="10:42">Assistant response on a restrained spectral surface.</ChatBubble>
+            <ChatBubble align="right" timestamp="10:43">User response with a local accent edge.</ChatBubble>
+            <ChatInputArea onSend={() => {}} />
+            <AIToolCallCard name="inspect_components" status="complete" arguments={'{"scope":"src/components"}'} result={'{"valid":true}'} durationMs={184} />
+            <Row>
+              <div className="min-w-[240px] flex-1"><AIToolExecutionCard toolName="Build package" status="running" /></div>
+              <div className="min-w-[240px] flex-1"><AIToolExecutionCard toolName="Verify exports" status="complete" result="Public API preserved" /></div>
+            </Row>
+            <AITaskExecutionPanel
+              defaultExpanded
+              taskList={{
+                description: 'Prepare compatible release',
+                tasks: [
+                  { id: 'tokens', description: 'Validate semantic tokens', status: 'completed' },
+                  { id: 'examples', description: 'Build examples', status: 'running', progress: 72 },
+                  { id: 'audit', description: 'Complete independent audit', status: 'pending' },
+                ],
+              }}
+            />
+          </Section>
+
           {/* Navigation */}
           <Section title="Navigation">
             <HoloBreadcrumb items={[{ label: 'Home', href: '#' }, { label: 'Components', href: '#' }, { label: 'Button' }]} />
@@ -185,6 +224,7 @@ function App() {
               <HoloButton>Spaced C</HoloButton>
             </HoloSpace>
           </Section>
+          </div>
         </div>
       </ToastProvider>
     </LocaleProvider>

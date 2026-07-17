@@ -17,10 +17,9 @@ export function HoloAnchor({ items, activeKey, onChange, className = '' }: HoloA
   const handleClick = (key: string, href: string) => {
     onChange?.(key)
     
-    // Smooth scroll to anchor
     const element = document.querySelector(href)
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+      element.scrollIntoView({ block: 'start' })
     }
   }
 
@@ -30,20 +29,21 @@ export function HoloAnchor({ items, activeKey, onChange, className = '' }: HoloA
         const isActive = activeKey === item.key
         
         return (
-          <div
+          <button
+            type="button"
             key={item.key}
             className={`
-              pl-3 py-1.5 text-sm cursor-pointer transition-colors duration-200
-              border-l-2
+              block w-full appearance-none bg-transparent pl-3 py-1.5 text-left text-sm cursor-pointer transition-colors duration-150
+              shd-control-focus border-y-0 border-r-0 border-l-2
               ${isActive
-                ? 'text-holo-cyan border-l-holo-cyan'
-                : 'text-white/50 hover:text-holo-cyan/70 border-l-transparent'
+                ? 'text-content-accent border-l-accent-primary bg-accent-primary-softer'
+                : 'text-content-tertiary hover:text-content-primary border-l-transparent'
               }
             `}
             onClick={() => handleClick(item.key, item.href)}
           >
             {item.title}
-          </div>
+          </button>
         )
       })}
     </div>

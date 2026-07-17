@@ -11,10 +11,10 @@ interface HoloBadgeProps {
 }
 
 const colorMap = {
-  cyan: 'bg-holo-cyan text-scene-void',
-  green: 'bg-status-success text-scene-void',
-  error: 'bg-status-error text-white',
-  warning: 'bg-status-warning text-scene-void',
+  cyan: 'bg-accent-primary-soft border-stroke-accent text-content-accent',
+  green: 'bg-state-success-soft border-stroke-success text-status-success',
+  error: 'bg-state-error-soft border-stroke-error text-status-error',
+  warning: 'bg-state-warning-soft border-stroke-warning text-status-warning',
 }
 
 export function HoloBadge({
@@ -40,7 +40,7 @@ export function HoloBadge({
           absolute top-0 right-0 translate-x-1/2 -translate-y-1/2
           flex items-center justify-center font-medium
           ${dot ? 'w-2 h-2' : 'min-w-5 h-5 px-1 text-xs'}
-          rounded-full ${colorMap[color]}
+          rounded-full border ${colorMap[color]}
         `}
       >
         {!dot && displayCount}

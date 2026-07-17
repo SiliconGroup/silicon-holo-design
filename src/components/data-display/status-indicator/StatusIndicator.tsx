@@ -34,7 +34,7 @@ export function StatusIndicator({ status, labels, colors }: StatusIndicatorProps
   const pulse = defaultColors[status].pulse
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-holo-cyan/5 border border-holo-cyan/15">
+    <div data-shd-motion="status" className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-raised border border-stroke-subtle">
       <div className="relative">
         <div
           className={`w-2 h-2 rounded-full ${pulse ? 'animate-pulse' : ''}`}
