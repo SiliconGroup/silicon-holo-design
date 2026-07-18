@@ -207,13 +207,25 @@ function App() {
       if (!tableWrap || tableWrap.scrollWidth <= tableWrap.clientWidth || markdownNarrow.scrollWidth > markdownNarrow.clientWidth + 1) throw new Error(`Wide Markdown table does not use an internal scroll surface: ${JSON.stringify({ wrap: tableWrap && { scrollWidth: tableWrap.scrollWidth, clientWidth: tableWrap.clientWidth }, markdown: { scrollWidth: markdownNarrow.scrollWidth, clientWidth: markdownNarrow.clientWidth } })}`)
 
       const messageScroll = document.querySelector<HTMLElement>('[data-shd-message-scroll="true"]')
-      if (!messageScroll || getComputedStyle(messageScroll).scrollbarWidth !== 'thin') throw new Error('Message list does not use the shared thin scrollbar contract.')
+      if (!messageScroll) throw new Error('Message list scroll fixture is missing.')
+      const usesWebkitScrollbar = CSS.supports('selector(::-webkit-scrollbar)')
+      const expectedScrollbarWidth = usesWebkitScrollbar ? 'auto' : 'thin'
+      const messageScrollStyle = getComputedStyle(messageScroll)
+      if (messageScrollStyle.getPropertyValue('scrollbar-width') !== expectedScrollbarWidth) {
+        throw new Error(`Message list does not use the capability-aware scrollbar contract: ${JSON.stringify({ usesWebkitScrollbar, scrollbarWidth: messageScrollStyle.getPropertyValue('scrollbar-width') })}`)
+      }
+      if (usesWebkitScrollbar && getComputedStyle(messageScroll, '::-webkit-scrollbar').width !== '8px') {
+        throw new Error('Message list did not activate the WebKit scrollbar branch.')
+      }
 
       const mathScroll = document.querySelector<HTMLElement>('[data-shd-math-narrow] .katex-display')
       if (!mathScroll) throw new Error('KaTeX scroll fixture is missing.')
       const mathStyle = getComputedStyle(mathScroll)
-      if (mathStyle.overflowX !== 'auto' || mathStyle.overflowY !== 'hidden' || mathStyle.scrollbarWidth !== 'thin') {
-        throw new Error(`KaTeX does not use the horizontal scrollbar contract: ${JSON.stringify({ overflowX: mathStyle.overflowX, overflowY: mathStyle.overflowY, scrollbarWidth: mathStyle.scrollbarWidth, scrollWidth: mathScroll.scrollWidth, clientWidth: mathScroll.clientWidth })}`)
+      if (mathStyle.overflowX !== 'auto' || mathStyle.overflowY !== 'hidden' || mathStyle.getPropertyValue('scrollbar-width') !== expectedScrollbarWidth) {
+        throw new Error(`KaTeX does not use the capability-aware horizontal scrollbar contract: ${JSON.stringify({ usesWebkitScrollbar, overflowX: mathStyle.overflowX, overflowY: mathStyle.overflowY, scrollbarWidth: mathStyle.getPropertyValue('scrollbar-width'), scrollWidth: mathScroll.scrollWidth, clientWidth: mathScroll.clientWidth })}`)
+      }
+      if (usesWebkitScrollbar && getComputedStyle(mathScroll, '::-webkit-scrollbar').height !== '8px') {
+        throw new Error('KaTeX did not activate the WebKit horizontal scrollbar branch.')
       }
 
       const alert = document.querySelector<HTMLElement>('[data-shd-alert-fixture] [role="status"]')

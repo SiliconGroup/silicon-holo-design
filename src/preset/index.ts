@@ -39,10 +39,13 @@ button.shd-segmented-control-button{font-family:var(--shd-font-sans,Inter,"SF Pr
 .shd-copy-action:hover{background:var(--shd-surface-interactive);color:var(--shd-content-primary)}
 .shd-copy-action svg{width:14px;height:14px}
 .shd-scrollbar{scrollbar-width:thin;scrollbar-color:var(--shd-stroke-default) transparent}
+@supports selector(::-webkit-scrollbar){
+.shd-scrollbar{scrollbar-width:auto;scrollbar-color:auto}
 .shd-scrollbar::-webkit-scrollbar{width:8px;height:8px}
 .shd-scrollbar::-webkit-scrollbar-track{background:transparent}
 .shd-scrollbar::-webkit-scrollbar-thumb{min-height:32px;border:2px solid transparent;border-radius:999px;background:var(--shd-stroke-default);background-clip:padding-box}
 .shd-scrollbar::-webkit-scrollbar-thumb:hover{background:var(--shd-stroke-accent);background-clip:padding-box}
+}
 .shd-spectral-panel{background:var(--shd-surface-base-soft);box-shadow:inset 0 1px 0 var(--shd-spectral-highlight);color:var(--shd-content-primary)}
 .shd-spectral-panel-raised{background:var(--shd-surface-raised-soft);box-shadow:inset 0 1px 0 var(--shd-spectral-highlight);color:var(--shd-content-primary)}
 .shd-spectral-glass{background:var(--shd-surface-glass);backdrop-filter:blur(14px) saturate(118%);-webkit-backdrop-filter:blur(14px) saturate(118%);box-shadow:inset 0 1px 0 var(--shd-spectral-highlight);color:var(--shd-content-primary)}
@@ -110,10 +113,13 @@ button.shd-segmented-control-button{font-family:var(--shd-font-sans,Inter,"SF Pr
 .shd-markdown-content .shd-markdown-code-block pre{overflow-x:auto;padding:14px}
 .shd-markdown-content .katex{color:var(--shd-content-primary)}
 .shd-markdown-content .katex-display{margin:1em 0;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scrollbar-width:thin;scrollbar-color:var(--shd-stroke-default) transparent}
+@supports selector(::-webkit-scrollbar){
+.shd-markdown-content .katex-display{scrollbar-width:auto;scrollbar-color:auto}
 .shd-markdown-content .katex-display::-webkit-scrollbar{width:8px;height:8px}
 .shd-markdown-content .katex-display::-webkit-scrollbar-track{background:transparent}
 .shd-markdown-content .katex-display::-webkit-scrollbar-thumb{border:2px solid transparent;border-radius:999px;background:var(--shd-stroke-default);background-clip:padding-box}
 .shd-markdown-content .katex-display::-webkit-scrollbar-thumb:hover{background:var(--shd-stroke-accent);background-clip:padding-box}
+}
 .shd-local-focus:focus-visible{outline:2px solid var(--shd-focus-ring);outline-offset:-2px}
 .shd-local-active{background-color:var(--shd-accent-primary-softer);box-shadow:inset 2px 0 0 var(--shd-stroke-accent)}
 .shd-control-focus:focus-visible,.shd-focus-frame{outline:2px solid var(--shd-focus-ring);outline-offset:1px}

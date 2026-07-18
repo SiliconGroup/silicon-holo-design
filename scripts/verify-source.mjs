@@ -60,6 +60,13 @@ if (/(?:^|\n)\s*body\s*\{/.test(baseCss)) baseResetIssues.push('base styles must
 if (/(?:^|\n)\s*button\s*\{/.test(baseCss)) baseResetIssues.push('base styles must not reset every host button')
 if (/(?:^|\n)\s*input\s*,\s*textarea\s*,\s*select\s*\{/.test(baseCss)) baseResetIssues.push('base styles must not reset every host form control')
 const materialContractIssues = []
+const scrollbarContractIssues = []
+for (const [name, source] of [['base CSS', baseCss], ['preset', presetSource]]) {
+  if (!/\.shd-scrollbar\s*\{[^}]*scrollbar-width:\s*thin;?[^}]*scrollbar-color:\s*var\(--shd-stroke-default\) transparent/s.test(source)) scrollbarContractIssues.push(`${name} lacks the standard scrollbar baseline`)
+  if (!/\.shd-markdown-content \.katex-display\s*\{[^}]*scrollbar-width:\s*thin;?[^}]*scrollbar-color:\s*var\(--shd-stroke-default\) transparent/s.test(source)) scrollbarContractIssues.push(`${name} lacks the standard KaTeX scrollbar baseline`)
+  if (!/@supports selector\(::-webkit-scrollbar\)\s*\{\s*\.shd-scrollbar\s*\{[^}]*scrollbar-width:\s*auto;?[^}]*scrollbar-color:\s*auto;?[^}]*\}\s*\.shd-scrollbar::-webkit-scrollbar/s.test(source)) scrollbarContractIssues.push(`${name} does not isolate the WebKit scrollbar strategy`)
+  if (!/@supports selector\(::-webkit-scrollbar\)\s*\{\s*\.shd-markdown-content \.katex-display\s*\{[^}]*scrollbar-width:\s*auto;?[^}]*scrollbar-color:\s*auto;?[^}]*\}\s*\.shd-markdown-content \.katex-display::-webkit-scrollbar/s.test(source)) scrollbarContractIssues.push(`${name} does not isolate the WebKit KaTeX strategy`)
+}
 for (const selector of ['shd-spectral-panel', 'shd-spectral-panel-raised', 'shd-spectral-glass', 'shd-surface-inset']) {
   const baseRule = new RegExp(`\\.${selector}\\s*\\{[^}]*color:\\s*var\\(--shd-content-primary\\)`, 's')
   const presetRule = new RegExp(`\\.${selector}\\{[^}]*color:var\\(--shd-content-primary\\)`, 's')
@@ -126,6 +133,11 @@ if (unthemedScrollSurfaces.length > 0) {
   process.exit(1)
 }
 
+if (scrollbarContractIssues.length > 0) {
+  console.error(`Scrollbar capability contracts are incomplete:\n${scrollbarContractIssues.join('\n')}`)
+  process.exit(1)
+}
+
 if (nakedDemoBorders.length > 0) {
   console.error(`Showcase and example borders must declare a semantic color:\n${nakedDemoBorders.join('\n')}`)
   process.exit(1)
@@ -138,5 +150,6 @@ console.log('✓ accent, stroke, and focus roles derive from final primitive var
 console.log('✓ scoped base styles preserve design borders without resetting host controls')
 console.log('✓ borderless library buttons explicitly clear native backgrounds')
 console.log('✓ library-owned scroll surfaces use the shared scrollbar contract')
+console.log('✓ standard and WebKit scrollbar strategies are capability-isolated')
 console.log('✓ preset and prebuilt material contracts remain aligned')
 console.log('✓ showcase and example borders use semantic colors')

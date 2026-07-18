@@ -373,6 +373,14 @@ console.log('public export baselines verified')
   for (const selector of ['.shd-spectral-panel-raised{', '.shd-spectral-glass{', '.shd-surface-inset{', '.shd-z-overlay{', '.shd-z-toast{', '.shd-z-tooltip{', 'button.shd-button{', 'button.shd-button-md{', 'button.shd-segmented-control-button{', '.shd-copy-action{', '.shd-scrollbar{', '.shd-markdown-content{', '.shd-markdown-table-wrap{', '.shd-markdown-content .katex-display{', '.shd-local-focus:focus-visible{', '.shd-control-focus:focus-visible', '.flex-center{', '.shd-focus-ring:focus-visible{', '.bg-surface-raised{', '.border-stroke-accent{', '.text-content-on-accent{', '.bg-state-warning-soft{']) {
     if (!presetCss.includes(selector)) throw new Error(`clean preset consumer did not generate ${selector}`)
   }
+  for (const rule of [
+    /\.shd-scrollbar\{scrollbar-width:thin;scrollbar-color:var\(--shd-stroke-default\) transparent\}/,
+    /\.shd-markdown-content \.katex-display\{[^}]*scrollbar-width:thin;scrollbar-color:var\(--shd-stroke-default\) transparent\}/,
+    /@supports selector\(::-webkit-scrollbar\)\{\.shd-scrollbar\{scrollbar-width:auto;scrollbar-color:auto\}\.shd-scrollbar::-webkit-scrollbar\{[^}]*\}\.shd-scrollbar::-webkit-scrollbar-track\{[^}]*\}\.shd-scrollbar::-webkit-scrollbar-thumb\{[^}]*\}\.shd-scrollbar::-webkit-scrollbar-thumb:hover\{[^}]*background:var\(--shd-stroke-accent\)/,
+    /@supports selector\(::-webkit-scrollbar\)\{\.shd-markdown-content \.katex-display\{scrollbar-width:auto;scrollbar-color:auto\}\.shd-markdown-content \.katex-display::-webkit-scrollbar\{[^}]*\}\.shd-markdown-content \.katex-display::-webkit-scrollbar-track\{[^}]*\}\.shd-markdown-content \.katex-display::-webkit-scrollbar-thumb\{[^}]*\}\.shd-markdown-content \.katex-display::-webkit-scrollbar-thumb:hover\{[^}]*background:var\(--shd-stroke-accent\)/,
+  ]) {
+    if (!rule.test(presetCss)) throw new Error('clean preset consumer did not preserve the capability-aware scrollbar contract')
+  }
   for (const selector of ['.shd-spectral-panel-raised{', '.shd-spectral-glass{', '.shd-surface-inset{']) {
     const start = presetCss.indexOf(selector)
     const rule = presetCss.slice(start, presetCss.indexOf('}', start) + 1)

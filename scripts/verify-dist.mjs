@@ -52,6 +52,18 @@ for (const selector of ['.shd-z-overlay{', '.shd-z-toast{', '.shd-z-tooltip{', '
   }
 }
 
+for (const rule of [
+  /\.shd-scrollbar\{scrollbar-width:thin;scrollbar-color:var\(--shd-stroke-default\) transparent\}/,
+  /\.shd-markdown-content \.katex-display\{[^}]*scrollbar-width:thin;scrollbar-color:var\(--shd-stroke-default\) transparent\}/,
+  /@supports selector\(::-webkit-scrollbar\)\{\.shd-scrollbar\{scrollbar-width:auto;scrollbar-color:auto\}\.shd-scrollbar::-webkit-scrollbar\{[^}]*\}\.shd-scrollbar::-webkit-scrollbar-track\{[^}]*\}\.shd-scrollbar::-webkit-scrollbar-thumb\{[^}]*\}\.shd-scrollbar::-webkit-scrollbar-thumb:hover\{[^}]*background:var\(--shd-stroke-accent\)/,
+  /@supports selector\(::-webkit-scrollbar\)\{\.shd-markdown-content \.katex-display\{scrollbar-width:auto;scrollbar-color:auto\}\.shd-markdown-content \.katex-display::-webkit-scrollbar\{[^}]*\}\.shd-markdown-content \.katex-display::-webkit-scrollbar-track\{[^}]*\}\.shd-markdown-content \.katex-display::-webkit-scrollbar-thumb\{[^}]*\}\.shd-markdown-content \.katex-display::-webkit-scrollbar-thumb:hover\{[^}]*background:var\(--shd-stroke-accent\)/,
+]) {
+  if (!rule.test(css)) {
+    console.error('Dist CSS must isolate standard and WebKit scrollbar strategies')
+    process.exit(1)
+  }
+}
+
 if (!/button\.shd-control-focus(?:,[^{]+)?\{[^}]*appearance:none/.test(css)) {
   console.error('Dist CSS must remove native appearance only from library buttons')
   process.exit(1)
