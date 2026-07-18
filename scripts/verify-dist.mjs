@@ -45,7 +45,7 @@ for (const rule of [
   }
 }
 
-for (const selector of ['.shd-z-overlay{', '.shd-z-toast{', '.shd-z-tooltip{', 'button.shd-button{', 'button.shd-button-md{', 'button.shd-segmented-control-button{', '.shd-copy-action{', '.shd-scrollbar{', '.shd-markdown-content{', '.shd-markdown-table-wrap{']) {
+for (const selector of ['.shd-z-overlay{', '.shd-z-toast{', '.shd-z-tooltip{', 'button.shd-button{', 'button.shd-button-md{', 'button.shd-segmented-control-button{', '.shd-copy-action{', '.shd-scrollbar{', '.shd-markdown-content{', '.shd-markdown-table-wrap{', '.shd-markdown-content .katex-display{']) {
   if (!css.includes(selector)) {
     console.error(`Missing semantic style contract: ${selector}`)
     process.exit(1)

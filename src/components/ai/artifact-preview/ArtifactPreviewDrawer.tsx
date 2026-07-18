@@ -21,7 +21,7 @@ function CodeView({ code, lang }: { code: string; lang: string }) {
     ? hljs.highlight(code, { language: lang }).value
     : hljs.highlightAuto(code).value
   return (
-    <pre className="m-0 h-full overflow-auto bg-surface-canvas p-4 text-sm">
+    <pre className="shd-scrollbar m-0 h-full overflow-auto bg-surface-canvas p-4 text-sm">
       <code className={`language-${lang}`} dangerouslySetInnerHTML={{ __html: highlighted }} />
     </pre>
   )

@@ -32,7 +32,7 @@ export function ComponentDemo({ id, title, description, children, compareSurface
           </div>}
         </div>
         <div className={`${activeSurface.className} min-w-0 text-content-primary`}>
-          <div className="min-h-20 overflow-auto p-4">{children}</div>
+          <div className="shd-scrollbar min-h-20 overflow-auto p-4">{children}</div>
         </div>
       </div>
     </section>

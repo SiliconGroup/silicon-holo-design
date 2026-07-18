@@ -60,6 +60,16 @@ const codeMessage: ChatMessage = {
   role: 'assistant',
   content: 'Use `surface-base` for the shell.\n\n```ts\nconst surface = "base"\n```',
 }
+const mathMessage: ChatMessage = {
+  id: 'math-scroll-contract',
+  role: 'assistant',
+  content: String.raw`$$
+\begin{aligned}
+S(\lambda,t)&=B(\lambda)+\alpha(t)R_s(\lambda),\\
+L(\theta)&=\sum_{i=1}^{n}w_i\lVert f_\theta(x_i)-y_i\rVert_2^2+\beta\int_\Omega\lVert\nabla f_\theta(x)\rVert_2^2\,dx.
+\end{aligned}
+$$`,
+}
 const chineseMarkdownMessage: ChatMessage = {
   id: 'chinese-markdown-contract',
   role: 'assistant',
@@ -199,6 +209,13 @@ function App() {
       const messageScroll = document.querySelector<HTMLElement>('[data-shd-message-scroll="true"]')
       if (!messageScroll || getComputedStyle(messageScroll).scrollbarWidth !== 'thin') throw new Error('Message list does not use the shared thin scrollbar contract.')
 
+      const mathScroll = document.querySelector<HTMLElement>('[data-shd-math-narrow] .katex-display')
+      if (!mathScroll) throw new Error('KaTeX scroll fixture is missing.')
+      const mathStyle = getComputedStyle(mathScroll)
+      if (mathStyle.overflowX !== 'auto' || mathStyle.overflowY !== 'hidden' || mathStyle.scrollbarWidth !== 'thin') {
+        throw new Error(`KaTeX does not use the horizontal scrollbar contract: ${JSON.stringify({ overflowX: mathStyle.overflowX, overflowY: mathStyle.overflowY, scrollbarWidth: mathStyle.scrollbarWidth, scrollWidth: mathScroll.scrollWidth, clientWidth: mathScroll.clientWidth })}`)
+      }
+
       const alert = document.querySelector<HTMLElement>('[data-shd-alert-fixture] [role="status"]')
       if (!alert) throw new Error('Alert visual fixture is missing.')
       const alertStyle = getComputedStyle(alert)
@@ -336,6 +353,7 @@ function App() {
             <AIMessageBubble message={codeMessage} />
             <AIMessageBubble message={mermaidMessage} />
             <div className="w-[320px]" data-shd-markdown-narrow><AIMessageBubble message={chineseMarkdownMessage} /></div>
+            <div className="w-[280px]" data-shd-math-narrow><AIMessageBubble message={mathMessage} /></div>
           </div>
           <div className="mt-10 w-[320px]" data-shd-narrow-group>
             <AIToolCallGroup messages={narrowMessages} />

@@ -123,7 +123,7 @@ export function HtmlPreviewBlock({ code }: HtmlPreviewBlockProps) {
 
       {/* 内容区 */}
       {mode === 'code' ? (
-        <pre className="m-0 p-4 bg-surface-base overflow-auto text-sm" style={{ maxHeight: 500 }}>
+        <pre className="shd-scrollbar m-0 p-4 bg-surface-base overflow-auto text-sm" style={{ maxHeight: 500 }}>
           <code ref={codeRef} className="language-html">{code}</code>
         </pre>
       ) : (

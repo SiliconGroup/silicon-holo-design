@@ -29,7 +29,7 @@ export function AIToolExecutionCard({ toolName, status, result }: AIToolExecutio
       </div>
       {result && (isComplete || isError) && (
         <div className="mx-4 mb-4 pt-3 border-t border-stroke-muted">
-          <pre className="shd-status-glass-inset m-0 p-3 rounded border border-stroke-muted text-xs text-content-secondary font-mono whitespace-pre-wrap max-h-40 overflow-auto">{result}</pre>
+          <pre className="shd-status-glass-inset shd-scrollbar m-0 p-3 rounded border border-stroke-muted text-xs text-content-secondary font-mono whitespace-pre-wrap max-h-40 overflow-auto">{result}</pre>
         </div>
       )}
     </article>

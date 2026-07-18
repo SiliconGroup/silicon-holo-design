@@ -105,7 +105,7 @@ export function HoloModal({
               )}
             </div>
           )}
-          <div className="min-h-0 flex-1 overflow-auto p-4">{children}</div>
+          <div className="shd-scrollbar min-h-0 flex-1 overflow-auto p-4">{children}</div>
           {footer && (
             <div data-shd-overlay-footer className="shd-overlay-footer p-4">{footer}</div>
           )}

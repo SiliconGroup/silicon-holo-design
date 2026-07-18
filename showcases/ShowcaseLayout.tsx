@@ -182,7 +182,7 @@ export function ShowcaseLayout() {
         className={`
         fixed md:sticky top-0 left-0 z-40 w-60 flex-shrink-0
         bg-surface-base border-r border-stroke-subtle
-        h-screen overflow-y-auto transition-transform duration-250
+        shd-scrollbar h-screen overflow-y-auto transition-transform duration-250
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         <div className="p-5 pb-3">
@@ -213,7 +213,7 @@ export function ShowcaseLayout() {
       </aside>
 
       {/* Content */}
-      <main id="showcase-content" className="flex-1 min-w-0 overflow-y-auto h-screen">
+      <main id="showcase-content" className="shd-scrollbar flex-1 min-w-0 overflow-y-auto h-screen">
         <div className="max-w-5xl mx-auto px-6 py-8">
           <div className="text-center py-8 mb-8">
             <h1 className="text-3xl font-bold holo-text mb-3">Silicon Holo Components</h1>

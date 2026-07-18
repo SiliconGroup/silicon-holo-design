@@ -256,7 +256,7 @@ export function HoloDatePicker({
             role="dialog"
             aria-modal="true"
             aria-label={resolvedPlaceholder}
-            className="shd-z-nested-overlay box-border fixed max-h-[calc(100vh-16px)] max-w-[calc(100vw-16px)] overflow-auto bg-surface-overlay-soft backdrop-blur-md border border-stroke-default rounded-md p-3 shadow-[0_16px_40px_rgba(0,0,0,0.32)]"
+            className="shd-z-nested-overlay shd-scrollbar box-border fixed max-h-[calc(100vh-16px)] max-w-[calc(100vw-16px)] overflow-auto bg-surface-overlay-soft backdrop-blur-md border border-stroke-default rounded-md p-3 shadow-[0_16px_40px_rgba(0,0,0,0.32)]"
             style={(() => {
               void positionVersion
               const rect = triggerRef.current?.getBoundingClientRect()

@@ -38,6 +38,12 @@ const nativeButtonBackgroundIssues = files.flatMap(file => {
     ? [`${file.replace(`${root}/`, '')}:${index + 1}`]
     : [])
 })
+const unthemedScrollSurfaces = [...files, ...demoFiles].flatMap(file => {
+  const source = readFileSync(file, 'utf8')
+  return source.split('\n').flatMap((line, index) => /overflow(?:-[xy])?-(?:auto|scroll)/.test(line) && !line.includes('shd-scrollbar') && !line.includes('chat-input-scrollbar')
+    ? [`${file.replace(`${root}/`, '')}:${index + 1}: ${line.trim()}`]
+    : [])
+})
 const nakedDemoBorders = demoFiles.flatMap(file => {
   const source = readFileSync(file, 'utf8')
   return Array.from(source.matchAll(/className=(?:"([^"]*)"|'([^']*)')/g)).flatMap(match => {
@@ -115,6 +121,11 @@ if (nativeButtonBackgroundIssues.length > 0) {
   process.exit(1)
 }
 
+if (unthemedScrollSurfaces.length > 0) {
+  console.error(`Library-owned scroll surfaces must use the shared scrollbar contract:\n${unthemedScrollSurfaces.join('\n')}`)
+  process.exit(1)
+}
+
 if (nakedDemoBorders.length > 0) {
   console.error(`Showcase and example borders must declare a semantic color:\n${nakedDemoBorders.join('\n')}`)
   process.exit(1)
@@ -126,5 +137,6 @@ console.log('✓ decorative animations use the shared reduced-motion contract')
 console.log('✓ accent, stroke, and focus roles derive from final primitive variables')
 console.log('✓ scoped base styles preserve design borders without resetting host controls')
 console.log('✓ borderless library buttons explicitly clear native backgrounds')
+console.log('✓ library-owned scroll surfaces use the shared scrollbar contract')
 console.log('✓ preset and prebuilt material contracts remain aligned')
 console.log('✓ showcase and example borders use semantic colors')

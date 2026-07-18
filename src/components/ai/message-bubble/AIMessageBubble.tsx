@@ -121,7 +121,7 @@ function MarkdownCodeBlock({ code, language, highlighted }: { code: string; lang
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-content-tertiary">{label}</span>
         <CopyAction content={code} label={`${locale.ai.copy} ${label}`} />
       </div>
-      <pre className="m-0 max-w-full overflow-x-auto p-3.5 text-left font-mono text-[12px] leading-[1.65] text-content-secondary">
+      <pre className="shd-scrollbar m-0 max-w-full overflow-x-auto p-3.5 text-left font-mono text-[12px] leading-[1.65] text-content-secondary">
         {highlighted
           ? <code className={`hljs language-${label}`} dangerouslySetInnerHTML={{ __html: highlighted }} />
           : <code>{code}</code>}

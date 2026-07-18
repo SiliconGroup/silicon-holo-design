@@ -29,7 +29,7 @@ function PayloadBlock({ code }: { code: string }) {
         <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-content-tertiary">{isJson ? 'JSON' : 'TEXT'}</span>
         <CopyAction content={code} />
       </div>
-      <pre className="m-0 max-h-60 overflow-auto p-3 text-xs text-content-secondary">
+      <pre className="shd-scrollbar m-0 max-h-60 overflow-auto p-3 text-xs text-content-secondary">
         <code className={isJson ? 'language-json' : undefined} dangerouslySetInnerHTML={{ __html: highlighted }} />
       </pre>
     </div>

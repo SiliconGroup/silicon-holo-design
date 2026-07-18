@@ -29,7 +29,7 @@ export function CodeBlock({ className, children, ...props }: ComponentPropsWitho
         </button>
       </div>
       <code
-        className={`block max-w-full overflow-x-auto px-4 py-3 font-mono text-sm leading-relaxed text-content-primary ${className ?? ''}`}
+        className={`shd-scrollbar block max-w-full overflow-x-auto px-4 py-3 font-mono text-sm leading-relaxed text-content-primary ${className ?? ''}`}
         {...props}
       >
         {children}

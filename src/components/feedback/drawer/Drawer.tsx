@@ -101,7 +101,7 @@ export function HoloDrawer({
               </button>
             )}
           </div>
-          <div className="min-h-0 flex-1 overflow-auto p-4">{children}</div>
+          <div className="shd-scrollbar min-h-0 flex-1 overflow-auto p-4">{children}</div>
         </div>
       </div>
     </HoloPortal>
