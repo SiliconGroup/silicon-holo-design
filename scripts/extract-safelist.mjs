@@ -3,11 +3,13 @@ import presetUno from '@unocss/preset-uno'
 import { readFileSync, writeFileSync } from 'fs'
 import { globSync } from 'glob'
 import { join, resolve } from 'path'
+import { pathToFileURL } from 'node:url'
 
 const root = resolve(import.meta.dirname, '..')
 const distDir = join(root, 'dist')
 
-const { presetSiliconHolo } = await import(join(distDir, 'preset', 'index.js'))
+const presetUrl = pathToFileURL(join(distDir, 'preset', 'index.js'))
+const { presetSiliconHolo } = await import(presetUrl.href)
 const publishedPreset = presetSiliconHolo()
 const extractionPreset = { ...publishedPreset, safelist: [] }
 const sourceFiles = globSync('src/**/*.{ts,tsx}', {

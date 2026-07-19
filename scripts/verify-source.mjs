@@ -23,6 +23,7 @@ const unsupportedMotion = files.flatMap(file => {
 })
 const baseCss = readFileSync(resolve(root, 'src/styles/base.css'), 'utf8')
 const presetSource = readFileSync(resolve(root, 'src/preset/index.ts'), 'utf8')
+const safelistExtractor = readFileSync(resolve(root, 'scripts/extract-safelist.mjs'), 'utf8')
 const semanticDerivations = [
   ['accent-primary', /--shd-accent-primary:\s*color-mix\([^;]*var\(--shd-holo-cyan\)[^;]*var\(--shd-holo-blue\)/],
   ['stroke-accent', /--shd-stroke-accent:\s*color-mix\([^;]*var\(--shd-holo-cyan\)/],
@@ -60,6 +61,9 @@ if (/(?:^|\n)\s*body\s*\{/.test(baseCss)) baseResetIssues.push('base styles must
 if (/(?:^|\n)\s*button\s*\{/.test(baseCss)) baseResetIssues.push('base styles must not reset every host button')
 if (/(?:^|\n)\s*input\s*,\s*textarea\s*,\s*select\s*\{/.test(baseCss)) baseResetIssues.push('base styles must not reset every host form control')
 const materialContractIssues = []
+const scriptPortabilityIssues = []
+if (!/pathToFileURL\(join\(distDir, ['"]preset['"], ['"]index\.js['"]\)\)/.test(safelistExtractor)) scriptPortabilityIssues.push('safelist preset import must convert the filesystem path to a file URL')
+if (/await import\(join\(/.test(safelistExtractor)) scriptPortabilityIssues.push('safelist extractor must not pass an absolute filesystem path directly to ESM import')
 const scrollbarContractIssues = []
 for (const [name, source] of [['base CSS', baseCss], ['preset', presetSource]]) {
   if (!/\.shd-scrollbar\s*\{[^}]*scrollbar-width:\s*thin;?[^}]*scrollbar-color:\s*var\(--shd-stroke-default\) transparent/s.test(source)) scrollbarContractIssues.push(`${name} lacks the standard scrollbar baseline`)
@@ -138,6 +142,11 @@ if (scrollbarContractIssues.length > 0) {
   process.exit(1)
 }
 
+if (scriptPortabilityIssues.length > 0) {
+  console.error(`Build script portability contracts are incomplete:\n${scriptPortabilityIssues.join('\n')}`)
+  process.exit(1)
+}
+
 if (nakedDemoBorders.length > 0) {
   console.error(`Showcase and example borders must declare a semantic color:\n${nakedDemoBorders.join('\n')}`)
   process.exit(1)
@@ -151,5 +160,6 @@ console.log('✓ scoped base styles preserve design borders without resetting ho
 console.log('✓ borderless library buttons explicitly clear native backgrounds')
 console.log('✓ library-owned scroll surfaces use the shared scrollbar contract')
 console.log('✓ standard and WebKit scrollbar strategies are capability-isolated')
+console.log('✓ build-time ESM imports use cross-platform file URLs')
 console.log('✓ preset and prebuilt material contracts remain aligned')
 console.log('✓ showcase and example borders use semantic colors')
