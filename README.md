@@ -518,6 +518,17 @@ Markdown, PDF, and XLSX resources can be loaded from application URLs without co
 
 PDF and SheetJS dependencies are loaded only when their renderer is opened. Applications remain responsible for translating protected local paths into readable URLs or binary payloads.
 
+The PDF renderer ships with a lazy inline PDF.js worker, so Vite and Tauri consumers do not need to copy a hashed worker asset. Hosts with a custom CSP or worker lifecycle can configure one before opening a PDF:
+
+```tsx
+import { configureArtifactPdfWorker } from 'silicon-holo-design'
+
+configureArtifactPdfWorker({ workerSrc: '/workers/pdf.worker.mjs' })
+// or: configureArtifactPdfWorker({ workerPort: existingWorker })
+```
+
+Configure either `workerSrc` or `workerPort`, not both. `Blob` inputs are passed through directly, while `ArrayBuffer` inputs are wrapped in a stable `Blob` so PDF.js cannot detach the caller-owned buffer.
+
 ### `examples/vite-basic`
 
 Minimal setup — buttons, inputs, modals, toasts, and locale switching.

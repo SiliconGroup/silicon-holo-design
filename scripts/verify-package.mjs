@@ -22,11 +22,11 @@ const expectedPublicExports = {
   'HoloSpinner', 'HoloSteps', 'HoloSwitch', 'HoloTab', 'HoloTable', 'HoloTag', 'HoloTextarea',
   'HoloTimeline', 'HoloTooltip', 'HoloUpload', 'HtmlPreviewBlock', 'IconButton', 'LocaleProvider',
   'MessageBubble', 'MessageList', 'StatusIndicator', 'ThemeProvider', 'ThemeStyle', 'ToastProvider',
-  'ToolExecutionCard', 'cn', 'createThemeCss', 'defaultSemanticTokens', 'defaultTokens', 'enUS', 'formatMessage',
+  'ToolExecutionCard', 'cn', 'configureArtifactPdfWorker', 'createThemeCss', 'defaultSemanticTokens', 'defaultTokens', 'enUS', 'formatMessage',
   'isFullHtmlPage', 'presetSiliconHolo', 'useClickOutside', 'useLocale', 'useTheme', 'useToast', 'zhCN',
   ],
   'silicon-holo-design/chat': ['ChatBubble', 'ChatInputArea', 'ChatMessageList'],
-  'silicon-holo-design/ai': ['AIChatContainer', 'AIMessageBubble', 'AIMessageList', 'AITaskExecutionPanel', 'AIToolCallCard', 'AIToolCallGroup', 'AIToolExecutionCard', 'ArtifactPreviewDrawer'],
+  'silicon-holo-design/ai': ['AIChatContainer', 'AIMessageBubble', 'AIMessageList', 'AITaskExecutionPanel', 'AIToolCallCard', 'AIToolCallGroup', 'AIToolExecutionCard', 'ArtifactPreviewDrawer', 'configureArtifactPdfWorker'],
   'silicon-holo-design/preset': ['colors', 'presetSiliconHolo', 'shortcuts'],
   'silicon-holo-design/locale/en-US': ['default'],
   'silicon-holo-design/locale/zh-CN': ['default'],
@@ -195,6 +195,7 @@ import enUS from 'silicon-holo-design/locale/en-US'
 import zhCN from 'silicon-holo-design/locale/zh-CN'
 import type {
   Artifact,
+  ArtifactPdfWorkerConfig,
   ArtifactPreviewDrawerProps,
   ArtifactType,
   ChatMessage,
@@ -229,6 +230,7 @@ const message: ChatMessage = { id: 'fixture', role: 'assistant', content: 'fixtu
 const toolMessage: ChatMessage = { id: 'tool', role: 'tool', content: '', toolName: 'fixture', toolStatus: 'complete' }
 const fileArtifact: FileArtifact = { path: '/tmp/file.txt', mime_type: 'text/plain', file_name: 'file.txt' }
 const artifact: Artifact = { id: 'artifact', type: 'html', title: 'Artifact', content: '<p>fixture</p>', messageId: 'fixture' }
+const artifactPdfWorkerConfig: ArtifactPdfWorkerConfig = { workerSrc: '/workers/pdf.worker.mjs' }
 const locales: Locale[] = [enUS, zhCN]
 const legacyThemeTokens: ThemeTokens = Root.defaultTokens
 const semanticThemeTokens: SemanticThemeTokens = Root.defaultSemanticTokens
@@ -240,7 +242,7 @@ const textareaProps: HoloTextareaProps = { size: 'md', variant: 'ghost', status:
 const artifactDrawerProps: ArtifactPreviewDrawerProps = { artifact, onClose: noop, width: '50vw', renderers: { html: () => <span /> } }
 const options = [{ value: 'one', label: 'One', disabled: false }]
 
-void [publicSizes, publicStatuses, connectionStatuses, messageRoles, toolStatuses, artifactTypes, fileArtifact, locales, resolvedThemeTokens, themeProviderProps, inputProps, textareaProps, artifactDrawerProps]
+void [publicSizes, publicStatuses, connectionStatuses, messageRoles, toolStatuses, artifactTypes, fileArtifact, locales, resolvedThemeTokens, themeProviderProps, inputProps, textareaProps, artifactDrawerProps, artifactPdfWorkerConfig]
 
 function HookFixture() {
   const ref = React.useRef<HTMLDivElement>(null)

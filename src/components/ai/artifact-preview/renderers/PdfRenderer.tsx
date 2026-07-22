@@ -1,15 +1,40 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Document, Page, pdfjs } from 'react-pdf'
-import PdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?worker'
+import inlinePdfWorkerSource from 'pdfjs-dist/build/pdf.worker.min.mjs?raw'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
 import { IconButton } from '@/components/general/icon-button'
 import type { Artifact } from '@/types'
 import { resolveArtifactSource } from '../artifact-resource'
-import { useArtifactArrayBuffer } from '../use-artifact-resource'
+import { getArtifactPdfWorkerConfig } from '../pdf-worker-config'
 import { RendererError, RendererLoading } from './RendererState'
 
-pdfjs.GlobalWorkerOptions.workerPort ??= new PdfWorker()
+let inlinePdfWorkerUrl: string | null = null
+let inlinePdfWorkerPort: Worker | null = null
+
+function getInlinePdfWorkerUrl() {
+  inlinePdfWorkerUrl ??= URL.createObjectURL(new Blob([inlinePdfWorkerSource], { type: 'text/javascript' }))
+  return inlinePdfWorkerUrl
+}
+
+function getInlinePdfWorkerPort() {
+  inlinePdfWorkerPort ??= new Worker(getInlinePdfWorkerUrl(), { type: 'module' })
+  return inlinePdfWorkerPort
+}
+
+function ensurePdfWorker() {
+  const config = getArtifactPdfWorkerConfig()
+  if (config.workerPort) {
+    pdfjs.GlobalWorkerOptions.workerPort = config.workerPort
+    return
+  }
+  if (config.workerSrc) {
+    pdfjs.GlobalWorkerOptions.workerPort = null
+    pdfjs.GlobalWorkerOptions.workerSrc = config.workerSrc
+    return
+  }
+  pdfjs.GlobalWorkerOptions.workerPort = getInlinePdfWorkerPort()
+}
 
 function PreviousIcon() {
   return <svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="m15 18-6-6 6-6" /></svg>
@@ -29,7 +54,6 @@ function PlusIcon() {
 
 export function PdfRenderer({ artifact }: { artifact: Artifact }) {
   const source = resolveArtifactSource(artifact)
-  const bytes = useArtifactArrayBuffer(artifact, source.kind !== 'url')
   const containerRef = useRef<HTMLDivElement>(null)
   const pageRefs = useRef(new Map<number, HTMLDivElement>())
   const scrollFrame = useRef<number | null>(null)
@@ -39,6 +63,24 @@ export function PdfRenderer({ artifact }: { artifact: Artifact }) {
   const [scale, setScale] = useState(1)
   const [renderLimit, setRenderLimit] = useState(1)
   const [renderedPages, setRenderedPages] = useState(() => new Set<number>())
+  const [workerReady, setWorkerReady] = useState(false)
+
+  const sourceUrl = source.kind === 'url' ? source.url : null
+  const sourceBlob = source.kind === 'blob' ? source.blob : null
+  const sourceBuffer = source.kind === 'arrayBuffer' ? source.data : null
+  const sourceText = source.kind === 'text' ? source.value : null
+  const file = useMemo(() => {
+    if (sourceUrl) return sourceUrl
+    if (sourceBlob) return sourceBlob
+    if (sourceBuffer) return new Blob([sourceBuffer], { type: artifact.mimeType || 'application/pdf' })
+    if (sourceText !== null) return new Blob([sourceText], { type: artifact.mimeType || 'application/pdf' })
+    return null
+  }, [artifact.mimeType, sourceBlob, sourceBuffer, sourceText, sourceUrl])
+
+  useEffect(() => {
+    ensurePdfWorker()
+    setWorkerReady(true)
+  }, [])
 
   useEffect(() => {
     const element = containerRef.current
@@ -54,9 +96,8 @@ export function PdfRenderer({ artifact }: { artifact: Artifact }) {
     if (scrollFrame.current !== null) cancelAnimationFrame(scrollFrame.current)
   }, [])
 
-  const file = source.kind === 'url' ? source.url : bytes.data ? { data: new Uint8Array(bytes.data) } : null
-  if (source.kind !== 'url' && bytes.loading) return <RendererLoading label="Loading PDF" />
-  if (source.kind !== 'url' && (bytes.error || !file)) return <RendererError message={bytes.error ?? 'PDF is unavailable'} />
+  if (!workerReady) return <RendererLoading label="Preparing PDF renderer" />
+  if (!file) return <RendererError message="PDF is unavailable" />
 
   const scrollToPage = (nextPage: number) => {
     const target = Math.max(1, Math.min(pages, nextPage))
