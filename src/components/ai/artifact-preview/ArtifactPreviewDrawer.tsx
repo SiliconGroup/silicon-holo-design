@@ -1,12 +1,13 @@
 import { useState, useCallback, useEffect, useId, useRef, type ReactNode } from 'react'
-import hljs from 'highlight.js'
 import { HoloPortal } from '@/utils/portal'
 import { focusFirstOrContainer, restoreFocus, trapFocus } from '@/utils/focus'
 import { HoloTab } from '@/components/navigation/tabs'
 import { useLocale } from '@/locale'
-import { HtmlRenderer } from './HtmlRenderer'
 import { lockDocumentScroll } from '@/utils/scroll-lock'
 import type { Artifact } from '@/types'
+import { ArtifactRenderer } from './ArtifactRenderer'
+import { SourceRenderer } from './renderers/SourceRenderer'
+import { artifactDownloadName, artifactHasTextSource, normalizeArtifactType, readArtifactArrayBuffer, readArtifactText, resolveArtifactSource } from './artifact-resource'
 
 export interface ArtifactPreviewDrawerProps {
   artifact: Artifact | null
@@ -14,26 +15,6 @@ export interface ArtifactPreviewDrawerProps {
   width?: string
   constrainToViewport?: boolean
   renderers?: Partial<Record<string, (artifact: Artifact) => ReactNode>>
-}
-
-function CodeView({ code, lang }: { code: string; lang: string }) {
-  const highlighted = hljs.getLanguage(lang)
-    ? hljs.highlight(code, { language: lang }).value
-    : hljs.highlightAuto(code).value
-  return (
-    <pre className="shd-scrollbar m-0 h-full overflow-auto bg-surface-canvas p-4 text-sm">
-      <code className={`language-${lang}`} dangerouslySetInnerHTML={{ __html: highlighted }} />
-    </pre>
-  )
-}
-
-function BuiltinRenderer({ artifact, onEscape }: { artifact: Artifact; onEscape: () => void }) {
-  switch (artifact.type) {
-    case 'html': return <HtmlRenderer code={artifact.content} onEscape={onEscape} />
-    case 'svg': return <div className="flex h-full w-full items-center justify-center rounded bg-surface-interactive p-4"><div dangerouslySetInnerHTML={{ __html: artifact.content }} className="flex h-full w-full items-center justify-center [&_svg]:max-h-full [&_svg]:max-w-full" /></div>
-    case 'image': return <div className="w-full h-full flex items-center justify-center p-4"><img src={artifact.content} alt={artifact.title || 'Image'} className="max-w-full max-h-full object-contain rounded" /></div>
-    default: return <div className="p-4 text-content-tertiary">Unsupported type: {artifact.type}</div>
-  }
 }
 
 export function ArtifactPreviewDrawer({ artifact, onClose, width = '50vw', constrainToViewport = false, renderers }: ArtifactPreviewDrawerProps) {
@@ -67,26 +48,34 @@ export function ArtifactPreviewDrawer({ artifact, onClose, width = '50vw', const
     }
   }, [artifact?.id, handleClose])
 
-  const handleCopy = useCallback(() => {
+  const handleCopy = useCallback(async () => {
     if (!artifact) return
-    navigator.clipboard.writeText(artifact.content)
+    await navigator.clipboard.writeText(await readArtifactText(artifact))
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }, [artifact])
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = useCallback(async () => {
     if (!artifact) return
-    const ext = artifact.type === 'html' ? 'html' : artifact.type === 'svg' ? 'svg' : 'txt'
-    const blob = new Blob([artifact.content], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
+    const source = resolveArtifactSource(artifact)
+    if (source.kind === 'url') {
+      const anchor = document.createElement('a')
+      anchor.href = source.url; anchor.download = artifactDownloadName(artifact); anchor.click()
+      return
+    }
+    const data = source.kind === 'text' ? new Blob([source.value], { type: artifact.mimeType ?? 'text/plain' }) : source.kind === 'blob' ? source.blob : new Blob([await readArtifactArrayBuffer(artifact)], { type: artifact.mimeType })
+    const url = URL.createObjectURL(data)
     const a = document.createElement('a')
-    a.href = url; a.download = `${artifact.title || 'artifact'}.${ext}`; a.click()
+    a.href = url; a.download = artifactDownloadName(artifact); a.click()
     URL.revokeObjectURL(url)
   }, [artifact])
 
   if (!artifact) return null
 
   const custom = renderers?.[artifact.type]
+  const canShowSource = artifactHasTextSource(artifact)
+  const canCopy = canShowSource
+  const type = normalizeArtifactType(artifact)
 
   return (
     <HoloPortal>
@@ -95,16 +84,16 @@ export function ArtifactPreviewDrawer({ artifact, onClose, width = '50vw', const
         <div className="shd-overlay-header flex flex-shrink-0 flex-wrap items-center justify-between gap-2 px-4 py-3">
           <div className="flex min-w-0 flex-wrap items-center gap-3">
             <h3 id={titleId} className="text-sm font-medium text-content-primary">{artifact.title || artifact.type.toUpperCase()}</h3>
-            <HoloTab items={[{ key: 'code', label: locale.ai.artifactCode }, { key: 'preview', label: locale.ai.artifactPreview }]} activeKey={mode} onChange={(k) => setMode(k as 'code' | 'preview')} />
+            {canShowSource && <HoloTab items={[{ key: 'code', label: locale.ai.artifactCode }, { key: 'preview', label: locale.ai.artifactPreview }]} activeKey={mode} onChange={(k) => setMode(k as 'code' | 'preview')} />}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <button type="button" onClick={handleCopy} className="shd-control-focus bg-transparent rounded-sm border border-stroke-subtle px-2 py-1 text-[11px] text-content-tertiary transition-colors hover:border-stroke-default hover:text-content-primary">{copied ? locale.ai.copied : locale.ai.copy}</button>
+            {canCopy && <button type="button" onClick={handleCopy} className="shd-control-focus bg-transparent rounded-sm border border-stroke-subtle px-2 py-1 text-[11px] text-content-tertiary transition-colors hover:border-stroke-default hover:text-content-primary">{copied ? locale.ai.copied : locale.ai.copy}</button>}
             <button type="button" onClick={handleDownload} className="shd-control-focus bg-transparent rounded-sm border border-stroke-subtle px-2 py-1 text-[11px] text-content-tertiary transition-colors hover:border-stroke-default hover:text-content-primary">{locale.ai.artifactDownload}</button>
             <button type="button" onClick={onClose} aria-label={locale.common.close} className="shd-control-focus border-none bg-transparent text-content-tertiary transition-colors duration-150 hover:text-content-primary"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
           </div>
         </div>
         <div className="flex-1 min-h-0 overflow-hidden">
-          {mode === 'code' ? <CodeView code={artifact.content} lang={artifact.type === 'html' ? 'html' : artifact.type} /> : (custom ? custom(artifact) : <BuiltinRenderer artifact={artifact} onEscape={handleClose} />)}
+          {mode === 'code' && canShowSource ? <SourceRenderer artifact={artifact} /> : (custom ? custom(artifact) : <ArtifactRenderer artifact={{ ...artifact, type }} onEscape={handleClose} />)}
         </div>
       </div>
     </HoloPortal>

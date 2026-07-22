@@ -86,4 +86,31 @@ describe('ArtifactPreviewDrawer', () => {
     render(<ArtifactPreviewDrawer artifact={{ id: 'remote-image', type: 'image', title: 'Remote image', content: 'https://tracker.example/pixel.png' }} onClose={() => {}} />)
     expect(screen.getByRole('img', { name: 'Remote image' }).getAttribute('src')).toBe('https://tracker.example/pixel.png')
   })
+
+  it('keeps legacy HTML callers unchanged while hiding text-only actions for binary resources', () => {
+    const { rerender } = render(<ArtifactPreviewDrawer artifact={{ id: 'legacy-html', type: 'html', title: 'Legacy HTML', content: '<p>Hello</p>' }} onClose={() => {}} />)
+    expect(screen.getByRole('tab', { name: 'Code' })).toBeDefined()
+    expect(screen.getByRole('button', { name: 'Copy' })).toBeDefined()
+    rerender(<ArtifactPreviewDrawer artifact={{ id: 'binary-pdf', type: 'pdf', title: 'Binary PDF', content: '/fixture.pdf' }} onClose={() => {}} />)
+    expect(screen.queryByRole('tab', { name: 'Code' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Copy' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Download' })).toBeDefined()
+  })
+
+  it('keeps the source scroll container inside the drawer content box', async () => {
+    render(<ArtifactPreviewDrawer artifact={{ id: 'source-layout', type: 'html', title: 'Source layout', content: '<p>Hello</p>' }} onClose={() => {}} />)
+    fireEvent.click(screen.getByRole('tab', { name: 'Code' }))
+    expect((await screen.findByText(/Hello/)).closest('pre')?.className).toContain('box-border')
+  })
+
+  it('copies loaded text instead of a text resource URL', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('# Loaded Markdown'))
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText } })
+    render(<ArtifactPreviewDrawer artifact={{ id: 'copy-url', type: 'markdown', title: 'Remote Markdown', content: '', source: { kind: 'url', url: '/fixture.md' } }} onClose={() => {}} />)
+    fireEvent.click(screen.getByRole('button', { name: 'Copy' }))
+    expect(await screen.findByRole('button', { name: 'Copied' })).toBeDefined()
+    expect(writeText).toHaveBeenCalledWith('# Loaded Markdown')
+    fetchMock.mockRestore()
+  })
 })

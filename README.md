@@ -490,6 +490,34 @@ const customLocale: Locale = {
 
 ## Examples
 
+### Artifact resource previews
+
+`ArtifactPreviewDrawer` keeps the original string-content API and adds optional URL, Blob, and ArrayBuffer sources. Existing HTML callers remain unchanged:
+
+```tsx
+<ArtifactPreviewDrawer
+  artifact={{ id: 'html', type: 'html', content: '<h1>Preview</h1>' }}
+  onClose={closePreview}
+/>
+```
+
+Markdown, PDF, and XLSX resources can be loaded from application URLs without coupling the component to a desktop filesystem API:
+
+```tsx
+<ArtifactPreviewDrawer
+  artifact={{
+    id: 'workbook',
+    type: 'xlsx',
+    title: 'Operational workbook',
+    content: '',
+    source: { kind: 'url', url: convertFileSrc(localPath) },
+  }}
+  onClose={closePreview}
+/>
+```
+
+PDF and SheetJS dependencies are loaded only when their renderer is opened. Applications remain responsible for translating protected local paths into readable URLs or binary payloads.
+
 ### `examples/vite-basic`
 
 Minimal setup — buttons, inputs, modals, toasts, and locale switching.

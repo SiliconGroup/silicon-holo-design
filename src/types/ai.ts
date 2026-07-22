@@ -28,11 +28,21 @@ export interface FileArtifact {
 /** 可预览的内容类型，支持扩展自定义类型 */
 export type ArtifactType = 'html' | 'image' | 'svg' | (string & {})
 
+/** Artifact 资源来源；保留 content 字段以兼容已有调用。 */
+export type ArtifactSource =
+  | { kind: 'text'; value: string }
+  | { kind: 'url'; url: string }
+  | { kind: 'blob'; blob: Blob }
+  | { kind: 'arrayBuffer'; data: ArrayBuffer }
+
 /** 通用 Artifact 描述 */
 export interface Artifact {
   id: string
   type: ArtifactType
   title?: string
   content: string
+  source?: ArtifactSource
+  mimeType?: string
+  fileName?: string
   messageId?: string
 }

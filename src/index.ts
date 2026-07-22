@@ -8,7 +8,7 @@ import 'katex/dist/katex.min.css'
 // Types
 export type { Size, Status, ConnectionStatus } from './types'
 export type { MessageRole, ChatMessage, ToolStatus } from './types'
-export type { ArtifactType, Artifact, FileArtifact } from './types'
+export type { ArtifactType, ArtifactSource, Artifact, FileArtifact } from './types'
 
 // Locale
 export { LocaleProvider, useLocale, formatMessage, enUS, zhCN } from './locale/index'

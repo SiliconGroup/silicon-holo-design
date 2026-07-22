@@ -273,6 +273,35 @@ const imageArtifact: Artifact = {
   content: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1800&q=85',
 }
 
+const markdownArtifact: Artifact = {
+  id: 'showcase-markdown-artifact',
+  type: 'markdown',
+  title: 'Rich Markdown Specification',
+  content: '',
+  fileName: 'complex-markdown.md',
+  mimeType: 'text/markdown',
+  source: { kind: 'url', url: '/artifact-preview/complex-markdown.md' },
+}
+
+const pdfArtifact: Artifact = {
+  id: 'showcase-pdf-artifact',
+  type: 'pdf',
+  title: 'Tracing JIT Research Paper',
+  content: '/artifact-preview/complex-document.pdf',
+  fileName: 'complex-document.pdf',
+  mimeType: 'application/pdf',
+}
+
+const spreadsheetArtifact: Artifact = {
+  id: 'showcase-spreadsheet-artifact',
+  type: 'xlsx',
+  title: 'Operational Workbook',
+  content: '',
+  fileName: 'complex-workbook.xlsx',
+  mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  source: { kind: 'url', url: '/artifact-preview/complex-workbook.xlsx' },
+}
+
 export default function ChatAISection() {
   const [latestMessage, setLatestMessage] = useState('')
   const [taskExpanded, setTaskExpanded] = useState(false)
@@ -315,14 +344,17 @@ export default function ChatAISection() {
         </div>
       </ComponentDemo>
 
-      <ComponentDemo id="artifact-preview" title="ArtifactPreviewDrawer" description="Interactive HTML, SVG, remote image, code/preview modes, external resources, scripts, and responsive drawer widths">
+      <ComponentDemo id="artifact-preview" title="ArtifactPreviewDrawer" description="Modular HTML, Markdown, PDF, spreadsheet, SVG, and image renderers with URL and text resource inputs">
         <div className="grid min-h-32 gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <HoloButton onClick={() => { setArtifactWidth('min(56rem, calc(100vw - 16px))'); setActiveArtifact(consoleArtifact) }}>Open HTML console</HoloButton>
+          <HoloButton data-testid="open-markdown-artifact" variant="secondary" onClick={() => { setArtifactWidth('min(64rem, calc(100vw - 16px))'); setActiveArtifact(markdownArtifact) }}>Open rich Markdown</HoloButton>
+          <HoloButton data-testid="open-pdf-artifact" variant="secondary" onClick={() => { setArtifactWidth('min(72rem, calc(100vw - 16px))'); setActiveArtifact(pdfArtifact) }}>Open complex PDF</HoloButton>
+          <HoloButton data-testid="open-spreadsheet-artifact" variant="secondary" onClick={() => { setArtifactWidth('min(76rem, calc(100vw - 16px))'); setActiveArtifact(spreadsheetArtifact) }}>Open XLSX workbook</HoloButton>
           <HoloButton variant="secondary" onClick={() => { setArtifactWidth('min(48rem, calc(100vw - 16px))'); setActiveArtifact(topologyArtifact) }}>Open SVG topology</HoloButton>
           <HoloButton variant="ghost" onClick={() => { setArtifactWidth('min(48rem, calc(100vw - 16px))'); setActiveArtifact(imageArtifact) }}>Open remote image</HoloButton>
           <HoloButton variant="secondary" onClick={() => { setArtifactWidth('320px'); setActiveArtifact(consoleArtifact) }}>Open narrow HTML</HoloButton>
         </div>
-        <p className="mt-4 text-xs leading-5 text-content-tertiary">The HTML fixture loads an external web font, executes a live clock and button handlers, and exercises both desktop and constrained-width presentation.</p>
+        <p className="mt-4 text-xs leading-5 text-content-tertiary">Fixtures are served from the Showcase origin. Markdown covers GFM, KaTeX, Mermaid and code; the PDF is the PDF.js Tracemonkey research sample; the workbook covers multiple sheets, formulas, merges, dates, links, validation, conditional formatting and charts.</p>
         <ArtifactPreviewDrawer artifact={activeArtifact} onClose={() => setActiveArtifact(null)} width={artifactWidth} constrainToViewport />
       </ComponentDemo>
 
