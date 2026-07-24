@@ -85,5 +85,5 @@ export function MarkdownRenderer({ artifact }: { artifact: Artifact }) {
   const { data, error, loading } = useArtifactText(artifact)
   if (loading) return <RendererLoading label="Loading Markdown" />
   if (error || data === null) return <RendererError message={error ?? 'Markdown is unavailable'} />
-  return <article data-shd-artifact-renderer="markdown" className="shd-scrollbar box-border h-full overflow-auto px-6 py-5"><div className="shd-markdown-content mx-auto max-w-[78rem]"><ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]} components={{ code: MarkdownCode, pre: MarkdownPre, table: MarkdownTable, a: ({ node: _node, ...props }) => <a {...props} target="_blank" rel="noreferrer noopener" /> }}>{data}</ReactMarkdown></div></article>
+  return <article data-shd-artifact-renderer="markdown" className="shd-scrollbar box-border h-full overflow-auto px-6 py-5"><div className="shd-markdown-content shd-markdown-doc"><ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]} components={{ code: MarkdownCode, pre: MarkdownPre, table: MarkdownTable, a: ({ node: _node, ...props }) => <a {...props} target="_blank" rel="noreferrer noopener" /> }}>{data}</ReactMarkdown></div></article>
 }

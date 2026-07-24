@@ -241,7 +241,6 @@ export const safelist: string[] = [
   "max-h-full",
   "max-w-80",
   "max-w-[78%]",
-  "max-w-[78rem]",
   "max-w-[85%]",
   "max-w-[calc(100vw-16px)]",
   "max-w-[calc(100vw-32px)]",

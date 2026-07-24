@@ -74,6 +74,8 @@ button.shd-segmented-control-button{font-family:var(--shd-font-sans,Inter,"SF Pr
 .shd-markdown-content>:first-child{margin-top:0}
 .shd-markdown-content>:last-child{margin-bottom:0}
 .shd-markdown-content>:where(p,h1,h2,h3,h4,ul,ol,blockquote,hr){max-width:72ch}
+.shd-markdown-content.shd-markdown-doc{width:100%;max-width:min(100%,52rem);margin-inline:auto}
+.shd-markdown-content.shd-markdown-doc>:where(p,h1,h2,h3,h4,ul,ol,blockquote,hr){max-width:none}
 .shd-markdown-content p{margin:0}
 .shd-markdown-content p+p{margin-top:.72em}
 .shd-markdown-content h1,.shd-markdown-content h2,.shd-markdown-content h3,.shd-markdown-content h4{margin:1.2em 0 .52em;color:var(--shd-content-primary);font-weight:600;line-height:1.4;letter-spacing:-.008em}
