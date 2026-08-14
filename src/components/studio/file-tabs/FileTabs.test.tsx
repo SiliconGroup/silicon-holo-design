@@ -68,6 +68,48 @@ describe('HoloFileTabs', () => {
     render(<HoloFileTabs tabs={tabs} activeId="a" />)
     expect(screen.getByTitle('Unsaved changes')).toBeDefined()
     expect(screen.queryAllByTitle('Unsaved changes')).toHaveLength(1)
+    expect(screen.getByRole('tab', { name: 'b.ts' }).getAttribute('data-shd-tab-dirty')).toBe('true')
+    expect(screen.getByRole('tab', { name: 'a.ts' }).hasAttribute('data-shd-tab-dirty')).toBe(false)
+  })
+
+  it('never puts a bare flex next to hidden on the close button of a dirty tab', () => {
+    render(<HoloFileTabs tabs={tabs} activeId="a" onClose={() => {}} />)
+    const close = screen.getByRole('button', { name: 'Close b.ts' })
+    const tokens = close.className.split(/\s+/)
+    /*
+     * 同时出现 `flex` 与 `hidden` 时，胜负取决于 CSS 产出顺序而非 class 顺序：
+     * 预构建 CSS 里 .hidden 恰好在后，而 example 走 virtual:uno.css 顺序不同，
+     * 按钮就会保持可见，并把同一个 20px flex 容器里的 8px dirty 圆点压缩到 0 宽。
+     */
+    expect(tokens).toContain('hidden')
+    expect(tokens).not.toContain('flex')
+    expect(tokens).toContain('group-hover:flex')
+  })
+
+  it('keeps the unsaved dot at a fixed size so a sibling cannot squeeze it', () => {
+    render(<HoloFileTabs tabs={tabs} activeId="a" onClose={() => {}} />)
+    const dot = screen.getByTitle('Unsaved changes')
+    expect(dot.className).toContain('flex-none')
+    expect(dot.className).toContain('h-2')
+    expect(dot.className).toContain('w-2')
+  })
+
+  it('exposes the unsaved state to assistive technology without changing the tab name', () => {
+    render(<HoloFileTabs tabs={tabs} activeId="a" />)
+    const dirty = screen.getByRole('tab', { name: 'b.ts' })
+    const describedBy = dirty.getAttribute('aria-describedby')
+    expect(describedBy).toBeTruthy()
+    // 说明元素必须在按钮外面，否则会并入可访问名
+    expect(document.getElementById(describedBy!)?.textContent).toBe('Unsaved changes')
+    expect(dirty.contains(document.getElementById(describedBy!))).toBe(false)
+    expect(screen.getByRole('tab', { name: 'a.ts' }).hasAttribute('aria-describedby')).toBe(false)
+  })
+
+  it('keeps the unsaved indicator when tabs are not closable', () => {
+    render(<HoloFileTabs tabs={tabs} activeId="a" closable={false} />)
+    // dirty 与 closable 是无关的关注点：不可关闭的标签同样要显示未保存状态
+    expect(screen.getByTitle('Unsaved changes')).toBeDefined()
+    expect(screen.queryByRole('button', { name: 'Close b.ts' })).toBeNull()
   })
 
   it('moves between tabs with the horizontal arrows and Home/End', () => {

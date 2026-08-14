@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   HoloButton,
+  HoloConfirm,
   HoloSpace,
   HoloSwitch,
   HoloTag,
@@ -24,6 +25,7 @@ import {
   createExplorerPanel,
   createGitPanel,
   inferFileKind,
+  inferLanguageId,
   openTab,
   pinTab,
   type HoloFileTab,
@@ -40,6 +42,7 @@ import {
   deriveChanges,
   deriveTreeStatus,
   discard,
+  isUntracked,
   markDirty,
   stage,
   unstage,
@@ -98,6 +101,8 @@ function StudioExample({ locale, onLocaleChange }: { locale: Locale; onLocaleCha
   const [commitMessage, setCommitMessage] = useState('')
   const [editable, setEditable] = useState(false)
   const [busy, setBusy] = useState(false)
+  /** 关闭未保存标签时待确认的路径。save / discard / cancel 是宿主策略，库只上报 onClose。 */
+  const [pendingClose, setPendingClose] = useState<string | null>(null)
   const draftsRef = useRef(new Map<string, string>())
   const toastRef = useRef(toast)
   toastRef.current = toast
@@ -118,6 +123,12 @@ function StudioExample({ locale, onLocaleChange }: { locale: Locale; onLocaleCha
   }, [])
 
   const loadChildren = useCallback((node: HoloTreeNode) => fs.readDir(node.id), [])
+
+  const discardAndClose = useCallback((path: string) => {
+    draftsRef.current.delete(path)
+    setDrafts(previous => { const next = { ...previous }; delete next[path]; return next })
+    setTabState(previous => closeTab(previous, path))
+  }, [])
 
   const openPath = useCallback((path: string, options: { pinned?: boolean } = {}) => {
     setDiffTarget(null)
@@ -208,8 +219,13 @@ function StudioExample({ locale, onLocaleChange }: { locale: Locale; onLocaleCha
         onSelectChange: change => openPath(change.path),
         onOpenDiff: async path => {
           try {
-            const before = await fs.committedText(path)
-            const after = draftsRef.current.get(path) ?? before
+            /*
+             * before = HEAD（未跟踪文件没有 HEAD，与空文档对比）
+             * after  = 未保存草稿优先，否则工作区里的真实内容
+             */
+            const before = isUntracked(git, path) ? '' : await fs.committedText(path)
+            const draft = draftsRef.current.get(path)
+            const after = draft ?? await fs.readText(path)
             setDiffTarget({ path, before, after })
             setTabState(previous => ({ ...previous, activeId: undefined }))
           } catch (error) {
@@ -251,7 +267,7 @@ function StudioExample({ locale, onLocaleChange }: { locale: Locale; onLocaleCha
         </div>
       ),
     },
-  ], [busy, changes, commitMessage, decoratedNodes, expandedIds, git.commits, loadChildren, loadedIds, locale, messages, nodes.length, openPath, selectedIds, toast])
+  ], [busy, changes, commitMessage, decoratedNodes, expandedIds, git, loadChildren, loadedIds, locale, messages, nodes.length, openPath, selectedIds, toast])
 
   return (
     <div className="flex h-screen flex-col bg-surface-canvas">
@@ -285,10 +301,10 @@ function StudioExample({ locale, onLocaleChange }: { locale: Locale; onLocaleCha
                 onActiveChange={path => { setTabState(previous => ({ ...previous, activeId: path })); setDiffTarget(null) }}
                 // Double clicking a preview tab pins it
                 onPin={path => setTabState(previous => pinTab(previous, path))}
+                // 未保存时先确认再关闭；这是宿主策略，库不代替决定
                 onClose={path => {
-                  draftsRef.current.delete(path)
-                  setDrafts(previous => { const next = { ...previous }; delete next[path]; return next })
-                  setTabState(previous => closeTab(previous, path))
+                  if (drafts[path]?.dirty === true) setPendingClose(path)
+                  else discardAndClose(path)
                 }}
               />
             : undefined}
@@ -307,7 +323,7 @@ function StudioExample({ locale, onLocaleChange }: { locale: Locale; onLocaleCha
                 key={diffTarget.path}
                 before={diffTarget.before}
                 after={diffTarget.after}
-                languageId="typescript"
+                languageId={inferLanguageId(diffTarget.path)}
                 beforeLabel={`${messages.diffBefore} · ${diffTarget.path}`}
                 afterLabel={`${messages.diffAfter} · ${diffTarget.path}`}
               />
@@ -326,6 +342,21 @@ function StudioExample({ locale, onLocaleChange }: { locale: Locale; onLocaleCha
               />}
         </HoloStudio>
       </div>
+
+      <HoloConfirm
+        open={pendingClose !== null}
+        type="warning"
+        layout="horizontal"
+        title={messages.closeDirtyTitle}
+        description={formatMessage(messages.closeDirtyBody, { path: pendingClose ?? '' })}
+        confirmText={messages.discardAndClose}
+        cancelText={messages.keepEditing}
+        onCancel={() => setPendingClose(null)}
+        onConfirm={() => {
+          if (pendingClose !== null) discardAndClose(pendingClose)
+          setPendingClose(null)
+        }}
+      />
     </div>
   )
 }

@@ -30,6 +30,10 @@ export interface ExampleMessages {
   diffAfter: string
   openHint: string
   previewHint: string
+  closeDirtyTitle: string
+  closeDirtyBody: string
+  discardAndClose: string
+  keepEditing: string
 }
 
 const enUS: ExampleMessages = {
@@ -56,6 +60,10 @@ const enUS: ExampleMessages = {
   diffAfter: 'Working tree',
   openHint: 'Single click opens a file. Expand protected/ to see a directory that fails to read.',
   previewHint: 'Single click opens a preview tab (italic) that the next single click replaces. Double click the file or the tab to keep it open; editing pins it too. Markdown and SVG can be switched between Preview and Source.',
+  closeDirtyTitle: 'Close without saving?',
+  closeDirtyBody: '{path} has unsaved changes. Closing the tab discards them.',
+  discardAndClose: 'Discard and close',
+  keepEditing: 'Keep editing',
 }
 
 const zhCN: ExampleMessages = {
@@ -82,6 +90,10 @@ const zhCN: ExampleMessages = {
   diffAfter: '工作区',
   openHint: '单击即可打开文件。展开 protected/ 可以看到读取失败的目录。',
   previewHint: '单击打开的是预览标签（斜体），下一次单击会原地替换它。双击文件或双击标签即固定；编辑同样会固定。Markdown 与 SVG 可以在预览与源码之间切换。',
+  closeDirtyTitle: '关闭且不保存？',
+  closeDirtyBody: '{path} 有未保存的修改，关闭标签会丢弃它们。',
+  discardAndClose: '丢弃并关闭',
+  keepEditing: '继续编辑',
 }
 
 export const exampleMessages: Record<string, ExampleMessages> = { 'en-US': enUS, 'zh-CN': zhCN }

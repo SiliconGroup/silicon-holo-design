@@ -4,6 +4,10 @@
   "unreadable": [
     "protected"
   ],
+  "head": {
+    "src/styles/theme.css": "/studio-head/src/styles/theme.css",
+    "src/lib/format.ts": "/studio-head/src/lib/format.ts"
+  },
   "entries": [
     {
       "path": ".gitignore",

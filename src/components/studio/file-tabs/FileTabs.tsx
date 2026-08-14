@@ -1,4 +1,4 @@
-import { useEffect, useRef, type KeyboardEvent, type MouseEvent } from 'react'
+import { useEffect, useId, useRef, type KeyboardEvent, type MouseEvent } from 'react'
 import { formatMessage } from '@/locale'
 import type { HoloFileTab, HoloFileTabsProps } from '../types'
 import { useStudioLocale } from '../utils/use-studio-locale'
@@ -16,6 +16,7 @@ export function HoloFileTabs({
   className = '',
 }: HoloFileTabsProps) {
   const locale = useStudioLocale()
+  const baseId = useId()
   const tabRefs = useRef(new Map<string, HTMLButtonElement>())
   const stripRef = useRef<HTMLDivElement>(null)
 
@@ -70,6 +71,12 @@ export function HoloFileTabs({
         const isActive = tab.id === activeId
         return (
           <div key={tab.id} className="group relative flex flex-none items-stretch">
+            {/*
+              未保存状态原先只有一个 aria-hidden 的圆点，辅助技术完全拿不到。
+              这里用 aria-describedby 关联一段仅读屏可见的说明：它**必须放在按钮外面**，
+              否则会并入标签的可访问名（变成「App.tsx Unsaved changes」）。
+            */}
+            {tab.dirty === true && <span id={`${baseId}-${tab.id}-dirty`} className="sr-only">{locale.unsavedChanges}</span>}
             <button
               type="button"
               role="tab"
@@ -80,6 +87,8 @@ export function HoloFileTabs({
               aria-selected={isActive}
               tabIndex={isActive ? 0 : -1}
               data-shd-tab-preview={tab.preview === true ? 'true' : undefined}
+              data-shd-tab-dirty={tab.dirty === true ? 'true' : undefined}
+              aria-describedby={tab.dirty === true ? `${baseId}-${tab.id}-dirty` : undefined}
               title={tab.title ?? tab.label}
               onClick={() => onActiveChange?.(tab.id)}
               onDoubleClick={() => { if (tab.preview === true) onPin?.(tab.id) }}
@@ -105,18 +114,22 @@ export function HoloFileTabs({
               */}
               <span className={`relative truncate ${tab.preview === true ? 'italic pr-0.5' : ''}`}>{tab.label}</span>
             </button>
-            {closable && <span className="pointer-events-none absolute right-1 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center">
+            {(closable || tab.dirty === true) && <span className="pointer-events-none absolute right-1 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center">
+              {/*
+                dirty 圆点与 closable 无关：不可关闭的标签同样需要显示未保存状态。
+                可关闭时圆点在悬浮态让位给关闭按钮（VS Code 的行为）。
+              */}
               {tab.dirty === true && <span
                 aria-hidden="true"
                 title={locale.unsavedChanges}
-                className="h-1.5 w-1.5 rounded-full bg-accent-primary group-hover:hidden"
+                className={`h-2 w-2 flex-none rounded-full bg-accent-primary ${closable ? 'group-hover:hidden' : ''}`}
               />}
-              <button
+              {closable && <button
                 type="button"
                 aria-label={formatMessage(locale.closeTab, { name: tab.label })}
                 onClick={event => { event.stopPropagation(); onClose?.(tab.id) }}
                 className={`
-                  border-none shd-control-focus bg-transparent pointer-events-auto h-5 w-5 flex items-center justify-center rounded-sm
+                  border-none shd-control-focus bg-transparent pointer-events-auto h-5 w-5 flex-none items-center justify-center rounded-sm
                   text-content-tertiary transition-colors duration-150 hover:bg-surface-interactive hover:text-content-primary
                   ${tab.dirty === true ? 'hidden group-hover:flex' : 'flex'}
                 `}
@@ -124,7 +137,7 @@ export function HoloFileTabs({
                 <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" aria-hidden="true">
                   <path d="M3 3l6 6M9 3l-6 6" />
                 </svg>
-              </button>
+              </button>}
             </span>}
           </div>
         )

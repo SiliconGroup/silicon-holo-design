@@ -23,6 +23,11 @@ interface Manifest {
   name: string
   root: string
   unreadable: string[]
+  /**
+   * path → 该文件已提交（HEAD）版本的 URL。
+   * 没有条目表示该文件与 HEAD 一致，diff 自然为空。
+   */
+  head?: Record<string, string>
   entries: ManifestEntry[]
 }
 
@@ -32,6 +37,8 @@ export interface VirtualFs {
   /** Edited files come from memory; otherwise the component fetches the URL itself. */
   readFile(path: string): Promise<ArtifactSource>
   writeFile(path: string, content: string): Promise<void>
+  /** 工作区里的文本（内存草稿优先），diff 的 after 侧用它。 */
+  readText(path: string): Promise<string>
   /** Committed content for the diff view. Untouched files are fetched once. */
   committedText(path: string): Promise<string>
   entry(path: string): ManifestEntry | undefined
@@ -79,13 +86,17 @@ export function createVirtualFs(): VirtualFs {
     return loading
   }
 
+  const fetchFrom = async (url: string, path: string) => {
+    const response = await fetch(url)
+    if (!response.ok) throw new Error(`Unable to read '${path}' (${response.status})`)
+    return response.text()
+  }
+
   const fetchText = async (path: string) => {
     const current = await load()
     const entry = current.entries.find(candidate => candidate.path === path)
     if (!entry) throw new Error(`ENOENT: no such file '${path}'`)
-    const response = await fetch(urlOf(current, entry))
-    if (!response.ok) throw new Error(`Unable to read '${path}' (${response.status})`)
-    return response.text()
+    return fetchFrom(urlOf(current, entry), path)
   }
 
   return {
@@ -129,11 +140,14 @@ export function createVirtualFs(): VirtualFs {
       return { kind: 'url', url: urlOf(current, entry) }
     },
 
+    async readText(path) {
+      const edited = edits.get(path)
+      return edited !== undefined ? edited : fetchText(path)
+    },
+
     async writeFile(path, content) {
-      if (!committed.has(path)) {
-        // Remember the server copy before the first write so the diff has a baseline.
-        committed.set(path, await fetchText(path).catch(() => ''))
-      }
+      // Resolve the HEAD baseline before the first write so the diff always has something to compare against.
+      if (!committed.has(path)) await this.committedText(path).catch(() => '')
       edits.set(path, content)
       await delay(120)
     },
@@ -141,7 +155,11 @@ export function createVirtualFs(): VirtualFs {
     async committedText(path) {
       const stored = committed.get(path)
       if (stored !== undefined) return stored
-      const text = await fetchText(path)
+      const current = await load()
+      const baseline = current.head?.[path]
+      const text = baseline !== undefined
+        ? await fetchFrom(baseline, path)
+        : await fetchText(path)
       committed.set(path, text)
       return text
     },

@@ -1,0 +1,18 @@
+:root {
+  --orbital-accent: #00b8d4;
+  --orbital-surface: #04121a;
+}
+
+.orbital-panel {
+  border: 1px solid rgba(0, 184, 212, 0.24);
+  border-radius: 4px;
+  background: var(--orbital-surface);
+  padding: 12px;
+}
+
+.orbital-panel__title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--orbital-accent);
+}

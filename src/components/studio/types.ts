@@ -127,7 +127,12 @@ export interface HoloStudioFile {
   mimeType?: string
   /** 内容来源。复用库内既有的 ArtifactSource。 */
   source: ArtifactSource
-  /** 是否有未保存修改。由宿主判定，驱动标签指示器。 */
+  /**
+   * 是否有未保存修改。由宿主判定。
+   *
+   * 这是**给宿主看的元数据**：HoloFileView 不渲染它。未保存状态的呈现在标签上，
+   * 宿主把它转写到 `HoloFileTab.dirty` 即可（圆点 + aria-describedby 说明）。
+   */
   dirty?: boolean
   /** 是否只读。true 时即便注入了编辑器也强制只读。 */
   readOnly?: boolean

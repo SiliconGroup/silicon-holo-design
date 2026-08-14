@@ -99,6 +99,11 @@ export function markDirty(state: VirtualGitState, path: string): VirtualGitState
   return { ...state, dirty }
 }
 
+/** 未跟踪的文件没有 HEAD 版本，diff 应当与空文档对比。 */
+export function isUntracked(state: VirtualGitState, path: string): boolean {
+  return state.untracked.has(path) && !state.staged.has(path)
+}
+
 export function commit(state: VirtualGitState, message: string, amend: boolean): VirtualGitState {
   const paths = [...state.staged]
   const at = new Date().toISOString().slice(11, 19)
