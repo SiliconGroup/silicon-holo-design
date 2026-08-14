@@ -111,6 +111,16 @@ describe('HoloFileTabs', () => {
     expect(screen.getByRole('tab', { name: 'a.ts' }).hasAttribute('data-shd-tab-preview')).toBe(false)
   })
 
+  it('leaves room for the italic glyph overhang so the last character is not clipped', () => {
+    render(<HoloFileTabs tabs={[{ id: 'p', label: 'telemetry.md', preview: true }, ...tabs]} activeId="p" />)
+    const label = screen.getByText('telemetry.md')
+    // truncate 带的 overflow:hidden 在内边距边界裁切；斜体字形的墨迹超出推进宽度，
+    // 没有这点右内边距时最后一个字符会被切掉。
+    expect(label.className).toContain('italic')
+    expect(label.className).toContain('pr-0.5')
+    expect(screen.getByText('a.ts').className).not.toContain('pr-0.5')
+  })
+
   it('requests a pin on double click, and only for preview tabs', () => {
     const onPin = vi.fn()
     render(<HoloFileTabs tabs={[{ id: 'p', label: 'preview.ts', preview: true }, ...tabs]} activeId="p" onPin={onPin} />)

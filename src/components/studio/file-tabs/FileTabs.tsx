@@ -98,8 +98,12 @@ export function HoloFileTabs({
                 <span aria-hidden="true" className="absolute inset-x-0 top-0 h-0.5 bg-accent-primary" />
               </>}
               {tab.icon !== undefined && <span aria-hidden="true" className="relative flex-none text-content-tertiary">{tab.icon}</span>}
-              {/* 预览标签用斜体表示「会被下一次单击替换」，与 VS Code 一致。 */}
-              <span className={`relative truncate ${tab.preview === true ? 'italic' : ''}`}>{tab.label}</span>
+              {/*
+                预览标签用斜体表示「会被下一次单击替换」，与 VS Code 一致。
+                斜体字形的墨迹会超出它的推进宽度，而 truncate 带的 overflow:hidden 在
+                内边距边界处裁切，所以必须给斜体留一点右内边距，否则最后一个字符会被切掉。
+              */}
+              <span className={`relative truncate ${tab.preview === true ? 'italic pr-0.5' : ''}`}>{tab.label}</span>
             </button>
             {closable && <span className="pointer-events-none absolute right-1 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center">
               {tab.dirty === true && <span
