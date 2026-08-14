@@ -8,6 +8,7 @@ const configs = [
   'examples/chat/vite.config.ts',
   'examples/ai-chat/vite.config.ts',
   'examples/component-gallery/vite.config.ts',
+  'examples/studio/vite.config.ts',
 ]
 
 for (const config of configs) {

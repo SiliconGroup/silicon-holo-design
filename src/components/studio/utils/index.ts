@@ -1,0 +1,7 @@
+export { flattenTree } from './flatten-tree'
+export { inferFileKind, inferLanguageId } from './file-kind'
+export { resolveFileIcon } from './file-icon'
+export { openTab, pinTab, closeTab } from './preview-tabs'
+export type { HoloFileTabsState } from './preview-tabs'
+export { useStudioLocale, formatBytes } from './use-studio-locale'
+export type { StudioLocale } from './use-studio-locale'

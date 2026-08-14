@@ -1,0 +1,22 @@
+:root {
+  --orbital-accent: #00e5ff;
+  --orbital-surface: #04121a;
+  --orbital-edge: color-mix(in srgb, var(--orbital-accent) 24%, transparent);
+}
+
+.orbital-panel {
+  box-sizing: border-box;
+  border: 1px solid var(--orbital-edge);
+  border-radius: 6px;
+  background: var(--orbital-surface);
+  padding: 16px;
+}
+
+.orbital-panel__title {
+  margin: 0 0 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--orbital-accent) 70%, white);
+}

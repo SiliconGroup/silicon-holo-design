@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useState, useEffect, useRef, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState, useEffect, useRef, type ReactNode } from 'react'
 import { HoloPortal } from '@/utils/portal'
 import { useLocale } from '@/locale'
 
@@ -84,7 +84,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     const id = `${Date.now()}-${++toastSequence}`
     setToasts(prev => [...prev, { id, type, message }])
   }, [])
-  const api: ToastAPI = { success: (m) => show('success', m), error: (m) => show('error', m), info: (m) => show('info', m) }
+  // 必须 memo：context value 若每次渲染都是新对象，消费者写 useEffect(..., [toast])
+  // 就会在每次弹 toast 时重跑副作用（弹 toast 会让本 Provider 重渲染），造成难以定位的连锁重取。
+  const api = useMemo<ToastAPI>(() => ({
+    success: (message) => show('success', message),
+    error: (message) => show('error', message),
+    info: (message) => show('info', message),
+  }), [show])
   return (
     <ToastContext.Provider value={api}>
       {children}

@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import { useEffect } from 'react'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { ToastProvider, useToast } from './Toast'
 import { LocaleProvider, zhCN } from '@/locale'
@@ -74,3 +75,19 @@ describe('ToastProvider', () => {
 })
 
 const TOAST_TEST_DURATION = 8000
+
+describe('ToastProvider context identity', () => {
+  it('keeps a stable identity so consumer effects do not re-run on every toast', () => {
+    const seen: unknown[] = []
+    function Consumer() {
+      const toast = useToast()
+      useEffect(() => { seen.push(toast) }, [toast])
+      return <button type="button" onClick={() => toast.info('notification body')}>trigger</button>
+    }
+    render(<ToastProvider><Consumer /></ToastProvider>)
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }))
+    fireEvent.click(screen.getByRole('button', { name: 'trigger' }))
+    // 不稳定的 context value 会让 [toast] 依赖的副作用在每次弹 toast 时重跑
+    expect(seen).toHaveLength(1)
+  })
+})

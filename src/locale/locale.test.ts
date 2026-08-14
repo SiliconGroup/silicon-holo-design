@@ -26,4 +26,20 @@ describe('Locale', () => {
     expect(formatMessage('Total {total} items', { total: 100 })).toBe('Total 100 items')
     expect(formatMessage('共 {total} 条', { total: 50 })).toBe('共 50 条')
   })
+
+  it('keeps the studio group aligned across locales', () => {
+    const en = Object.keys(enUS.studio ?? {}).sort()
+    const zh = Object.keys(zhCN.studio ?? {}).sort()
+    expect(en.length).toBeGreaterThan(0)
+    expect(zh).toEqual(en)
+  })
+
+  it('leaves no studio message empty', () => {
+    for (const locale of [enUS, zhCN]) {
+      for (const [key, value] of Object.entries(locale.studio ?? {})) {
+        expect(typeof value, `${locale.locale}.studio.${key}`).toBe('string')
+        expect(value.length, `${locale.locale}.studio.${key}`).toBeGreaterThan(0)
+      }
+    }
+  })
 })

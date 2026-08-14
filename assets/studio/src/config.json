@@ -1,0 +1,12 @@
+{
+  "link": {
+    "endpoint": "wss://orbital.example/telemetry",
+    "reconnectMs": 2500,
+    "channels": ["attitude", "power", "thermal"]
+  },
+  "render": {
+    "maxPreviewBytes": 524288,
+    "theme": "spectral-flat"
+  },
+  "features": { "diffView": true, "inlineRename": true }
+}

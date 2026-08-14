@@ -1,4 +1,6 @@
 export { ArtifactPreviewDrawer } from './ArtifactPreviewDrawer'
 export type { ArtifactPreviewDrawerProps } from './ArtifactPreviewDrawer'
+export { ArtifactRenderer } from './ArtifactRenderer'
+export type { ArtifactRendererProps } from './ArtifactRenderer'
 export { configureArtifactPdfWorker } from './pdf-worker-config'
 export type { ArtifactPdfWorkerConfig } from './pdf-worker-config'

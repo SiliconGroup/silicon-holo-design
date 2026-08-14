@@ -107,8 +107,8 @@ export { AIToolCallCard } from './components/ai/tool-call-card'
 export { AIToolCallGroup } from './components/ai/tool-call-group'
 export { AITaskExecutionPanel } from './components/ai/task-execution-panel'
 export type { AITaskExecutionList, AITaskExecutionPanelProps, AITaskExecutionStatus, AITaskExecutionTask } from './components/ai/task-execution-panel'
-export { ArtifactPreviewDrawer, configureArtifactPdfWorker } from './components/ai/artifact-preview'
-export type { ArtifactPdfWorkerConfig, ArtifactPreviewDrawerProps } from './components/ai/artifact-preview'
+export { ArtifactPreviewDrawer, ArtifactRenderer, configureArtifactPdfWorker } from './components/ai/artifact-preview'
+export type { ArtifactPdfWorkerConfig, ArtifactPreviewDrawerProps, ArtifactRendererProps } from './components/ai/artifact-preview'
 
 // Backward-compatible aliases (deprecated, will be removed in next major version)
 /** @deprecated Use AIMessageBubble instead */

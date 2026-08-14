@@ -45,6 +45,7 @@ button.shd-segmented-control-button{font-family:var(--shd-font-sans,Inter,"SF Pr
 .shd-scrollbar::-webkit-scrollbar-track{background:transparent}
 .shd-scrollbar::-webkit-scrollbar-thumb{min-height:32px;border:2px solid transparent;border-radius:999px;background:var(--shd-stroke-default);background-clip:padding-box}
 .shd-scrollbar::-webkit-scrollbar-thumb:hover{background:var(--shd-stroke-accent);background-clip:padding-box}
+.shd-scrollbar::-webkit-scrollbar-corner{background:transparent}
 }
 .shd-spectral-panel{background:var(--shd-surface-base-soft);box-shadow:inset 0 1px 0 var(--shd-spectral-highlight);color:var(--shd-content-primary)}
 .shd-spectral-panel-raised{background:var(--shd-surface-raised-soft);box-shadow:inset 0 1px 0 var(--shd-spectral-highlight);color:var(--shd-content-primary)}

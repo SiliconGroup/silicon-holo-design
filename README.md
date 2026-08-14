@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/components-59-00e5ff?style=flat-square" alt="59 components" />
+  <img src="https://img.shields.io/badge/components-69-00e5ff?style=flat-square" alt="69 components" />
   <img src="https://img.shields.io/badge/react-18-61dafb?style=flat-square" alt="React 18" />
   <img src="https://img.shields.io/badge/typescript-5.7-3178c6?style=flat-square" alt="TypeScript" />
   <img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="Apache 2.0" />
@@ -20,6 +20,7 @@
   <a href="#components">Components</a> ·
   <a href="#chat">Chat</a> ·
   <a href="#ai-chat">AI Chat</a> ·
+  <a href="#studio">Studio</a> ·
   <a href="#theming">Theming</a> ·
   <a href="#i18n">i18n</a> ·
   <a href="#examples">Examples</a> ·
@@ -88,6 +89,8 @@ The preset includes colors, shortcuts, fonts, and a **safelist** of all CSS clas
 | `silicon-holo-design/styles` | CSS variables & base styles (required) |
 | `silicon-holo-design/preset` | UnoCSS preset (`presetSiliconHolo`) |
 | `silicon-holo-design/chat` | Base chat components (`ChatBubble`, `ChatInputArea`, `ChatMessageList`) |
+| `silicon-holo-design/studio` | Project explorer components (`HoloStudio`, `HoloTree`, `HoloGitPanel`, …) — no extra install |
+| `silicon-holo-design/studio/editor` | CodeMirror 6 layer (`HoloCodeEditor`, `HoloDiffView`) — **requires CodeMirror, see [Studio](#studio)** |
 | `silicon-holo-design/ai` | AI-enhanced chat components (`AIChatContainer`, `AIMessageBubble`, etc.) |
 | `silicon-holo-design/locale/*` | Locale files (`en-US`, `zh-CN`) |
 
@@ -95,7 +98,7 @@ The preset includes colors, shortcuts, fonts, and a **safelist** of all CSS clas
 
 ## Components
 
-59 components across 7 categories.
+69 components across 8 categories.
 
 ### General
 
@@ -177,6 +180,25 @@ The preset includes colors, shortcuts, fonts, and a **safelist** of all CSS clas
 | `HexagonLoader` | Hexagonal loading animation |
 | `ToastProvider` / `useToast` | Toast notification system |
 | `DataStreamEffect` | Ambient data stream animation |
+
+### Studio (Project Explorer)
+
+Controlled components for reading a project: a VS Code style shell, a virtualised file tree, code presentation, and a git change panel. Exported from `silicon-holo-design/studio`.
+
+| Component | Description |
+|-----------|-------------|
+| `HoloStudio` | Shell: activity bar + collapsible side panel + main area |
+| `HoloActivityBar` | Narrow vertical icon bar (usable standalone) |
+| `HoloTree` | Controlled, virtualised tree with full ARIA `tree` semantics |
+| `HoloFileTabs` | File tab strip with dirty indicators and overflow scrolling |
+| `HoloCodeView` | Read-only highlighted code view (reuses the bundled highlight.js) |
+| `HoloFileView` | Dispatches by file kind: code, Markdown, PDF, spreadsheet, image, SVG |
+| `HoloGitPanel` | Git change and commit panel, modelled on real git semantics |
+| `HoloSplitPane` | Draggable and keyboard-resizable split container |
+| `HoloCodeEditor` | CodeMirror 6 editor — from `silicon-holo-design/studio/editor` |
+| `HoloDiffView` | CodeMirror merge view — from `silicon-holo-design/studio/editor` |
+
+Helpers: `createExplorerPanel`, `createGitPanel`, `flattenTree`, `inferFileKind`, `inferLanguageId`, `resolveFileIcon`.
 
 ### Chat (Base Layer)
 
@@ -339,6 +361,98 @@ Both `AIChatContainer` and `AIMessageList` accept custom empty state content:
 ```
 
 If omitted, built-in defaults are used (session selector and conversation starter hints).
+
+---
+
+## Studio
+
+A lightweight project reader. The components are **fully controlled** and make **no assumptions about where your data comes from**:
+
+- **No filesystem access.** You supply the already-parsed tree and file contents.
+- **No git implementation.** You supply the change list; the panel only renders it and reports intent.
+- **No persistence.** `onSaveIntent` forwards the Cmd/Ctrl+S intent; writing is your job.
+
+### Read-only browsing (no extra install)
+
+```tsx
+import 'silicon-holo-design/styles'
+import { HoloStudio, HoloFileView, createExplorerPanel } from 'silicon-holo-design/studio'
+import type { HoloTreeNode, HoloStudioFile } from 'silicon-holo-design/studio'
+
+function ProjectReader({ nodes, file }: { nodes: HoloTreeNode[]; file: HoloStudioFile | null }) {
+  const [expandedIds, setExpandedIds] = useState<string[]>([])
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+  return (
+    <HoloStudio
+      panels={[createExplorerPanel({
+        title: 'Explorer',
+        tree: { nodes, expandedIds, onExpandedChange: setExpandedIds, selectedIds, onSelectedChange: setSelectedIds },
+      })]}
+    >
+      <HoloFileView file={file} />
+    </HoloStudio>
+  )
+}
+```
+
+The tree takes a **flat** array (`id` + `parentId`), not nested `children`. Use `flattenTree()` if you already hold a nested structure. Lazy loading is a prop:
+
+```tsx
+<HoloTree
+  nodes={nodes}
+  expandedIds={expandedIds}
+  onExpandedChange={setExpandedIds}
+  loadChildren={node => myIpc.readDir(node.id)}
+  loadedIds={loadedIds}
+  onLoadedIdsChange={setLoadedIds}
+  onChildrenLoaded={(parent, children) => setNodes(merge(nodes, parent.id, children))}
+/>
+```
+
+### Editing and diffs (requires CodeMirror)
+
+The editor layer is an **optional peer dependency**, so read-only consumers pay nothing for it:
+
+```bash
+npm i @codemirror/state @codemirror/view @codemirror/language \
+      @codemirror/commands @codemirror/search @codemirror/merge @lezer/highlight
+# plus the language packs you want, e.g.
+npm i @codemirror/lang-javascript @codemirror/lang-json
+```
+
+```tsx
+import { HoloCodeEditor, HoloDiffView } from 'silicon-holo-design/studio/editor'
+
+<HoloFileView
+  file={file}
+  codeRenderer={HoloCodeEditor}
+  onChange={(file, value) => setContent(file.id, value)}
+  onSaveIntent={file => myIpc.writeFile(file.id, contentOf(file.id))}
+/>
+```
+
+> **CodeMirror must be a single instance.** Multiple copies of `@codemirror/state` break `instanceof` checks and throw
+> `Unrecognized extension value in extension set`. This is why the packages are peers rather than dependencies.
+> pnpm users should dedupe; npm users should avoid installing different versions across workspaces.
+
+### Git panel
+
+`HoloGitPanel` is modelled on git, not on a neutral VCS abstraction. `indexState` and `worktreeState` are independent, so a
+partially staged file correctly appears in **both** *Staged Changes* and *Changes*:
+
+```tsx
+<HoloGitPanel
+  repo={{ branch: 'main', upstream: 'origin/main', ahead: 2, inProgress: undefined }}
+  changes={[{ path: 'src/a.ts', indexState: 'modified', worktreeState: 'modified' }]}
+  commitMessage={message}
+  onCommitMessageChange={setMessage}
+  onStage={paths => myGit.add(paths)}
+  onCommit={({ amend }) => myGit.commit(message, { amend })}
+/>
+```
+
+Conflicted entries offer *Mark as resolved*, which calls `onStage` — because in git, resolving a conflict **is** `git add`.
 
 ---
 
@@ -553,6 +667,14 @@ Full AI chat interface with streaming simulation, tool execution cards, status i
 npm run example:ai-chat
 ```
 
+### `examples/studio`
+
+A full host-integration reference for the studio components. The project it opens lives in `assets/studio/` as **real files served over HTTP**, described by a `manifest.json` that stands in for `read_dir` + `stat`. It covers lazy tree loading, single-click open, a directory that fails to read, code / Markdown / SVG / image / PDF / spreadsheet dispatch, the oversized-file placeholder, save-through-host, staging, committing, and a diff view — plus an English / Chinese switch and a toggle between the read-only path and the CodeMirror editor path.
+
+```bash
+npm run example:studio
+```
+
 ### `examples/component-gallery`
 
 A broad cross-category component gallery, including the spectral Chat/AI execution surfaces. The main Showcase covers the core visual state matrix; the focused examples complete end-to-end coverage for chat containers, message lists, toasts, and application composition.
@@ -606,7 +728,9 @@ silicon-holo-design/
 │   │   ├── data-display/  # Table, Tag, Badge, Avatar, Tooltip, CodeBlock, ...
 │   │   ├── feedback/      # Modal, Drawer, Alert, Progress, Toast, ...
 │   │   ├── chat/          # ChatBubble, ChatInputArea, ChatMessageList (base layer)
-│   │   └── ai/            # AIChatContainer, ToolCall, TaskExecution, Artifact preview (AI layer)
+│   │   ├── ai/            # AIChatContainer, ToolCall, TaskExecution, Artifact preview (AI layer)
+│   │   └── studio/        # Studio shell, Tree, FileTabs, CodeView, FileView, GitPanel, SplitPane
+│   │       └── editor/    # Optional CodeMirror 6 layer (CodeEditor, DiffView)
 │   ├── locale/            # i18n (en-US, zh-CN)
 │   ├── theme/             # Theme tokens & provider
 │   ├── preset/            # UnoCSS preset
@@ -620,6 +744,7 @@ silicon-holo-design/
 │   ├── vite-basic/        # Minimal starter
 │   ├── chat/              # Base chat demo
 │   ├── ai-chat/           # AI chat demo with tool calls
+│   ├── studio/            # Project explorer demo with in-memory fs and git
 │   └── component-gallery/ # Full component reference
 └── dev_docs/              # Migration & design docs
 ```

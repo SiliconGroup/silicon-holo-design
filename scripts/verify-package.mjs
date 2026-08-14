@@ -11,7 +11,7 @@ const consumerDirectory = join(workspace, 'consumer')
 const expectedPublicExports = {
   'silicon-holo-design': [
   'AIChatContainer', 'AIMessageBubble', 'AIMessageList', 'AITaskExecutionPanel', 'AIToolCallCard', 'AIToolCallGroup',
-  'AIToolExecutionCard', 'ArtifactPreviewDrawer', 'ChatBubble', 'ChatContainer', 'ChatInputArea',
+  'AIToolExecutionCard', 'ArtifactPreviewDrawer', 'ArtifactRenderer', 'ChatBubble', 'ChatContainer', 'ChatInputArea',
   'ChatMessageList', 'CircuitBorder', 'CodeBlock', 'DataStreamEffect', 'GlowCard', 'HexagonLoader',
   'HoloAlert', 'HoloAnchor', 'HoloAvatar', 'HoloBadge', 'HoloBreadcrumb', 'HoloButton',
   'HoloCheckbox', 'HoloCollapse', 'HoloConfirm', 'HoloDatePicker', 'HoloDescriptions',
@@ -26,7 +26,10 @@ const expectedPublicExports = {
   'isFullHtmlPage', 'presetSiliconHolo', 'useClickOutside', 'useLocale', 'useTheme', 'useToast', 'zhCN',
   ],
   'silicon-holo-design/chat': ['ChatBubble', 'ChatInputArea', 'ChatMessageList'],
-  'silicon-holo-design/ai': ['AIChatContainer', 'AIMessageBubble', 'AIMessageList', 'AITaskExecutionPanel', 'AIToolCallCard', 'AIToolCallGroup', 'AIToolExecutionCard', 'ArtifactPreviewDrawer', 'configureArtifactPdfWorker'],
+  'silicon-holo-design/ai': ['AIChatContainer', 'AIMessageBubble', 'AIMessageList', 'AITaskExecutionPanel', 'AIToolCallCard', 'AIToolCallGroup', 'AIToolExecutionCard', 'ArtifactPreviewDrawer', 'ArtifactRenderer', 'configureArtifactPdfWorker'],
+  // ./studio 必须在**未安装 CodeMirror** 的消费者中可以 import 成功——这条断言即该保证的执行版本。
+  // ./studio/editor 刻意不在此列：它按设计要求消费者自行安装 CodeMirror。
+  'silicon-holo-design/studio': ['HoloActivityBar', 'HoloCodeView', 'HoloFileTabs', 'HoloFileView', 'HoloGitPanel', 'HoloSplitPane', 'HoloStudio', 'HoloTree', 'closeTab', 'createExplorerPanel', 'createGitPanel', 'flattenTree', 'inferFileKind', 'inferLanguageId', 'openTab', 'pinTab', 'resolveFileIcon'],
   'silicon-holo-design/preset': ['colors', 'presetSiliconHolo', 'shortcuts'],
   'silicon-holo-design/locale/en-US': ['default'],
   'silicon-holo-design/locale/zh-CN': ['default'],
@@ -191,6 +194,27 @@ import * as Root from 'silicon-holo-design'
 import * as Chat from 'silicon-holo-design/chat'
 import * as AI from 'silicon-holo-design/ai'
 import * as Preset from 'silicon-holo-design/preset'
+import * as Studio from 'silicon-holo-design/studio'
+import type {
+  HoloActivityBarProps,
+  HoloCodeRendererProps,
+  HoloFileKind,
+  HoloFileTab,
+  HoloFileTabsProps,
+  HoloFileTabsState,
+  HoloFileViewMode,
+  HoloGitFileChange,
+  HoloGitFileState,
+  HoloGitPanelProps,
+  HoloGitRepoState,
+  HoloSplitPaneProps,
+  HoloStudioFile,
+  HoloStudioPanel,
+  HoloStudioProps,
+  HoloTreeNode,
+  HoloTreeNodeStatus,
+  HoloTreeProps,
+} from 'silicon-holo-design/studio'
 import enUS from 'silicon-holo-design/locale/en-US'
 import zhCN from 'silicon-holo-design/locale/zh-CN'
 import type {
@@ -241,6 +265,32 @@ const inputProps: HoloInputProps = { size: 'md', variant: 'default', status: 'su
 const textareaProps: HoloTextareaProps = { size: 'md', variant: 'ghost', status: 'error', onChange: () => {}, autoResize: true, maxAutoHeight: 200, onSubmit: noop, grouped: false }
 const artifactDrawerProps: ArtifactPreviewDrawerProps = { artifact, onClose: noop, width: '50vw', renderers: { html: () => <span /> } }
 const options = [{ value: 'one', label: 'One', disabled: false }]
+const studioNodes: HoloTreeNode[] = [
+  { id: 'src', label: 'src', kind: 'branch', expandable: true },
+  { id: 'src/a.ts', label: 'a.ts', kind: 'leaf', parentId: 'src', status: 'modified' satisfies HoloTreeNodeStatus, badge: 1, meta: { path: '/src/a.ts' } },
+]
+const studioFile: HoloStudioFile = { id: 'src/a.ts', fileName: 'a.ts', kind: 'code' satisfies HoloFileKind, source: { kind: 'text', value: 'const a = 1' }, dirty: true, byteSize: 11 }
+const studioTabs: HoloFileTab[] = [{ id: 'src/a.ts', label: 'a.ts', dirty: true, title: 'src/a.ts' }]
+const gitRepo: HoloGitRepoState = { branch: 'main', upstream: 'origin/main', ahead: 1, behind: 0, detached: false, inProgress: 'rebase' }
+const gitChanges: HoloGitFileChange[] = [{ path: 'src/a.ts', indexState: 'added' satisfies HoloGitFileState, worktreeState: 'modified', conflict: { ours: true, theirs: false } }]
+const studioTreeProps: HoloTreeProps = { nodes: studioNodes, expandedIds: ['src'], onExpandedChange: () => {}, selectedIds: [], onSelectedChange: () => {}, multiple: true, loadChildren: async () => studioNodes, loadedIds: [], onLoadedIdsChange: () => {} }
+const studioGitProps: HoloGitPanelProps = { repo: gitRepo, changes: gitChanges, commitMessage: '', onCommitMessageChange: setString, onStage: () => {}, onUnstage: () => {}, onDiscard: () => {}, onOpenDiff: () => {}, onCommit: () => {}, onRefresh: noop, allowEmptyCommit: false }
+const studioPanels: HoloStudioPanel[] = [
+  Studio.createExplorerPanel({ tree: studioTreeProps, title: 'Files' }),
+  Studio.createGitPanel({ git: studioGitProps, title: 'Source Control' }),
+  { id: 'custom', icon: <span />, title: 'Custom', render: () => <span />, badge: 2, placement: 'bottom' },
+]
+const studioProps: HoloStudioProps = { panels: studioPanels, activePanelId: 'explorer', onActivePanelChange: setString, sideCollapsed: false, sideWidth: 260, minSideWidth: 180, maxSideWidth: 520 }
+const studioTabsProps: HoloFileTabsProps = { tabs: studioTabs, activeId: 'src/a.ts', onActiveChange: setString, onClose: setString, closable: true, closeOnMiddleClick: true }
+const studioBarProps: HoloActivityBarProps = { items: studioPanels, activeId: 'explorer', onActiveChange: setString, onActiveReselect: setString }
+const studioSplitProps: HoloSplitPaneProps = { direction: 'horizontal', size: 240, onSizeChange: setNumber, minSize: 120, maxSize: 480, children: [<span key="a" />, <span key="b" />] }
+const studioCodeProps: HoloCodeRendererProps = { value: 'const a = 1', languageId: 'typescript', readOnly: true, showLineNumbers: true, wrap: false, highlightLines: [1], revealLine: 1 }
+const previewTabState: HoloFileTabsState = Studio.openTab({ tabs: [], activeId: undefined }, { id: 'a.ts', label: 'a.ts' })
+const pinnedTabState: HoloFileTabsState = Studio.pinTab(Studio.openTab(previewTabState, { id: 'b.ts', label: 'b.ts' }, { pinned: true }), 'a.ts')
+const closedTabState: HoloFileTabsState = Studio.closeTab(pinnedTabState, 'b.ts')
+const viewModes: HoloFileViewMode[] = ['preview', 'source']
+void [previewTabState, pinnedTabState, closedTabState, viewModes]
+void [studioFile, studioProps, studioTabsProps, studioBarProps, studioSplitProps, studioCodeProps, Studio.flattenTree([{ id: 'a', label: 'a', kind: 'branch', children: [] }]), Studio.inferFileKind({ fileName: 'a.ts' }), Studio.inferLanguageId('a.ts'), Studio.resolveFileIcon({ fileName: 'a.ts' })]
 
 void [publicSizes, publicStatuses, connectionStatuses, messageRoles, toolStatuses, artifactTypes, fileArtifact, locales, resolvedThemeTokens, themeProviderProps, inputProps, textareaProps, artifactDrawerProps, artifactPdfWorkerConfig]
 
@@ -314,6 +364,13 @@ export const compatibilityFixture = (
     <AI.ArtifactPreviewDrawer artifact={artifact} onClose={noop} width="50vw" renderers={{ html: () => <span /> }} />
     <Root.MessageBubble message={message} /><Root.MessageList messages={[message]} /><Root.ChatContainer onSend={setString} /><Root.ToolExecutionCard toolName="legacy" status="pending" />
     <Root.LocaleProvider locale={enUS}><Root.LocaleProvider locale={zhCN}><span data-preset={Preset.presetSiliconHolo().name} /></Root.LocaleProvider></Root.LocaleProvider>
+    <Root.ArtifactRenderer artifact={artifact} />
+    <Studio.HoloStudio {...studioProps}><Studio.HoloFileView file={studioFile} onChange={() => {}} onSaveIntent={() => {}} /></Studio.HoloStudio>
+    <Studio.HoloActivityBar {...studioBarProps} /><Studio.HoloTree {...studioTreeProps} /><Studio.HoloFileTabs {...studioTabsProps} />
+    <Studio.HoloGitPanel {...studioGitProps} /><Studio.HoloSplitPane {...studioSplitProps} /><Studio.HoloCodeView {...studioCodeProps} />
+    <Studio.HoloFileTabs tabs={previewTabState.tabs} activeId={previewTabState.activeId} onPin={setString} />
+    <Studio.HoloFileView file={studioFile} mode="preview" onModeChange={() => {}} defaultMode="source" showModeToggle />
+    <Studio.HoloTree {...studioTreeProps} activateOn="click" onActivatePinned={() => {}} />
   </>
 )
 

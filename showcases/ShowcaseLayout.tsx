@@ -6,6 +6,7 @@ import NavSection from './sections/NavSection'
 import LayoutSection from './sections/LayoutSection'
 import ChatAISection from './sections/ChatAISection'
 import FoundationsSection from './sections/FoundationsSection'
+import StudioSection from './sections/StudioSection'
 
 interface NavItem {
   id: string
@@ -39,6 +40,24 @@ const navCategories: NavCategory[] = [
       { id: 'tool-execution', title: 'AIToolExecutionCard' },
       { id: 'task-execution', title: 'AITaskExecutionPanel' },
       { id: 'data-stream', title: 'DataStreamEffect' },
+    ]
+  },
+  {
+    title: 'Studio (项目阅读器)',
+    items: [
+      { id: 'studio-shell', title: 'HoloStudio' },
+      { id: 'studio-activity-bar', title: 'HoloActivityBar' },
+      { id: 'studio-tree', title: 'HoloTree' },
+      { id: 'studio-tree-lazy', title: 'HoloTree Lazy Load' },
+      { id: 'studio-tree-large', title: 'HoloTree Virtual Scroll' },
+      { id: 'studio-file-tabs', title: 'HoloFileTabs' },
+      { id: 'studio-code-view', title: 'HoloCodeView' },
+      { id: 'studio-code-editor', title: 'HoloCodeEditor' },
+      { id: 'studio-diff-view', title: 'HoloDiffView' },
+      { id: 'studio-file-view', title: 'HoloFileView' },
+      { id: 'studio-git-panel', title: 'HoloGitPanel' },
+      { id: 'studio-split-pane', title: 'HoloSplitPane' },
+      { id: 'studio-theme', title: 'Studio Theming' },
     ]
   },
   {
@@ -230,23 +249,27 @@ export function ShowcaseLayout() {
               <ChatAISection />
             </section>
             <section>
-              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">02</span>Form (表单)</h2>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">02</span>Studio (项目阅读器)</h2>
+              <StudioSection />
+            </section>
+            <section>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">03</span>Form (表单)</h2>
               <FormSection />
             </section>
             <section>
-              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">03</span>Data Display (数据展示)</h2>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">04</span>Data Display (数据展示)</h2>
               <DataSection />
             </section>
             <section>
-              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">04</span>Feedback (反馈)</h2>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">05</span>Feedback (反馈)</h2>
               <FeedbackSection />
             </section>
             <section>
-              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">05</span>Navigation (导航)</h2>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">06</span>Navigation (导航)</h2>
               <NavSection />
             </section>
             <section>
-              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">06</span>Layout (布局)</h2>
+              <h2 className="text-xl font-semibold text-content-primary mb-6 pb-2 border-b border-stroke-subtle"><span className="text-content-accent mr-2">07</span>Layout (布局)</h2>
               <LayoutSection />
             </section>
           </div>

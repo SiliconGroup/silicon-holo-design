@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/组件-59-00e5ff?style=flat-square" alt="59 components" />
+  <img src="https://img.shields.io/badge/组件-69-00e5ff?style=flat-square" alt="69 components" />
   <img src="https://img.shields.io/badge/react-18-61dafb?style=flat-square" alt="React 18" />
   <img src="https://img.shields.io/badge/typescript-5.7-3178c6?style=flat-square" alt="TypeScript" />
   <img src="https://img.shields.io/badge/license-Apache%202.0-green?style=flat-square" alt="Apache 2.0" />
@@ -20,6 +20,7 @@
   <a href="#组件列表">组件列表</a> ·
   <a href="#聊天组件">聊天组件</a> ·
   <a href="#ai-聊天">AI 聊天</a> ·
+  <a href="#studio-项目阅读器">Studio 项目阅读器</a> ·
   <a href="#主题定制">主题定制</a> ·
   <a href="#国际化">国际化</a> ·
   <a href="#示例">示例</a> ·
@@ -85,13 +86,15 @@ export default defineConfig({
 | `silicon-holo-design/preset` | UnoCSS 预设（`presetSiliconHolo`） |
 | `silicon-holo-design/chat` | 基础聊天组件（`ChatBubble`、`ChatInputArea`、`ChatMessageList`） |
 | `silicon-holo-design/ai` | AI 增强聊天组件（`AIChatContainer`、`AIMessageBubble` 等） |
+| `silicon-holo-design/studio` | 项目阅读器组件（`HoloStudio`、`HoloTree`、`HoloGitPanel` 等）— 无需额外安装 |
+| `silicon-holo-design/studio/editor` | CodeMirror 6 层（`HoloCodeEditor`、`HoloDiffView`）— **需自行安装 CodeMirror，见 [Studio](#studio-项目阅读器)** |
 | `silicon-holo-design/locale/*` | 语言包（`en-US`、`zh-CN`） |
 
 ---
 
 ## 组件列表
 
-共 59 个组件，分为 7 大类。
+共 69 个组件，分为 8 大类。
 
 ### 通用
 
@@ -172,6 +175,25 @@ export default defineConfig({
 | `HexagonLoader` | 六边形加载动画 |
 | `ToastProvider` / `useToast` | 轻提示系统 |
 | `DataStreamEffect` | 数据流动画效果 |
+
+### Studio（项目阅读器）
+
+用于阅读一个项目的受控组件：类 VS Code 外壳、虚拟滚动文件树、代码呈现与 Git 变更面板。从 `silicon-holo-design/studio` 导出。
+
+| 组件 | 说明 |
+|------|------|
+| `HoloStudio` | 外壳：Activity Bar + 可折叠侧边面板 + 主内容区 |
+| `HoloActivityBar` | 窄图标侧栏（可独立使用） |
+| `HoloTree` | 受控虚拟滚动树，完整 ARIA `tree` 语义 |
+| `HoloFileTabs` | 文件标签栏，含 dirty 指示与溢出滚动 |
+| `HoloCodeView` | 只读高亮代码视图（复用库内已有的 highlight.js） |
+| `HoloFileView` | 按文件种类分派：代码、Markdown、PDF、表格、图片、SVG |
+| `HoloGitPanel` | Git 变更与提交面板，按真实 git 语义设计 |
+| `HoloSplitPane` | 可拖拽、可键盘调整的分栏容器 |
+| `HoloCodeEditor` | CodeMirror 6 编辑器 — 来自 `silicon-holo-design/studio/editor` |
+| `HoloDiffView` | CodeMirror merge 视图 — 来自 `silicon-holo-design/studio/editor` |
+
+辅助函数：`createExplorerPanel`、`createGitPanel`、`flattenTree`、`inferFileKind`、`inferLanguageId`、`resolveFileIcon`。
 
 ### 聊天（基础层）
 
@@ -426,6 +448,98 @@ import { LocaleProvider, zhCN, enUS } from 'silicon-holo-design'
 
 ---
 
+## Studio 项目阅读器
+
+一套轻量项目阅读器。组件**完全受控**，且**不对数据来源做任何假设**：
+
+- **不访问文件系统**：目录树与文件内容由宿主解析好后传入。
+- **不实现 git**：变更列表由宿主给出，面板只负责渲染与上报意图。
+- **不做持久化**：`onSaveIntent` 只转发 Cmd/Ctrl+S 意图，写盘是宿主的事。
+
+### 只读浏览（零额外安装）
+
+```tsx
+import 'silicon-holo-design/styles'
+import { HoloStudio, HoloFileView, createExplorerPanel } from 'silicon-holo-design/studio'
+import type { HoloTreeNode, HoloStudioFile } from 'silicon-holo-design/studio'
+
+function ProjectReader({ nodes, file }: { nodes: HoloTreeNode[]; file: HoloStudioFile | null }) {
+  const [expandedIds, setExpandedIds] = useState<string[]>([])
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+  return (
+    <HoloStudio
+      panels={[createExplorerPanel({
+        title: '资源管理',
+        tree: { nodes, expandedIds, onExpandedChange: setExpandedIds, selectedIds, onSelectedChange: setSelectedIds },
+      })]}
+    >
+      <HoloFileView file={file} />
+    </HoloStudio>
+  )
+}
+```
+
+树接收**扁平数组**（`id` + `parentId`），不是嵌套 `children`。已持有嵌套结构时用 `flattenTree()` 转换。惰性加载是一个 prop：
+
+```tsx
+<HoloTree
+  nodes={nodes}
+  expandedIds={expandedIds}
+  onExpandedChange={setExpandedIds}
+  loadChildren={node => myIpc.readDir(node.id)}
+  loadedIds={loadedIds}
+  onLoadedIdsChange={setLoadedIds}
+  onChildrenLoaded={(parent, children) => setNodes(merge(nodes, parent.id, children))}
+/>
+```
+
+### 编辑与 diff（需要 CodeMirror）
+
+编辑器层是**可选 peerDependencies**，因此只读消费者不需要为它付出任何体积：
+
+```bash
+npm i @codemirror/state @codemirror/view @codemirror/language \
+      @codemirror/commands @codemirror/search @codemirror/merge @lezer/highlight
+# 再按需安装语言包，例如
+npm i @codemirror/lang-javascript @codemirror/lang-json
+```
+
+```tsx
+import { HoloCodeEditor, HoloDiffView } from 'silicon-holo-design/studio/editor'
+
+<HoloFileView
+  file={file}
+  codeRenderer={HoloCodeEditor}
+  onChange={(file, value) => setContent(file.id, value)}
+  onSaveIntent={file => myIpc.writeFile(file.id, contentOf(file.id))}
+/>
+```
+
+> **CodeMirror 必须只有一份实例。** 多份 `@codemirror/state` 会破坏 `instanceof` 判断并抛出
+> `Unrecognized extension value in extension set`。这正是这些包声明为 peer 而不是 dependencies 的原因。
+> pnpm 用户建议配置 dedupe；npm 用户注意不要在多个 workspace 中安装不同版本。
+
+### Git 面板
+
+`HoloGitPanel` 按 git 设计，而不是按某种中立的 VCS 抽象设计。`indexState` 与 `worktreeState` 相互独立，
+因此部分暂存的文件会正确地同时出现在 *已暂存的更改* 与 *更改* 两组中：
+
+```tsx
+<HoloGitPanel
+  repo={{ branch: 'main', upstream: 'origin/main', ahead: 2, inProgress: undefined }}
+  changes={[{ path: 'src/a.ts', indexState: 'modified', worktreeState: 'modified' }]}
+  commitMessage={message}
+  onCommitMessageChange={setMessage}
+  onStage={paths => myGit.add(paths)}
+  onCommit={({ amend }) => myGit.commit(message, { amend })}
+/>
+```
+
+冲突条目提供「标记为已解决」，它调用的是 `onStage` —— 因为在 git 中，解决冲突**就是** `git add`。
+
+---
+
 ## 示例
 
 | 示例 | 说明 | 启动命令 |
@@ -433,6 +547,7 @@ import { LocaleProvider, zhCN, enUS } from 'silicon-holo-design'
 | `examples/vite-basic` | 最小化入门 — 按钮、输入、弹窗、语言切换 | `npm run example:basic` |
 | `examples/chat` | 基础聊天 — 使用 `ChatBubble`、`ChatInputArea`、`ChatMessageList` | `npm run example:chat` |
 | `examples/ai-chat` | AI 聊天 — 流式输出、工具执行卡片、状态指示器 | `npm run example:ai-chat` |
+| `examples/studio` | 项目阅读器 — 打开的项目是 `assets/studio/` 下经 HTTP 提供的**真实文件**（由 `manifest.json` 描述，相当于 `read_dir` + `stat`）：惰性加载、单击打开、读取失败的目录、代码/Markdown/SVG/图片/PDF/表格分派、超限占位、宿主保存、暂存与提交、diff，以及中英文切换 | `npm run example:studio` |
 | `examples/component-gallery` | 跨分类组件与 Chat/AI 视觉参考 | `npm run example:gallery` |
 | Showcase | 核心组件视觉状态矩阵；Chat 容器、消息列表、Toast 与应用组合由专项 examples 补充覆盖 | `npm run showcase` |
 
@@ -463,7 +578,9 @@ silicon-holo-design/
 │   │   ├── data-display/  # Table, Tag, Badge, Avatar, Tooltip, CodeBlock, ...
 │   │   ├── feedback/      # Modal, Drawer, Alert, Progress, Toast, ...
 │   │   ├── chat/          # ChatBubble, ChatInputArea, ChatMessageList（基础层）
-│   │   └── ai/            # AIChatContainer、ToolCall、TaskExecution、Artifact 预览（AI 层）
+│   │   ├── ai/            # AIChatContainer、ToolCall、TaskExecution、Artifact 预览（AI 层）
+│   │   └── studio/        # Studio 外壳、Tree、FileTabs、CodeView、FileView、GitPanel、SplitPane
+│   │       └── editor/    # 可选 CodeMirror 6 层（CodeEditor、DiffView）
 │   ├── locale/            # 国际化（en-US, zh-CN）
 │   ├── theme/             # 主题 tokens 与 provider
 │   ├── preset/            # UnoCSS 预设
@@ -477,6 +594,7 @@ silicon-holo-design/
 │   ├── vite-basic/        # 最小化入门
 │   ├── chat/              # 基础聊天示例
 │   ├── ai-chat/           # AI 聊天示例（含工具调用）
+│   ├── studio/            # 项目阅读器示例（内存 fs 与 git）
 │   └── component-gallery/ # 全组件一览
 └── dev_docs/              # 迁移与设计文档
 ```

@@ -184,6 +184,8 @@ button.shd-segmented-control-button { font-family: var(--shd-font-sans); font-si
   .shd-scrollbar::-webkit-scrollbar-track { background: transparent; }
   .shd-scrollbar::-webkit-scrollbar-thumb { min-height: 32px; border: 2px solid transparent; border-radius: 999px; background: var(--shd-stroke-default); background-clip: padding-box; }
   .shd-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--shd-stroke-accent); background-clip: padding-box; }
+  /* 两轴同时出现滚动条时，WebKit 的交角默认是浅色方块；不置空会在深色面板上显示为白点。 */
+  .shd-scrollbar::-webkit-scrollbar-corner { background: transparent; }
 }
 
 .shd-spectral-panel {

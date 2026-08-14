@@ -1,0 +1,141 @@
+{
+  "name": "orbital-console",
+  "root": "/studio",
+  "unreadable": [
+    "protected"
+  ],
+  "entries": [
+    {
+      "path": ".gitignore",
+      "kind": "file",
+      "bytes": 38
+    },
+    {
+      "path": "README.md",
+      "kind": "file",
+      "bytes": 1118
+    },
+    {
+      "path": "assets",
+      "kind": "directory"
+    },
+    {
+      "path": "build",
+      "kind": "directory"
+    },
+    {
+      "path": "data",
+      "kind": "directory"
+    },
+    {
+      "path": "docs",
+      "kind": "directory"
+    },
+    {
+      "path": "package.json",
+      "kind": "file",
+      "bytes": 276
+    },
+    {
+      "path": "protected",
+      "kind": "directory"
+    },
+    {
+      "path": "src",
+      "kind": "directory"
+    },
+    {
+      "path": "assets/logo.svg",
+      "kind": "file",
+      "bytes": 483
+    },
+    {
+      "path": "build/bundle.wasm",
+      "kind": "file",
+      "bytes": 8
+    },
+    {
+      "path": "data/telemetry.ndjson",
+      "kind": "file",
+      "bytes": 48315
+    },
+    {
+      "path": "data/workbook.xlsx",
+      "kind": "file",
+      "url": "/artifact-preview/complex-workbook.xlsx",
+      "bytes": 13802
+    },
+    {
+      "path": "docs/architecture.md",
+      "kind": "file",
+      "bytes": 1412
+    },
+    {
+      "path": "docs/operations.pdf",
+      "kind": "file",
+      "url": "/artifact-preview/complex-document.pdf",
+      "bytes": 1016315
+    },
+    {
+      "path": "docs/telemetry.md",
+      "kind": "file",
+      "bytes": 345
+    },
+    {
+      "path": "src/app.ts",
+      "kind": "file",
+      "bytes": 905
+    },
+    {
+      "path": "src/config.json",
+      "kind": "file",
+      "bytes": 282
+    },
+    {
+      "path": "src/features",
+      "kind": "directory"
+    },
+    {
+      "path": "src/index.ts",
+      "kind": "file",
+      "bytes": 306
+    },
+    {
+      "path": "src/lib",
+      "kind": "directory"
+    },
+    {
+      "path": "src/styles",
+      "kind": "directory"
+    },
+    {
+      "path": "src/features/editor",
+      "kind": "directory"
+    },
+    {
+      "path": "src/lib/format.ts",
+      "kind": "file",
+      "bytes": 704
+    },
+    {
+      "path": "src/lib/parse.rs",
+      "kind": "file",
+      "bytes": 838
+    },
+    {
+      "path": "src/lib/report.py",
+      "kind": "file",
+      "bytes": 538
+    },
+    {
+      "path": "src/styles/theme.css",
+      "kind": "file",
+      "bytes": 538
+    },
+    {
+      "path": "src/features/editor/state.ts",
+      "kind": "file",
+      "bytes": 764
+    }
+  ]
+}

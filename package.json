@@ -1,6 +1,6 @@
 {
   "name": "silicon-holo-design",
-  "version": "0.2.8",
+  "version": "0.3.0",
   "license": "Apache-2.0",
   "type": "module",
   "module": "./dist/index.js",
@@ -18,6 +18,14 @@
     "./ai": {
       "import": "./dist/components/ai/index.js",
       "types": "./dist/components/ai/index.d.ts"
+    },
+    "./studio": {
+      "import": "./dist/components/studio/index.js",
+      "types": "./dist/components/studio/index.d.ts"
+    },
+    "./studio/editor": {
+      "import": "./dist/components/studio/editor/index.js",
+      "types": "./dist/components/studio/editor/index.d.ts"
     },
     "./preset": {
       "import": "./dist/preset/index.js",
@@ -38,7 +46,37 @@
   ],
   "peerDependencies": {
     "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react-dom": ">=18.0.0",
+    "@codemirror/state": "^6.0.0",
+    "@codemirror/view": "^6.0.0",
+    "@codemirror/language": "^6.0.0",
+    "@codemirror/commands": "^6.0.0",
+    "@codemirror/search": "^6.0.0",
+    "@codemirror/merge": "^6.0.0",
+    "@lezer/highlight": "^1.0.0",
+    "@codemirror/lang-javascript": "^6.0.0",
+    "@codemirror/lang-json": "^6.0.0",
+    "@codemirror/lang-markdown": "^6.0.0",
+    "@codemirror/lang-python": "^6.0.0",
+    "@codemirror/lang-rust": "^6.0.0",
+    "@codemirror/lang-html": "^6.0.0",
+    "@codemirror/lang-css": "^6.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@codemirror/state": { "optional": true },
+    "@codemirror/view": { "optional": true },
+    "@codemirror/language": { "optional": true },
+    "@codemirror/commands": { "optional": true },
+    "@codemirror/search": { "optional": true },
+    "@codemirror/merge": { "optional": true },
+    "@lezer/highlight": { "optional": true },
+    "@codemirror/lang-javascript": { "optional": true },
+    "@codemirror/lang-json": { "optional": true },
+    "@codemirror/lang-markdown": { "optional": true },
+    "@codemirror/lang-python": { "optional": true },
+    "@codemirror/lang-rust": { "optional": true },
+    "@codemirror/lang-html": { "optional": true },
+    "@codemirror/lang-css": { "optional": true }
   },
   "dependencies": {
     "highlight.js": "^11.10.0",
@@ -56,7 +94,21 @@
     "uuid": "^11.1.1"
   },
   "devDependencies": {
+    "@codemirror/commands": "^6.10.4",
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/lang-html": "^6.4.12",
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/lang-json": "^6.0.2",
+    "@codemirror/lang-markdown": "^6.5.2",
+    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/lang-rust": "^6.0.2",
+    "@codemirror/language": "^6.12.4",
+    "@codemirror/merge": "^6.12.2",
+    "@codemirror/search": "^6.7.1",
+    "@codemirror/state": "^6.7.1",
+    "@codemirror/view": "^6.43.8",
     "@iconify-json/carbon": "^1.2.24",
+    "@lezer/highlight": "^1.2.3",
     "@testing-library/react": "^16.1.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
@@ -78,9 +130,10 @@
     "prepare": "node scripts/prepare.mjs",
     "dev": "vite",
     "build:dist": "tsc --noEmit && vite build && node scripts/extract-safelist.mjs && vite build",
-    "build": "npm run build:dist && node scripts/verify-dist.mjs && node scripts/verify-public-types.mjs && node scripts/verify-additive-api.mjs && node scripts/verify-package.mjs && node scripts/verify-artifact-package-browser.mjs && node scripts/verify-theme-browser.mjs && node scripts/verify-toolcall-browser.mjs && node scripts/verify-artifact-browser.mjs && node scripts/verify-surfaces.mjs",
+    "build": "npm run build:dist && node scripts/verify-dist.mjs && node scripts/verify-optional-deps.mjs && node scripts/verify-public-types.mjs && node scripts/verify-additive-api.mjs && node scripts/verify-package.mjs && node scripts/verify-artifact-package-browser.mjs && node scripts/verify-theme-browser.mjs && node scripts/verify-toolcall-browser.mjs && node scripts/verify-artifact-browser.mjs && node scripts/verify-surfaces.mjs",
     "test": "vitest run && node scripts/verify-source.mjs",
     "typecheck": "tsc --noEmit",
+    "verify:optional-deps": "node scripts/verify-optional-deps.mjs",
     "verify:surfaces": "node scripts/verify-surfaces.mjs",
     "verify:theme-browser": "node scripts/verify-theme-browser.mjs",
     "verify:toolcall-browser": "node scripts/verify-toolcall-browser.mjs",
@@ -90,6 +143,7 @@
     "example:basic": "vite --config examples/vite-basic/vite.config.ts",
     "example:chat": "vite --config examples/chat/vite.config.ts",
     "example:ai-chat": "vite --config examples/ai-chat/vite.config.ts",
-    "example:gallery": "vite --config examples/component-gallery/vite.config.ts"
+    "example:gallery": "vite --config examples/component-gallery/vite.config.ts",
+    "example:studio": "vite --config examples/studio/vite.config.ts"
   }
 }
