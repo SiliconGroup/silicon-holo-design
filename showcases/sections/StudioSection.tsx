@@ -678,7 +678,7 @@ function FileViewDemo() {
       <p className="m-0 text-xs text-content-tertiary">
         With the switch off this uses the built-in read-only HoloCodeView, a path that needs <strong className="text-content-secondary">no CodeMirror package at all</strong>.
         Markdown, SVG, image, PDF and spreadsheet files reuse the ArtifactRenderer already shipped with the library, loaded from
-        <code className="text-content-accent"> assets/studio/</code> over HTTP.
+        <code className="text-content-accent"> assets/</code> over HTTP.
         Text backed previews (markdown, SVG, HTML) also offer a Preview / Source switch, so they can be edited as source;
         PDF, spreadsheet, image and binary files are preview only.
       </p>
